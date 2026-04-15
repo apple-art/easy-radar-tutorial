@@ -2,9 +2,9 @@
   <tr>
     <td align="center" valign="middle" width="130">
       <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="./design/icon-concepts/ai-redraw-transparent-white-lines-subject-only.svg">
-        <source media="(prefers-color-scheme: light)" srcset="./design/icon-concepts/ai-redraw-transparent-black-lines-subject-only.svg">
-        <img src="./design/icon-concepts/ai-redraw-transparent-black-lines-subject-only.svg" alt="易懂的雷达信号处理教程图标" width="92">
+        <source media="(prefers-color-scheme: dark)" srcset="./design/icon-concepts/logo-mark-dark.svg">
+        <source media="(prefers-color-scheme: light)" srcset="./design/icon-concepts/logo-mark-light.svg">
+        <img src="./design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标" width="92">
       </picture>
     </td>
     <td align="left" valign="middle">
