@@ -1,6 +1,24 @@
-# 易懂的雷达信号处理教程
+<table align="center">
+  <tr>
+    <td align="center" valign="middle" width="130">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="./design/icon-concepts/ai-redraw-transparent-white-lines-subject-only.svg">
+        <source media="(prefers-color-scheme: light)" srcset="./design/icon-concepts/ai-redraw-transparent-black-lines-subject-only.svg">
+        <img src="./design/icon-concepts/ai-redraw-transparent-black-lines-subject-only.svg" alt="易懂的雷达信号处理教程图标" width="92">
+      </picture>
+    </td>
+    <td align="left" valign="middle">
+      <h1>易懂的雷达信号处理教程</h1>
+      <p><em>An Easy-to-Understand Radar Signal Processing Tutorial for Students and Engineers</em></p>
+    </td>
+  </tr>
+</table>
 
-> An Easy-to-Understand Radar Signal Processing Tutorial for Students and Engineers
+<p align="center">
+  <img src="https://img.shields.io/badge/status-updating-8E44AD" alt="status">
+  <img src="https://img.shields.io/badge/level-beginner_friendly-4CAF50" alt="level">
+  <img src="https://img.shields.io/badge/focus-radar_signal_processing-1976D2" alt="focus">
+</p>
 
 ## 项目简介
 
