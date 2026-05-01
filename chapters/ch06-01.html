@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>6.1 目标检测的基本问题 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="前面两章我们已经会做两件事：第4章把回波里的时间延迟变成了距离，第5章把回波里的频率偏移变成了速度。看起来似乎已经足够：只要在距离像或者速度谱里找到一个尖峰，不就知道那里有目标了吗？">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch06-01.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link active" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第6章</span>
+      <span>目标检测</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">6.1 目标检测的基本问题</h1>
+<p>前面两章我们已经会做两件事：第4章把回波里的<strong>时间延迟</strong>变成了距离，第5章把回波里的<strong>频率偏移</strong>变成了速度。看起来似乎已经足够：只要在距离像或者速度谱里找到一个尖峰，不就知道那里有目标了吗？</p>
+<p>但真正做起来，很快就会遇到一个问题：图上永远不会只有干干净净的“目标峰”，还会有噪声、杂波、旁瓣，以及各种偶然起伏。如果看到一个凸起就认定有目标，误报会多得无法使用。</p>
+<p>所以，目标检测这一章要解决的问题是：眼前这个峰，到底值不值得相信？</p>
+<p>---</p>
+<h2 id="section-2">检测判决的直观例子</h2>
+<p>假设匹配滤波之后，我们得到一条距离像。某 8 个距离单元的幅度如下：</p>
+<div class="math-block">$$
+0.8,
+1.1,
+0.9,
+1.0,
+4.7,
+1.2,
+1.0,
+0.7
+$$</div>
+<p>这时候大多数人都会立刻指向第 5 个单元：4.7 这么高，显然像目标。这个判断通常是对的，因为它比周围背景高出很多。但要注意，这里其实已经隐含了检测判断。你并不是只在“看见数字”，而是在比较：背景大概在 1 左右，第 5 个单元明显更大，所以它更像真实目标，而不是噪声波动。</p>
+<p>现在把数据稍微换一下：</p>
+<div class="math-block">$$
+0.8,
+1.1,
+0.9,
+1.0,
+1.6,
+1.2,
+1.0,
+0.7
+$$</div>
+<p>第 5 个单元现在只有 1.6。它还算不算目标？这时就没那么笃定了。因为 1.6 虽然比周围大一点，但也可能只是噪声恰好抬高了一次。目标检测真正麻烦的地方，就出现在这种“不够明显但又不能轻易忽略”的情形里。</p>
+<p>这也说明，仅仅“看峰值”还不够。你面对的不是一个抽象的数学问题，而是在一堆起伏里分辨：哪个凸起值得相信，哪个只是背景偶然冒高了一下。</p>
+<figure><img src="../figures/%E7%AC%AC%E5%85%AD%E7%AB%A0/fig6_1_detection_scene.png" alt="距离像中的强目标、弱目标和噪声起伏" loading="lazy"><figcaption>距离像中的强目标、弱目标和噪声起伏</figcaption></figure>
+<p>---</p>
+<h2 id="section-3">检测的两种基本假设</h2>
+<p>在检测问题里，最理想的情况当然是：有目标时，回波很强；没目标时，输出几乎是零。但实际系统很难做到这么干净。接收机本身有热噪声，环境里有杂波，前面的脉冲压缩和频谱分析还可能带来旁瓣和泄漏。于是即使“没有目标”，距离单元或频率单元里也常常会出现非零输出，而且这些输出还会上下起伏。</p>
+<p>所以在检测里，通常把一个单元里的输出看成两种成分的叠加：</p>
+<div class="math-block">$$
+\text{输出} = \text{目标回波} + \text{噪声/杂波}
+$$</div>
+<p>如果这个单元里没有目标，那就退化成：</p>
+<div class="math-block">$$
+\text{输出} = \text{噪声/杂波}
+$$</div>
+<p>更直接地说，检测问题最基本的判断只有两个：要么这里只有噪声，要么这里是“目标加噪声”。很多教材会立刻把它写成假设检验：</p>
+<div class="math-block">$$
+H_0: x = n
+$$</div>
+<div class="math-block">$$
+H_1: x = s + n
+$$</div>
+<p>这里的 $x$ 是观测值，$n$ 是噪声或背景杂波，$s$ 是目标信号；$H_0$ 表示“没有目标”，$H_1$ 表示“有目标”。这个写法看上去较正式，但表达的意思很直接：眼前这个数值，到底只是背景在波动，还是背景上真的叠加了一个目标？</p>
+<p>顺着这个想法再往前走一步，也就能看出为什么“只找局部最大值”不够。噪声也会制造局部最大值。比如：</p>
+<div class="math-block">$$
+0.7,
+1.0,
+1.4,
+1.1,
+0.9
+$$</div>
+<p>第 3 个单元是局部最大值，但它未必是真目标。它也可能只是随机起伏里恰好最高的一点。换句话说，“比左右两边高”只能说明它是个峰，不能说明它是个可信的目标峰。真正需要回答的是另一个问题：它高到什么程度，才足以让人相信它不是偶然起伏？</p>
+<p>---</p>
+<h2 id="section-4">阈值检测的基本规则</h2>
+<p>为了把问题讲得最简单，先只考虑一个单元的幅度值 $x$。我们人为设定一个门槛，记作 $T$：如果 $x &gt; T$，判定“有目标”；如果 $x \le T$，判定“没有目标”。写成公式就是：</p>
+<div class="math-block">$$
+\begin{cases}
+\text{判有目标}, &amp; x &gt; T \\
+\text{判无目标}, &amp; x \le T
+\end{cases}
+$$</div>
+<p>这个规则非常朴素，却是绝大多数检测器的共同骨架。后面无论是固定阈值、CFAR，还是更复杂的统计检测方法，本质上都绕不开这一步：把一个连续变化的数值，变成“报”还是“不报”的离散判决。</p>
+<p>这里最值得注意的，不是公式本身，而是它背后的代价。阈值设低了，容易把噪声当成目标；阈值设高了，容易把弱目标漏掉。也就是说，检测从来不是绝对正确的识别，而是带风险的判决。这正是本章的主线。</p>
+<p>如果回头看前面的内容，就会发现本章其实是在为第4章和第5章的结果加上一道判别环节。第4章告诉我们某个峰出现在什么距离，第5章告诉我们某个峰对应什么速度，第6章则要回答：这个峰到底要不要信？如果没有这一步，前面的距离和速度估计就缺少可信性判断：虽然看到了许多峰值，却无法判断哪些对应真实目标，哪些只是背景起伏。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%20%E2%80%94%E2%80%94%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch06-00.html">← 6.0 本章导读</a><a class="pager-link next" href="ch06-02.html">6.2 检测阈值与固定阈值检测 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

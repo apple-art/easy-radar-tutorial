@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>5.5 实际应用 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="前面几节讲的多普勒测速原理，在日常生活中随处可见。这一节挑三个典型场景来看：交警的测速枪、气象雷达的风速测量、以及汽车上的防撞雷达。它们使用的雷达体制各不相同，但背后的测速思路是一样的。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch05-05.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link active" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第5章</span>
+      <span>速度测量</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">5.5 实际应用</h1>
+<p>前面几节讲的多普勒测速原理，在日常生活中随处可见。这一节挑三个典型场景来看：交警的测速枪、气象雷达的风速测量、以及汽车上的防撞雷达。它们使用的雷达体制各不相同，但背后的测速思路是一样的。</p>
+<p>---</p>
+<h2 id="section-2">应用1：交警测速枪</h2>
+<p>路边的测速枪是最常见的多普勒雷达应用。它采用连续波体制——雷达持续发射单频信号（通常 24 GHz 或 35 GHz），回波与发射信号混频后得到差频信号，再做 FFT 找到频率峰值，由 $v = c\Delta f/(2f_0)$ 算出速度。整个过程在几十毫秒内完成。</p>
+<p>为什么用连续波而不是脉冲？因为测速枪只需要测速度，不需要测距离。连续波结构简单、成本低、功耗小，适合做成手持设备。测量精度通常在 ±1 km/h 以内，足够用于交通执法。</p>
+<p>如果测速枪不是正对着车辆，而是成角度 $\theta$，测得的速度是真实速度的 $\cos\theta$ 倍。例如，卡口与车道成30°角，测得速度会比真实速度低约13%。这就是为什么警察通常尽量正对车道测速。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%BA%94%E7%AB%A0/fig5_10_speed_gun.png" alt="测速枪工作示意图" loading="lazy"><figcaption>测速枪工作示意图</figcaption></figure>
+<p>上图展示了正对和偏角两种情况：正对时测得的速度准确，偏角时得到的是径向速度分量，因此偏低。</p>
+<p>---</p>
+<h2 id="section-3">应用2：气象雷达测风速</h2>
+<p>天气预报里的风速数据，很多来自多普勒天气雷达。它的工作原理和测速枪类似，但目标是空气中的雨滴、雪花等微小颗粒。</p>
+<p>和测速枪不同，气象雷达采用脉冲体制——因为它不仅要知道风有多快，还要知道风在哪里。雷达发射脉冲后，通过回波的时间延迟确定雨滴的距离，再通过相邻脉冲之间的相位差（正是 5.3 节讲的原理）计算多普勒频移，从而得到风速。雷达旋转扫描一圈，就能画出整个区域的风速分布图。</p>
+<p>实际应用包括：</p>
+<ul><li>龙卷风预警：龙卷风的小范围内风向急剧变化可以通过多普勒雷达识别，其典型信号是相邻区域方向相反的频移。</li><li>风切变检测：机场附近的多普勒雷达能实时监测风速突变，预警起降阶段的危险。</li><li>降水估计：雨滴的运动速度和大小有关，频移信息可以辅助估算降水强度。</li></ul>
+<p>气象雷达通常工作在 S 波段（2-4 GHz）或 C 波段（4-8 GHz），扫频时不能用过高频率以免被雨水衰减，也不能用过低频以免分辨率不足。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%BA%94%E7%AB%A0/fig5_11_weather_radar.png" alt="气象雷达风速测量" loading="lazy"><figcaption>气象雷达风速测量</figcaption></figure>
+<p>图中展示了气象雷达的扫描方式，尤其是龙卷风的识别：局部相对方向性改变显而易见。</p>
+<p>---</p>
+<h2 id="section-4">应用3：汽车防撞雷达</h2>
+<p>现代汽车上的自适应巡航（ACC）和自动紧急制动（AEB）功能都依赖车载毫米波雷达，这类雷达既要测距离，也要测速度。</p>
+<p>汽车雷达采用的是第三种体制：调频连续波（FMCW）。它发射频率随时间线性变化的信号（类似第 4 章的 LFM），回波与当前发射信号混频后，差频信号里同时包含了时间延迟（对应距离）和多普勒频移（对应速度）的信息。通过上下扫频两次测量，就能把距离和速度分离出来。</p>
+<p>汽车雷达通常工作在 77 GHz 频段。选这个频率主要是因为波长只有约 4 mm，天线可以做得很小，方便安装在车身上；同时高频也意味着更高的距离和角度分辨率。</p>
+<p>典型性能指标：</p>
+<ul><li>探测距离：200-250 米</li><li>距离精度：约 10 cm</li><li>速度精度：约 0.1 m/s</li><li>角度分辨率：约 1-2°（通过多天线阵列实现）</li></ul>
+<p>汽车雷达常面对多目标场景，因此背后需要目标检测、聚类、跟踪等算法。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%BA%94%E7%AB%A0/fig5_12_automotive_radar.png" alt="汽车防撞雷达工作示意图" loading="lazy"><figcaption>汽车防撞雷达工作示意图</figcaption></figure>
+<p>图中示意 FMCW 雷达的距离-速度谱，可同时看到多个目标的距离和速度信息。</p>
+<p>---</p>
+<h2 id="section-5">实际系统面对的问题</h2>
+<p>上面三个应用看起来原理都很清楚，但真正做起来会碰到不少麻烦：</p>
+<p><strong>杂波</strong>。地面、建筑物等静止目标也会产生回波，只是频移为零。如果不把这些零频附近的信号滤掉，真正的运动目标就会被淹没。常用的办法是高通滤波，把零频附近的成分去掉。</p>
+<p><strong>多目标叠加</strong>。同一距离单元里可能有不止一个目标，它们的回波叠在一起。5.4 节讲的 FFT 能在频率上把它们分开，但如果两个目标速度很接近，就需要更长的观测时间来提高分辨率。</p>
+<p><strong>速度模糊</strong>。5.2 节已经提到，如果多普勒频移超过采样率的一半，就会发生混叠。实际系统常用多个脉冲重复频率交替测量来解决这个问题。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E9%80%9F%E5%BA%A6%E6%B5%8B%E9%87%8F.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%BA%94%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch05-04.html">← 5.4 MTD的基本思想</a><a class="pager-link next" href="ch05-06.html">5.6 小练习 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

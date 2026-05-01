@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>7.2 天线波束 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="很多人第一次接触雷达时，会把它想象成激光笔：按下按钮，射出一条笔直光线。这个想象很自然，但不准确。雷达天线波束更像手电筒的光柱——不是无限细的线，而是有宽度的锥形区域。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch07-02.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link active" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第7章</span>
+      <span>测角</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">7.2 天线波束</h1>
+<p>很多人第一次接触雷达时，会把它想象成激光笔：按下按钮，射出一条笔直光线。这个想象很自然，但不准确。雷达天线波束更像手电筒的光柱——不是无限细的线，而是有宽度的锥形区域。</p>
+<p>如果波束是一条线，测角就简单了：记录天线指向的方向即可。但波束有宽度，目标可能在波束覆盖的任何一个角度上，这给测角带来了根本性限制。</p>
+<p>---</p>
+<p>手电筒照向墙壁时，看到的光斑中心最亮，越往边缘越暗，但没有清晰的"有光"和"无光"边界。天线发射的电磁波也这样：能量分布不是开关式的"有或无"，而是连续变化的强度分布。</p>
+<p>假设天线指向正前方，测量不同角度上的辐射功率并画成曲线，就得到<strong>天线方向图</strong>。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%B8%83%E7%AB%A0/fig7_3_antenna_pattern_clean.png" alt="天线方向图：主瓣与旁瓣" loading="lazy"><figcaption>天线方向图：主瓣与旁瓣</figcaption></figure>
+<p>这条曲线有几个关键特征：</p>
+<ol><li><strong>主瓣</strong>：中间最高的峰，对应天线主要辐射方向，绝大部分能量集中在这里。</li></ol>
+<ol><li><strong>旁瓣</strong>：主瓣两侧的小峰。这是天线设计无法完全避免的"泄漏"，能量远低于主瓣。</li></ol>
+<ol><li><strong>波束宽度</strong>：主瓣有一定宽度。通常用"3dB波束宽度"量化：从峰值下降3dB（功率降到一半）对应的角度范围。</li></ol>
+<p>举个例子：某雷达的3dB波束宽度是5°，意味着天线指向0°时，在-2.5°到+2.5°范围内，辐射功率都在峰值的一半以上。超出这个范围，功率迅速下降。</p>
+<p>波束宽度受到基本物理规律的约束：</p>
+<div class="math-block">$$
+\theta_{\text{3dB}} \approx \frac{\lambda}{D}
+$$</div>
+<p>其中 $\lambda$ 是雷达工作波长，$D$ 是天线的尺寸（对于圆形天线是直径，对于矩形天线是对应方向的边长）。</p>
+<p>更精确的公式是：</p>
+<div class="math-block">$$
+\theta_{\text{3dB}} = k \frac{\lambda}{D}
+$$</div>
+<p>其中 $k$ 是一个与天线类型有关的系数：</p>
+<ul><li>均匀照射的矩形天线：$k \approx 0.88$</li><li>圆形抛物面天线：$k \approx 1.02$</li><li>实际工程中常用：$k \approx 1.0$（简化计算）</li></ul>
+<p>天线越大波束越窄。直径2米天线的波束宽度约是直径1米天线的一半。频率越高（波长越短）波束越窄——10 GHz雷达的波束比3 GHz雷达窄得多。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%B8%83%E7%AB%A0/fig7_4_beamwidth_vs_antenna_size.png" alt="波束宽度与天线尺寸的关系" loading="lazy"><figcaption>波束宽度与天线尺寸的关系</figcaption></figure>
+<p>来算几个实际例子：</p>
+<p>例1：车载毫米波雷达</p>
+<ul><li>工作频率：77 GHz，波长 $\lambda = c/f = 3.9$ mm</li><li>天线尺寸：$D = 10$ cm = 100 mm</li><li>波束宽度：$\theta \approx 3.9/100 \approx 0.039$ 弧度 $\approx 2.2°$</li></ul>
+<p>例2：气象雷达</p>
+<ul><li>工作频率：3 GHz，波长 $\lambda = 10$ cm</li><li>天线尺寸：$D = 3$ m = 3000 mm</li><li>波束宽度：$\theta \approx 100/3000 \approx 0.033$ 弧度 $\approx 1.9°$</li></ul>
+<p>例3：舰载搜索雷达</p>
+<ul><li>工作频率：1 GHz，波长 $\lambda = 30$ cm</li><li>天线尺寸：$D = 5$ m = 5000 mm</li><li>波束宽度：$\theta \approx 300/5000 = 0.06$ 弧度 $\approx 3.4°$</li></ul>
+<p>要得到窄波束（高角度分辨率），要么提高频率，要么增大天线。但频率不能无限提高（大气衰减、器件成本），天线也不能无限大（重量、成本、安装空间），所以实际系统在这些约束间权衡。</p>
+<p>波束宽度变化会带来什么影响？对比两个极端：</p>
+<ul><li>宽波束（10°）：扫描快，一次覆盖大范围，但测角精度低。两个相距8°的目标可能分不开。</li><li>窄波束（1°）：测角精度高，能分辨相距2°的目标，但扫描同样范围需要10倍时间。</li></ul>
+<p>搜索雷达用宽波束快速扫描，发现目标后切换到窄波束精确跟踪。</p>
+<p>公式有个隐含前提：天线尺寸要远大于波长（$D \gg \lambda$）。如果 $D &lt; \lambda$，天线变成近似全向辐射，几乎没有方向性，公式失效。这就是为什么低频雷达必须用巨大天线。</p>
+<p>旁瓣能量低，却会带来麻烦。如果强目标恰好在旁瓣方向，它的回波可能比主瓣方向的弱目标还强，导致雷达"看到"虚假位置。多个强目标分布在不同旁瓣上时，回波出现多个峰值，测角算法无所适从。这是为什么天线设计要压低旁瓣电平（通常要求旁瓣比主瓣低20-30 dB）。</p>
+<p>波束有宽度，这对测角意味着什么？</p>
+<p>假设天线指向0°，波束宽度5°。目标在0°时处于波束中心，接收功率最强。在2°时偏离中心，接收功率下降，回波变弱。在10°时已在主瓣外，几乎收不到能量，回波微弱。</p>
+<p>这给出了测角的基本思路：通过比较不同方向的回波强度，找到回波最强的方向，就是目标所在的方向。</p>
+<p>但回波最强的方向只说明目标"大致在波束中心附近"。具体偏离多少，取决于回波强度下降的幅度。波束宽时，目标偏离2°回波仍很强，难以察觉；波束窄时，偏离1°就能看出回波变弱。</p>
+<p>怎么通过扫描波束来测角？波束宽度又如何限制测角精度？我们后面的章节揭晓。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%9A%E6%B5%8B%E8%A7%92.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%B8%83%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch07-01.html">← 7.1 测角的必要性</a><a class="pager-link next" href="ch07-03.html">7.3 波束扫描测角 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

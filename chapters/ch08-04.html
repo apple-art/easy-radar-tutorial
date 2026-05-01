@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8.4 完整MATLAB示例 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="前面三节分别给出了距离处理、速度处理和检测的分步实现。本节把它们合成一份完整程序，并给出四个处理阶段的可视化结果。程序虽然更长，但其内部关系并不比前面复杂，只是把第4章到第6章的公式按顺序写到同一个脚本里。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch08-04.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link active" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第8章</span>
+      <span>完整处理流程</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">8.4 完整MATLAB示例</h1>
+<p>前面三节分别给出了距离处理、速度处理和检测的分步实现。本节把它们合成一份完整程序，并给出四个处理阶段的可视化结果。程序虽然更长，但其内部关系并不比前面复杂，只是把第4章到第6章的公式按顺序写到同一个脚本里。</p>
+<h2 id="section-2">完整代码与分段注释</h2>
+<p>完整程序可以按表8-2理解。</p>
+<div class="table-wrap"><table><thead><tr><th>处理环节</th><th>主要公式</th><th>MATLAB 变量</th></tr></thead><tbody><tr><td>发射信号生成</td><td>$k=B/T_p$, $s(t)$</td><td><code>k</code>, <code>tx</code></td></tr><tr><td>回波建模</td><td>$\tau_i=2R_i/c$, $f_{d,i}=2v_i/\lambda$</td><td><code>tau</code>, <code>fd</code>, <code>rx_matrix</code></td></tr><tr><td>距离压缩</td><td>$h(t)=s^<em>(-t)$, $y(t)=r(t)</em>h(t)$</td><td><code>mf</code>, <code>range_data</code></td></tr><tr><td>多普勒处理</td><td>$v=\lambda f_d/2$</td><td><code>rd_map</code>, <code>rd_power</code>, <code>vel_axis</code></td></tr><tr><td>检测判决</td><td>$\delta(x)$</td><td><code>threshold</code>, <code>det_mask</code></td></tr><tr><td>物理量输出</td><td>$\hat R$, $\hat v$</td><td><code>range_est</code>, <code>vel_est</code></td></tr></tbody></table></div>
+<p>下面给出完整 MATLAB 程序。</p>
+<p>如果你想把本章处理链一次完整跑通，可参考 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_full_processing_chain_demo.m"><code>ch08_full_processing_chain_demo.m</code></a>。若你是第一次看本章，更建议先按前面几节的顺序分别对照 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_minimal_pulse_radar_demo.m"><code>ch08_minimal_pulse_radar_demo.m</code></a>、<a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_range_doppler_demo.m"><code>ch08_range_doppler_demo.m</code></a> 和 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_radar_detection_demo.m"><code>ch08_radar_detection_demo.m</code></a>，最后再回来看这一份完整脚本。</p>
+<pre><code class="language-matlab">% ch08_full_processing_chain_demo.m
+% 第八章完整示例：从原始回波到目标检测的完整处理链
+clear; close all; clc;
+
+%% 第一部分：参数定义（对应第4-6章的物理参数）
+c = 3e8;           % 光速 (m/s)
+fc = 10e9;         % 载频 (Hz)
+lambda = c / fc;   % 波长 (m)
+B = 10e6;          % LFM 带宽 (Hz)
+Tp = 20e-6;        % 脉冲宽度 (s)
+fs = 20e6;         % 采样率 (Hz)
+PRF = 2e3;         % 脉冲重复频率 (Hz)
+Tr = 1 / PRF;      % 脉冲重复间隔 (s)
+Npulse = 32;       % 脉冲数量
+Nfast = 1024;      % 快时间采样点数
+
+% 两个目标的距离、速度和幅度
+range_targets = [6000, 9000];    % 距离 (m)
+vel_targets = [30, -20];         % 速度 (m/s)
+amp_targets = [1.0, 0.75];       % 幅度
+
+%% 第二部分：发射信号生成（对应第4章 LFM 信号）
+k = B / Tp;                      % 调频斜率 (Hz/s)
+tx_t = (0:round(Tp*fs)-1) / fs;
+tx = exp(1j * pi * k * tx_t.^2);              % 对应公式 s(t)
+mf = conj(fliplr(tx));                      % 对应公式 h(t) = s*(-t)
+
+%% 第三部分：回波矩阵生成（对应第4章距离、第5章速度）
+rx_matrix = zeros(Npulse, Nfast);
+fast_time = (0:Nfast-1) / fs;
+
+for m = 1:Npulse
+    pulse_data = zeros(1, Nfast);
+    for i = 1:length(range_targets)
+        tau = 2 * range_targets(i) / c;         % 对应公式 τ = 2R/c
+        fd = 2 * vel_targets(i) / lambda;       % 对应公式 f_d = 2v/λ
+        delayed_t = fast_time - tau;
+        valid = delayed_t &gt;= 0 &amp; delayed_t &lt;= Tp;
+        echo = zeros(1, Nfast);
+        echo(valid) = amp_targets(i) * exp(1j * pi * k * delayed_t(valid).^2) ...
+                    .* exp(1j * 2*pi * fd * (m-1) * Tr);  % 对应公式 exp(j2πf_d(m-1)T_r)
+        pulse_data = pulse_data + echo;
+    end
+    noise = 0.08 * (randn(1, Nfast) + 1j * randn(1, Nfast));
+    rx_matrix(m, :) = pulse_data + noise;
+end
+
+%% 第四部分：距离压缩（对应第4章匹配滤波）
+range_data = zeros(size(rx_matrix));
+for m = 1:Npulse
+    range_data(m, :) = conv(rx_matrix(m, :), mf, &#x27;same&#x27;);  % 对应公式 y(t) = r(t)*h(t)
+end
+
+group_delay = floor(length(tx) / 2);
+range_axis = ((0:Nfast-1) - group_delay) * c / (2 * fs);
+
+%% 第五部分：多普勒处理（对应第5章 FFT）
+rd_map = fftshift(fft(range_data, [], 1), 1);
+rd_power = abs(rd_map);
+rd_power = rd_power / max(rd_power(:));
+
+doppler_freq = (-Npulse/2:Npulse/2-1) * PRF / Npulse;
+vel_axis = doppler_freq * lambda / 2;           % 对应公式 v = λf_d/2
+
+%% 第六部分：固定阈值检测（对应第6章判决）
+threshold = 0.35;
+det_mask = rd_power &gt; threshold;                % 对应公式 δ(x)
+[row_idx, col_idx] = find(det_mask);
+range_est = range_axis(col_idx);                % 对应公式 R̂
+vel_est = vel_axis(row_idx);                    % 对应公式 v̂
+
+%% 第七部分：结果可视化
+figure(&#x27;Position&#x27;, [100, 100, 1200, 800]);
+
+subplot(2,2,1);
+imagesc(real(rx_matrix)); colorbar;
+title(&#x27;原始回波矩阵（实部）&#x27;);
+xlabel(&#x27;快时间采样点&#x27;); ylabel(&#x27;脉冲序号&#x27;);
+
+subplot(2,2,2);
+plot(range_axis/1e3, abs(range_data(1,:)), &#x27;LineWidth&#x27;, 1.5); grid on;
+title(&#x27;第一个脉冲的距离像&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;幅度&#x27;);
+
+subplot(2,2,3);
+imagesc(range_axis/1e3, vel_axis, rd_power);
+axis xy; colorbar;
+title(&#x27;距离-速度图&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;速度 (m/s)&#x27;);
+
+subplot(2,2,4);
+imagesc(range_axis/1e3, vel_axis, rd_power);
+axis xy; colorbar; hold on;
+plot(range_est/1e3, vel_est, &#x27;ro&#x27;, &#x27;MarkerSize&#x27;, 8, &#x27;LineWidth&#x27;, 1.5);
+title(&#x27;检测结果叠加&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;速度 (m/s)&#x27;);
+
+fprintf(&#x27;检测到的目标（可能含相邻阈值点）:\n&#x27;);
+for idx = 1:length(range_est)
+    fprintf(&#x27;距离 = %.2f km, 速度 = %.2f m/s\n&#x27;, range_est(idx)/1e3, vel_est(idx));
+end</code></pre>
+<h2 id="section-3">处理结果的四阶段展示</h2>
+<p>这段程序中，<code>tau</code> 与 <code>fd</code> 分别实现第4章和第5章给出的时延关系与多普勒关系；<code>range_data(m,:) = conv(rx_matrix(m,:), mf, &#x27;same&#x27;)</code> 对应匹配滤波公式 $y(t)=r(t)*h(t)$；<code>rd_map = fftshift(fft(range_data, [], 1), 1)</code> 把脉冲间相位变化换成多普勒谱；<code>det_mask = rd_power &gt; threshold</code> 则对应第6章的阈值判决。由于距离压缩仍采用 <code>conv(..., &#x27;same&#x27;)</code>，程序专门通过 <code>group_delay</code> 修正了距离轴，因此 <code>range_axis</code> 上的峰值位置与目标真实距离能够对应起来。</p>
+<p>运行程序后，图窗中的四幅图分别对应四个处理阶段：左上是原始回波矩阵，右上是单脉冲距离像，左下是距离-速度图，右下是在距离-速度图上叠加检测结果。整条雷达处理链也就在这一份 MATLAB 程序中完整呈现出来。</p>
+<figure><img src="../figures/%E7%AC%AC%E5%85%AB%E7%AB%A0/fig8_5_full_chain_result.png" alt="完整处理链的四阶段结果" loading="lazy"><figcaption>完整处理链的四阶段结果</figcaption></figure>
+<h2 id="section-4">小练习</h2>
+<p>通过修改参数，可以观察不同设置对处理结果的影响。</p>
+<p>练习1：带宽与距离分辨率 把 <code>B</code> 从 10 MHz 改成 5 MHz，观察距离像主瓣变宽。这验证了第4章的结论：距离分辨率由带宽决定。</p>
+<p>练习2：脉冲数与速度分辨率 把 <code>Npulse</code> 从 32 改成 16，观察速度维模糊增加。这验证了第5章的结论：速度分辨率由相干积累时间决定。</p>
+<p>练习3：阈值与检测结果 把 <code>threshold</code> 从 0.35 改成 0.2 和 0.5，对比虚警和漏检。阈值过低会增加虚警点，阈值过高可能漏掉弱目标。</p>
+<p>练习4：PRF 与速度模糊 把 <code>PRF</code> 从 2 kHz 改成 1 kHz，观察速度轴范围变化。PRF 越低，不模糊速度范围越小，这对应第5章的多普勒模糊问题。</p>
+<p>练习5：综合题 给定目标参数（距离 8 km，速度 15 m/s），预测距离-速度图上的峰值位置，再运行程序验证。</p>
+<p>这些练习帮助读者把公式、代码和物理现象联系起来，加深对雷达信号处理完整流程的理解。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%9A%E5%AE%8C%E6%95%B4%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch08-03.html">← 8.3 检测与结果解释</a><span></span></nav>
+  </main>
+</div>
+
+</body>
+</html>

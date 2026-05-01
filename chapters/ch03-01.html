@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3.1 雷达信号的基本形式 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="雷达要探测目标，首先得向空中发射电磁波。发什么样的波，是整个雷达系统设计的起点。工程上有两种基本方案：脉冲波和连续波。两种方案有各自的特点，工程实现的时候常常需要权衡。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch03-01.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link active" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第3章</span>
+      <span>雷达信号的生成与接收</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">3.1 雷达信号的基本形式</h1>
+<p>雷达要探测目标，首先得向空中发射电磁波。发什么样的波，是整个雷达系统设计的起点。工程上有两种基本方案：<strong>脉冲波</strong>和<strong>连续波</strong>。两种方案有各自的特点，工程实现的时候常常需要权衡。</p>
+<p>---</p>
+<h2 id="section-2">脉冲雷达的工作方式</h2>
+<p>想象你在一个黑暗的山洞里，想知道前方有没有墙壁。你拍一下手，然后屏住呼吸听回声。听到了，说明有墙；根据回声花了多久传回来，你能估算距离。声速大约 340 m/s，如果回声在 0.6 秒后传回，那墙壁大约在 $340 \times 0.6 / 2 \approx 100$ 米外。</p>
+<p>脉冲雷达就是这个逻辑，只是把声波换成了电磁波，速度从 340 m/s 变成了光速 $3\times10^8$ m/s。雷达天线先发出一段很短的电磁波脉冲，然后立刻停止发射，切换成接收状态，等待目标反射回来的回波。</p>
+<p>理解了吗？恭喜你掌握了雷达测距的基本原理，没什么难得其实。更多细节我们在第四章再讨论。</p>
+<p>脉冲宽度 $\tau$ 通常只有 1 微秒（$10^{-6}$ s）。1 微秒有多短？人眨一次眼大约需要 150,000 微秒。在这 1 微秒里，电磁波向前传播了 $c \times \tau = 3\times10^8 \times 10^{-6} = 300$ 米——大约三个足球场的长度。脉冲发完之后，雷达静默接收，等候来自各个距离的回波陆续返回。</p>
+<p>脉冲方案的核心优势是：发和收可以分开进行，距离测量直接靠时间差，非常干净。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%B8%89%E7%AB%A0/fig3_1_pulse_vs_cw.png" alt="脉冲雷达与连续波雷达发射信号对比" loading="lazy"><figcaption>脉冲雷达与连续波雷达发射信号对比</figcaption></figure>
+<p>上图展示了两种体制的区别：脉冲雷达在短暂的 $\tau$ 内发射，其余时间静默接收；连续波雷达始终保持发射状态。</p>
+<p>但脉冲方案有一个硬约束：不能在接收期间发射。这就自然而然的引出了两个参数。</p>
+<p><strong>脉冲重复间隔</strong>（PRI，Pulse Repetition Interval）是相邻两个脉冲之间的时间间隔。PRI 决定了雷达能探测的最大距离——你必须给回波足够的时间返回，才能发下一个脉冲，否则新脉冲发出去之后，上一个脉冲的远距回波还没到，两者就混在一起，搞不清楚哪个是哪个。</p>
+<div class="math-block">$$
+R_{\max} = \frac{c \cdot \text{PRI}}{2}
+$$</div>
+<p><strong>占空比</strong>（Duty Cycle）是脉冲宽度占 PRI 的比例，典型值约 1%。这意味着脉冲雷达有 99% 的时间在接收，只有 1% 的时间在发射。功率消耗相对低，但对峰值发射功率要求很高——必须在短短 1 微秒内把能量打出去。</p>
+<p>---</p>
+<h2 id="section-3">连续波雷达的工作方式</h2>
+<p>另一种思路是完全不停发射，同时持续接收。这就是<strong>连续波雷达</strong>（CW Radar，Continuous Wave Radar）。</p>
+<p>一边发射一边接收，发射信号不会淹没掉微弱的回波吗？这确实是个难题，实际的连续波雷达要用物理隔离（天线分开）或者特殊的滤波技术来压制发射信号的泄漏。</p>
+<p>连续波雷达在测速上有先天优势。发射信号是连续的，接收到的回波频率和发射频率的差值（多普勒频移）可以被非常精确地测量出来。测速雷达（俗称测速枪）和气象多普勒雷达，大多是连续波或调频连续波（FMCW）。</p>
+<p>但连续波雷达有一个明显的弱点：直接测距难。因为发和收同时进行，不存在一个明确的"出发时刻"可以用来计时。FMCW（调频连续波）通过给发射频率加线性扫频的方式，间接实现了测距能力，这部分内容到第4章再展开。</p>
+<p>两种方案的对比：</p>
+<p>| | 脉冲雷达 | 连续波雷达 | |--|--|--| | 发射方式 | 短暂脉冲，间歇发射 | 持续发射 | | 测距 | 直接，靠时间差 | 困难（FMCW 可间接实现） | | 测速 | 需要多个脉冲对比 | 优秀，直接读多普勒频移 | | 发收隔离 | 天然隔离（时间分开） | 需要额外处理 | | 典型应用 | 军事雷达、气象雷达（远程） | 测速枪、FMCW 汽车雷达 |</p>
+<p>本书后续章节以<strong>脉冲雷达</strong>为主要分析对象，因为它的信号处理链条最完整、也是雷达入门学习的标准路径。</p>
+<p>---</p>
+<p>不管发射什么样的信号，电磁波离开天线之后，都要经历"碰到目标→被反射→回波返回"这个过程。信号在这段旅程里发生了什么？下一节来看。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E6%8E%A5%E6%94%B6.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%B8%89%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch03-00.html">← 3.0 本章导读</a><a class="pager-link next" href="ch03-02.html">3.2 反射与截面积 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2.2 时域与频域 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="上一节末尾留了一个问题：把 3 Hz、7 Hz、15 Hz 三个正弦波叠加之后，得到一条看起来杂乱的波形。怎么从这条曲线里看出它是由哪些频率构成的？">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch02-02.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link active" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第2章</span>
+      <span>信号基础</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">2.2 时域与频域</h1>
+<p>上一节末尾留了一个问题：把 3 Hz、7 Hz、15 Hz 三个正弦波叠加之后，得到一条看起来杂乱的波形。怎么从这条曲线里看出它是由哪些频率构成的？</p>
+<p>答案是换一个角度看同一个信号。</p>
+<p>---</p>
+<h2 id="section-2">时域描述与频域描述</h2>
+<p>同一个信号可以用两种方式描述，就像同一栋楼可以从正面看，也可以从侧面看。</p>
+<p><strong>时域</strong>是我们最熟悉的视角：横轴是时间，纵轴是信号的值。心电图、录音波形、示波器屏幕上的曲线，都是时域的表示。它回答的问题是：这个信号在某一刻的值是多少？</p>
+<p><strong>频域</strong>换了一个角度：横轴是频率，纵轴是该频率成分的强度。它回答的问题是：这个信号里有哪些频率，各占多大比重？</p>
+<p>两种描述携带的信息完全等价——没有任何信息丢失，只是呈现方式不同。选择哪种视角，取决于你想回答什么问题。</p>
+<p>---</p>
+<h2 id="section-3">时域到频域的转换</h2>
+<p>还是上一节那三个分量：3 Hz（振幅 1.0）、7 Hz（振幅 0.6）、15 Hz（振幅 0.3）。下面这张四宫格图把时域和频域的对应关系摆在一起。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%BA%8C%E7%AB%A0/fig2_4_spectrum.png" alt="图 2.3 时域与频域的对应关系" loading="lazy"><figcaption>图 2.3 时域与频域的对应关系</figcaption></figure>
+<p>先看上面一行。左上是三条分量各自的时域波形，颜色不同，节奏不同，这一步还分得清楚。右上是它们相加后的复合信号——和上一节图 2.2 一样，杂乱无章。</p>
+<p>再看下面一行。左下是单独一个 3 Hz 正弦波的频域：整张图只有一根谱线，立在 3 Hz 的位置，高度等于振幅 1.0。一个纯正弦波在频域里就是这么干净——一根线，没有任何多余的成分。</p>
+<p>右下是复合信号的频域：三根竖线分别立在 3、7、15 Hz 的位置，高度正好是 1.0、0.6、0.3。上面时域里那条杂乱的波形，到了频域里结构完全暴露——三个分量的频率和强度一目了然。</p>
+<p>---</p>
+<h2 id="section-4">傅里叶变换</h2>
+<p>从时域波形计算出频域频谱，用的工具叫<strong>傅里叶变换</strong>（Fourier Transform）。反过来，从频谱还原时域波形，叫<strong>傅里叶逆变换</strong>。</p>
+<p>傅里叶变换实现的数学的细节不是本节的重点，读者可以去看奥本海姆的信号与系统补补基础，或者网上找个短平快的教程。你现在只需要建立一个直觉：傅里叶变换做的事情，就像把一束白光送入棱镜，白光看起来是一种颜色，经过棱镜折射之后分解成红橙黄绿蓝紫，每种颜色对应一个频率。傅里叶变换对信号做的，正是这件事。</p>
+<p>实际计算中用的是离散版本，叫<strong>快速傅里叶变换</strong>（FFT，Fast Fourier Transform），计算效率极高。</p>
+<p>---</p>
+<h2 id="section-5">频域分析在雷达中的作用</h2>
+<p>雷达接收到的回波是一个时域信号：振幅随时间变化的电压。但雷达想知道的不是"此刻电压是多少"，而是"回波里有没有某个特定频率，有多强"。</p>
+<p>目标的距离信息藏在回波的<strong>时间延迟</strong>里——回波比发射信号晚了多少时间，就对应多远的距离。延迟是时间轴上的位移，时域分析直接可读。</p>
+<p>目标的速度信息藏在回波的<strong>频率偏移</strong>里——运动目标让回波频率相对发射频率发生轻微变化（多普勒效应）。这个偏移在时域波形里几乎看不出来，但在频域里是一根谱线的位移，一目了然。</p>
+<p>这也是为什么雷达信号处理要在两个视角之间来回切换：距离用时域，速度用频域，各有各的用武之地。</p>
+<p>---</p>
+<h2 id="section-6">频率分辨率</h2>
+<p>频谱图上能分开两根相邻谱线的最小间距，叫<strong>频率分辨率</strong>，记作 $\Delta f$。它和观测时间 $T_{\text{obs}}$ 之间有一个简单的关系：</p>
+<div class="math-block">$$
+\Delta f \approx \frac{1}{T_{\text{obs}}}
+$$</div>
+<p>观测 1 秒，能分辨 1 Hz 的差异；观测 0.1 秒，只能分辨 10 Hz 的差异——观测时间越长，能分辨的频率间距越小，分辨能力越精细。</p>
+<p>如果你只听了一个声音 0.01 秒，很难判断它是 440 Hz 还是 441 Hz；但如果听了 1 秒，两个音高的差别就能分辨出来。</p>
+<p>这个限制在雷达里有实际影响：观测目标的时间越长，测速精度越高，但代价是雷达需要持续照射目标更长时间。时间和频率之间存在一个基本的权衡关系，第4章讨论脉冲压缩时还会回到这一点。</p>
+<p>---</p>
+<p>到这里，我们一直在讨论连续信号——信号在每一个时刻都有值。但计算机处理不了连续信号，必须把它变成一串离散的数字。怎么变？变的时候会丢信息吗？下一节回答这个问题。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E4%BF%A1%E5%8F%B7%E5%9F%BA%E7%A1%80.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch02-01.html">← 2.1 信号的基本概念</a><a class="pager-link next" href="ch02-03.html">2.3 采样定理 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>7.0 本章导读 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="前面几章我们已经解决了两件事：第 4 章告诉我们目标离多远，第 5 章告诉我们目标动得多快。到这里，雷达对目标的认识已经前进了一大步。但如果继续问下去，还会遇到一个很自然的问题：">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch07-00.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link active" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第7章</span>
+      <span>测角</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">7.0 本章导读</h1>
+<p>前面几章我们已经解决了两件事：第 4 章告诉我们目标离多远，第 5 章告诉我们目标动得多快。到这里，雷达对目标的认识已经前进了一大步。但如果继续问下去，还会遇到一个很自然的问题：</p>
+<p>它到底在什么方向？</p>
+<p>如果一个目标距离你 20 km，速度 200 m/s，这当然已经是信息；但如果你还不知道它是在左前方、正前方，还是右上方，这些信息就还不完整。就像朋友发消息说“我快到了”，你还会继续问一句：”你到哪儿了？”雷达也是一样。它不只要知道“有个目标”，还要知道“这个目标在什么方向上”。这一章要补上的，正是这最后一块拼图：目标方向。</p>
+<p>测距离时，我们抓的是时间延迟；测速时，我们抓的是频率变化；而测角更依赖天线本身的方向性。雷达之所以能判断方向，是因为它对不同方向的响应并不相同——这是后面波束扫描、角分辨力和单脉冲测角的共同基础。</p>
+<p>这一章建议你这样分轻重：</p>
+<p><strong>核心内容</strong>（必须掌握）：7.1-7.2 讲为什么雷达必须知道目标方向、天线波束和波束宽度到底在说什么；7.3 讲波束扫描测角的基本思想，这是最基础、最容易建立直觉的测角方法；7.4 讲波束宽度、角分辨力和测角精度之间是什么关系，这一节决定你能不能真正看懂”测角性能”在受什么限制。</p>
+<p><strong>提高内容</strong>（先知道主旨即可）：7.5 讲测角误差的主要来源，第一遍重点知道误差不是只来自噪声，还会来自多径、角闪烁等现实因素；7.6 讲单脉冲测角，先把它看成”比波束扫描更先进的工程方法”，建立概念就够了，不必第一遍就追求实现细节。</p>
+<p><strong>巩固内容</strong>：7.7 小练习，用来检查你能不能把”波束扫描 - 分辨力 - 误差来源”这条主线连起来。</p>
+<p>测角容易和测距混淆。但它们根本不同：测距是量时间差，测速是量频率差，测角是比较天线在不同方向的响应强弱。谁响谁就是目标方向。这个差别很重要——理解了这一点，后面的波束扫描、分辨力、单脉冲测角就能串成一条线。</p>
+<p>这一章用到前面学过的东西：第 3 章的天线方向性，第 4 章的分辨力概念（这次用在角度上），第 5 章的参数测量思路。不是全新的内容，是这些思路在测角上的展开。</p>
+<p>第一遍先把 7.1-7.4 读透，尤其要把”波束宽度为什么会限制测角能力”这件事想明白。这个问题一旦想通，后面很多内容就会顺得多。然后再去看 7.5 和 7.6，把它们当成对现实系统和更先进方法的补充。这样读下来，你会比较容易形成一个完整印象：基础扫描法告诉你雷达怎样大致判断方向，性能分析告诉你这种方法能做到多好，误差和单脉冲则说明工程系统为什么还要继续往前走。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%9A%E6%B5%8B%E8%A7%92.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%B8%83%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch06-05.html">← 6.5 小练习</a><a class="pager-link next" href="ch07-01.html">7.1 测角的必要性 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

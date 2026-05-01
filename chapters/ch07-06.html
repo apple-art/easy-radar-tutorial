@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>7.6 单脉冲测角 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="前面讲的扫描测角，核心思想是&quot;试探&quot;：让波束转一圈，比较不同方向的回波强度，找到最强的那个方向。这个方法简单直观，代价是速度慢。机械扫描需要几秒钟转一圈，电子扫描虽然快得多，但也需要依次指向多个方向。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch07-06.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link active" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第7章</span>
+      <span>测角</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">7.6 单脉冲测角</h1>
+<p>前面讲的扫描测角，核心思想是"试探"：让波束转一圈，比较不同方向的回波强度，找到最强的那个方向。这个方法简单直观，代价是速度慢。机械扫描需要几秒钟转一圈，电子扫描虽然快得多，但也需要依次指向多个方向。</p>
+<p>快速目标或多目标跟踪时，扫描测角太慢了。有没有办法一次就测准？有。这就是<strong>单脉冲测角</strong>（Monopulse）。</p>
+<p>---</p>
+<h2 id="section-2">单脉冲测角原理</h2>
+<p>扫描测角为什么需要多次测量？因为它只用一个波束，每次只能看一个方向，必须转一圈才能比较不同方向的回波强度。</p>
+<p>单脉冲测角的核心思想是：不用一个波束，而是同时用多个波束接收回波，通过比较它们的回波强度差异，一次就能判断目标偏离中心的方向和程度。</p>
+<p>就好比用两只耳朵听声音。声音从左来，左耳响；从右来，右耳响。比较响度差异就知道方向，不用转头。单脉冲就是这个原理：多个波束同时听，从强度差异提角度。</p>
+<p>具体怎么做？最常见的方法是用<strong>和波束</strong>和<strong>差波束</strong>。</p>
+<p>---</p>
+<h2 id="section-3">和差波束</h2>
+<p>假设天线可以同时形成两个波束：一个指向稍微偏左，一个指向稍微偏右。如果目标在正中间，两个波束收到的回波强度相同；如果目标偏左，左边的波束收到的回波更强；如果目标偏右，右边的波束收到的回波更强。</p>
+<p>通过比较两个波束的回波强度差异，就能判断目标偏离中心的方向和程度。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%B8%83%E7%AB%A0/fig7_12_monopulse.png" alt="单脉冲测角的和差波束" loading="lazy"><figcaption>单脉冲测角的和差波束</figcaption></figure>
+<p>实际实现时，通常不是直接形成"左波束"和"右波束"，而是形成两个特殊的波束：</p>
+<ol><li>和波束（Sum Beam）：两个子波束的信号相加，形成一个指向中心的常规波束。它的作用是探测目标、测量距离和速度，和普通雷达的波束一样。</li></ol>
+<ol><li>差波束（Difference Beam）：两个子波束的信号相减，形成一个在中心处为零、两侧为正负的特殊波束。它的作用是测量目标偏离中心的程度。</li></ol>
+<p>为什么要相加和相减？因为我们需要两个信息：一是"目标有多强"（用和波束），二是"目标偏离中心多少"（用差波束）。相加能保留总强度，相减能突出偏差——就像天平的两个托盘，相加得到总重量，相减得到重量差。</p>
+<p>差波束的输出直接反映了目标偏离中心的程度和方向：</p>
+<ul><li>如果目标在波束中心，两个子波束收到的信号相同，相减后为零</li><li>如果目标偏左，左边的子波束信号更强，相减后为正</li><li>如果目标偏右，右边的子波束信号更强，相减后为负</li></ul>
+<p>用数值例子说明：假设目标在波束中心，左右两个子波束都收到1V信号。</p>
+<ul><li>和波束输出：1+1=2V</li><li>差波束输出：1-1=0V（目标在中心）</li></ul>
+<p>如果目标偏左，左边收到1.2V，右边收到0.8V。</p>
+<ul><li>和波束：1.2+0.8=2V（总强度不变）</li><li>差波束：1.2-0.8=0.4V（正值表示偏左）</li></ul>
+<p>通过计算比值 0.4/2=0.2，就能算出偏离角度。为什么用比值而不是直接用差值？因为目标回波强度随距离、RCS变化。如果直接用差值0.4V，无法区分"目标偏离中心"和"目标回波弱"。用归一化比值0.2，就消除了回波强度的影响，只保留角度信息。</p>
+<h3 id="section-4">比值与角度估计</h3>
+<p>比值 $\Delta/\Sigma$ 本身只是个相对值，范围在0到1之间。要把它转成实际角度，需要乘以一个比例系数。这个系数叫<strong>单脉冲斜率</strong>，记为 $k_m$，反映的是波束形状对偏离敏感性有多强。</p>
+<div class="math-block">$$
+\theta_{\text{est}} = k_m \frac{\Delta}{\Sigma}
+$$</div>
+<p>$k_m$ 有多大呢？这取决于波束宽度。波束越窄，同样的偏离在角度上的变化就越明显，所以 $k_m$ 越大。粗略地说，$k_m$ 约等于 $\theta_{\text{3dB}}/2$。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%B8%83%E7%AB%A0/fig7_13_monopulse_curve.png" alt="单脉冲测角曲线" loading="lazy"><figcaption>单脉冲测角曲线</figcaption></figure>
+<h3 id="section-5">单脉冲测角精度</h3>
+<p>但这里有个现实问题：雷达回波里总是混着噪声。噪声会让 $\Delta$ 和 $\Sigma$ 都颤动，导致比值算出来的角度也跟着抖。信号越弱，噪声的相对影响就越大，角度估计的不确定性就越高。反过来说，SNR越高，我们对目标角度的把握就越有信心。</p>
+<p>那么到底能测得多准？这个问题可以用 Cramér-Rao 下界来估计。这个下界告诉我们一个理论极限：无论采用什么最优的处理方法，角度估计误差的标准差都不会低于</p>
+<div class="math-block">$$
+\sigma_{\theta} \geq \frac{\theta_{\text{3dB}}}{2\sqrt{2\text{SNR}}}
+$$</div>
+<p>这个公式里有几个关键信息。首先，精度正比于波束宽度——波束越窄，测角误差越小，这符合直觉。其次，SNR越高精度越好，但改善不是线性的。SNR翻倍，误差只能减小到原来的 $1/\sqrt{2}$，所以后期改善效果有限。</p>
+<p>最有意思的是分母里那个2。它来自于单脉冲用了两个通道（和波束加差波束），而扫描测角只用一个波束。在相同的SNR下，单脉冲能从同一个回波里挤出更多角度信息，所以精度比扫描高一倍。这是单脉冲的根本优势。</p>
+<p>---</p>
+<p>这个方法的优势非常明显：</p>
+<ol><li>速度快：只需一次发射接收，就能测出角度。扫描做不到。这对快速目标很关键。</li></ol>
+<ol><li>精度高：同时测两个波束，不受回波强度起伏影响（归一化消除了）。精度比扫描高一个数量级。</li></ol>
+<ol><li>抗干扰强：差波束在中心是零。旁瓣进来的干扰，比值关系和真目标不同，容易识别和剔除。</li></ol>
+<p>但代价也很明显：</p>
+<ol><li>系统复杂：需要多个波束，多通道接收，精密相位控制。成本和难度都高得多。可能是扫描系统的5-10倍。</li></ol>
+<ol><li>覆盖范围小：单脉冲只能在波束范围内工作。搜索大范围还得先用扫描找到目标，再切换到单脉冲精确跟踪。</li></ol>
+<p>单脉冲也有失效条件。波束内多个目标，差波束就混在一起，没法测角。得先用距离或速度把它们分开。信噪比很低时，差波束的噪声淹没角度信息，精度崩溃。单脉冲优势就没了。</p>
+<p>所以实际雷达系统常常是两种方式结合：用扫描模式搜索目标，发现目标后切换到单脉冲模式跟踪。搜索雷达主要用扫描，跟踪雷达和制导雷达主要用单脉冲。</p>
+<p>---</p>
+<p>单脉冲测角的具体实现有很多种：振幅和差单脉冲、相位和差单脉冲、圆锥扫描单脉冲……每种都有自己的优缺点和适用场景。这些细节已经超出了入门教材的范围。如果你对这个话题感兴趣，可以在学习了天线理论、信号处理、雷达系统设计之后，再深入研究。</p>
+<p>现在你已经了解了雷达测角的基本原理：从"为什么需要测角"，到"波束有宽度"，到"扫描测角"，到"角分辨力和误差"，再到"单脉冲测角"。这些知识足以让你理解雷达如何在三维空间中定位目标。</p>
+<p>通过几个练习来检验一下，看看能否把这些概念用起来。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%9A%E6%B5%8B%E8%A7%92.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%B8%83%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch07-05.html">← 7.5 测角误差的主要来源</a><a class="pager-link next" href="ch07-07.html">7.7 小练习 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

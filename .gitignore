@@ -1,0 +1,12 @@
+# Keep private manuscript sources out of the public repository.
+*.md
+!README.md
+
+# Common private draft/source folders.
+source/
+sources/
+drafts/
+manuscript/
+稿件/
+手稿/
+原稿/

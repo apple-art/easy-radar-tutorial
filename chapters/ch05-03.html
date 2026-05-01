@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>5.3 脉冲间相位变化与速度测量 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="上一节主要站在连续波雷达的角度讨论测速：先把高频回波混到低频，再从频率偏移算速度。这个思路很直观，但在实际雷达系统中，脉冲雷达更为常见——因为它既能测距又能测速。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch05-03.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link active" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第5章</span>
+      <span>速度测量</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">5.3 脉冲间相位变化与速度测量</h1>
+<p>上一节主要站在连续波雷达的角度讨论测速：先把高频回波混到低频，再从频率偏移算速度。这个思路很直观，但在实际雷达系统中，脉冲雷达更为常见——因为它既能测距又能测速。</p>
+<p>脉冲雷达里的速度信息不再表现成一段连续差频信号，而是体现在相邻脉冲之间的相位变化中。更具体地说：距离靠单个脉冲测出来，速度靠多个脉冲之间的规律变化测出来。</p>
+<p>那么为什么相邻脉冲之间固定的相位差，能换算成多普勒频率，进而得到速度？</p>
+<h2 id="section-2">脉冲间相位差</h2>
+<p>单个脉冲最擅长回答“目标大概在哪个距离上”。回波比发射晚到多少，就对应目标离雷达有多远。只看一个脉冲，你最多知道某个距离单元里有没有目标，却很难判断它是静止、靠近还是远离。</p>
+<p>原因并不复杂。速度不是靠某一个脉冲里突然多出什么新特征判断的，而是靠相邻脉冲之间有没有持续、稳定的变化来判断的。可以把它类比成拍照：只看一张照片，你能看出人站在哪里；连看很多张按固定时间间隔拍下的照片，你才能看出他是不是在持续移动。</p>
+<p>脉冲雷达的数据结构可以用下图来理解：</p>
+<figure><img src="../figures/%E7%AC%AC%E4%BA%94%E7%AB%A0/fig5_5_fast_slow_time.png" alt="快时间与慢时间" loading="lazy"><figcaption>快时间与慢时间</figcaption></figure>
+<p>每一行代表一个脉冲内的采样点，这是<strong>快时间</strong>方向，对应距离维度；每一列代表同一距离单元在不同脉冲的采样，这是<strong>慢时间</strong>方向，对应速度维度。快时间主要给距离，慢时间主要给速度。</p>
+<blockquote>学了后面一小节的MTD后，就知道为什么叫距离和速度维了。目前先记住这个叫法。至于快慢时间，大家看这个采样时间间隔就好理解，一个脉冲内的采样，自然比脉冲之间间隔时间久。</blockquote>
+<p>设雷达每隔 $T_r$ 秒发射一个脉冲。若目标径向速度为 $v$，那么从一个脉冲到下一个脉冲之间，目标沿视线方向移动了</p>
+<div class="math-block">$$
+\Delta R = vT_r
+$$</div>
+<p>电磁波往返一次，这会带来额外传播路程</p>
+<div class="math-block">$$
+\Delta L = 2\Delta R = 2vT_r
+$$</div>
+<p>而电磁波每走一个波长 $\lambda$，相位就多转 $2\pi$。因此，相邻两个脉冲之间的额外相位差为</p>
+<div class="math-block">$$
+\Delta \phi = 2\pi \frac{\Delta L}{\lambda} = 2\pi \frac{2vT_r}{\lambda}
+$$</div>
+<p>再利用上一节已经得到的多普勒关系</p>
+<div class="math-block">$$
+f_d = \frac{2v}{\lambda}
+$$</div>
+<p>就得到</p>
+<div class="math-block">$$
+\Delta \phi = 2\pi f_d T_r
+$$</div>
+<p>这个式子说明：目标一旦在运动，回波相位就不会停在原地，而是会随着脉冲序号一拍一拍地稳定转动。静止目标对应 $\Delta\phi \approx 0$；目标速度越大，脉冲间相位转动得越快。</p>
+<p>但要注意：如果目标速度太大，使得 $\Delta\phi$ 超过 $\pm\pi$，相位就会"折叠"回来，导致速度模糊。这就是为什么脉冲雷达有"最大不模糊速度"的限制——速度测量的有效范围取决于脉冲重复频率。</p>
+<h2 id="section-3">相位差法与慢时间 FFT</h2>
+<p>既然相邻两个脉冲之间的相位差已经和多普勒频率对应起来了，为什么不直接测相位差，而要做 FFT？</p>
+<p>从原理上说，直接利用相位差当然是可行的。若慢时间上相邻脉冲之间的相位差是 $\Delta\phi$，又知道脉冲重复周期 $T_r$，就可以由</p>
+<div class="math-block">$$
+\Delta \phi = 2\pi f_d T_r
+$$</div>
+<p>解出多普勒频率 $f_d$，再进一步换算成速度。</p>
+<p>但这样做有一个明显问题：只利用了很少的数据。若只看相邻两个脉冲，速度估计几乎完全建立在”一次相位差测量”上。噪声稍大一点，或者目标回波比较弱，这个相位差就会抖动得很厉害，算出来的速度也会跟着不稳。</p>
+<p>把多个脉冲放在一起看就不同了。不再只依赖某一对脉冲之间的相位差，而是去看整串脉冲的相位变化规律。这样做有两个好处：</p>
+<ol><li>积累增益：能把更多脉冲上的信息一起利用起来，结果更稳；</li><li>多目标分离：如果同一距离单元里不止一个目标，例如一个目标慢速靠近、另一个目标快速远离，它们对应的相位变化速率不同，就有机会把这两个目标分开。但如果两个目标的速度差太小（对应的频率间隔小于 $1/(NT_r)$），FFT就无法把它们分开——这就是速度分辨率的限制。</li></ol>
+<p>FFT的作用就是把多个脉冲的相位变化信息稳定地提取出来。下面看它是怎么做到的。</p>
+<h2 id="section-4">慢时间序列的复指数模型</h2>
+<p>前面已经推出：若相邻脉冲间的相位增量恒定为 $\Delta\phi$，那么第 $m$ 个脉冲上的相位就是</p>
+<div class="math-block">$$
+\phi_m = \phi_0 + (m-1)\Delta\phi
+$$</div>
+<p>若把某个距离单元在第 $m$ 个脉冲上的回波写成复数形式，就是</p>
+<div class="math-block">$$
+z[m] = A e^{j\phi_m} = A e^{j[\phi_0 + (m-1)\Delta\phi]}
+$$</div>
+<p>这是一个相位线性增长的复数序列。现在的问题是：怎样从这个序列中把相位增量Δφ（进而得到多普勒频率）稳定地提取出来？</p>
+<p>答案是：用FFT测量相位变化速率。FFT会告诉我们"每个样本相位增加多少弧度"（归一化频率），然后我们根据采样间隔把它转换成实际频率（Hz）。</p>
+<h2 id="section-5">FFT 的模板匹配机制</h2>
+<p>FFT的核心思想：用一组不同相位变化速率的”标准模板”去和当前样本比对。每个模板也是一个相位线性增长的序列，但增长速率不同。哪个模板的相位增长速率和样本最接近，哪里就出现峰值。</p>
+<p>离散傅里叶变换的公式是：</p>
+<div class="math-block">$$
+Z[k] = \sum_{m=0}^{N-1} z[m] e^{-j2\pi km/N}
+$$</div>
+<p>这里的 $k$ 是模板编号，$e^{-j2\pi km/N}$ 就是第 $k$ 个标准模板。模板 $k$ 对应的相位变化速率是 $2\pi k/N$ 弧度/样本。</p>
+<p>为什么相乘能测匹配度？关键在于：如果样本和模板的相位变化速率一致，相乘后样本的相位被模板”抵消”，所有项都指向同一方向，累加结果最大；如果不一致，相乘后各项指向不同方向，相互抵消，累加结果接近零。对每一个 $k$：</p>
+<ul><li>如果样本 z[m] 的相位增长速率和这个模板一致，相乘后各项会同向累加，|Z[k]| 很大</li><li>如果相位增长速率不一致，相乘后会相互抵消，|Z[k]| 很小</li></ul>
+<p>FFT就是在测量”样本的相位变化速率”和”各个候选模板的相位变化速率”的匹配程度。峰值位置k反映了样本的相位变化速率是 $2\pi k/N$ 弧度/样本。</p>
+<p>下面用一个最简单的例子来演示这个过程。假设固定某一距离单元以后，连续观察 4 个脉冲，得到的样本恰好是</p>
+<div class="math-block">$$
+z[0]=1,
+\quad z[1]=j,
+\quad z[2]=-1,
+\quad z[3]=-j
+$$</div>
+<p>这四个样本的幅度都相同，但相位依次是</p>
+<div class="math-block">$$
+0^\circ,\quad 90^\circ,\quad 180^\circ,\quad 270^\circ
+$$</div>
+<p>也就是说，每往后一个脉冲，相位就多转 $90^\circ$。这里 $N=4$。</p>
+<p>先看 $k=1$ 的情况。代入公式可得</p>
+<div class="math-block">$$
+Z[1] = \sum_{m=0}^{3} z[m] e^{-j2\pi (1)m/4}
+$$</div>
+<p>把各项逐个写开：</p>
+<div class="math-block">$$
+Z[1]=z[0]e^{0}+z[1]e^{-j\pi/2}+z[2]e^{-j\pi}+z[3]e^{-j3\pi/2}
+$$</div>
+<div class="math-block">$$
+= 1\cdot 1 + j\cdot(-j) + (-1)\cdot(-1) + (-j)\cdot j
+$$</div>
+<div class="math-block">$$
+= 1 + 1 + 1 + 1 = 4
+$$</div>
+<p>这个结果为什么会这么大？因为当 $k=1$ 时，模板 $e^{-j2\pi m/4}$ 的相位变化速率恰好和样本一致。相乘后，样本的相位被”抵消”掉，四项都变成了同一个方向，于是能够同向累加。</p>
+<p>再看 $k=0$ 的情况。代入公式有</p>
+<div class="math-block">$$
+Z[0] = \sum_{m=0}^{3} z[m] e^{-j2\pi (0)m/4}
+$$</div>
+<p>因为 $e^{0}=1$，这相当于用”零相位变化速率模板”（相位不变）去匹配。把四个样本直接相加：</p>
+<div class="math-block">$$
+Z[0]=1\cdot 1 + j\cdot 1 + (-1)\cdot 1 + (-j)\cdot 1
+$$</div>
+<div class="math-block">$$
+= 1 + j - 1 - j = 0
+$$</div>
+<p>因为样本的相位在转动，而模板相位不变，两者不匹配，所以相互抵消。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%BA%94%E7%AB%A0/fig5_6_dft_matching.png" alt="离散傅里叶变换中的模板匹配示意图" loading="lazy"><figcaption>离散傅里叶变换中的模板匹配示意图</figcaption></figure>
+<p>上图展示了FFT的模板匹配过程。左图是某一距离单元上的慢时间样本，相位随脉冲编号稳定推进；中图是几个候选模板；右图是各个候选模板对应的匹配结果 $|Z[k]|$，最匹配的位置形成最高峰。</p>
+<p>这个例子说明了FFT的工作原理：</p>
+<ul><li>样本序列 z[m] 的相位以速率Δφ（弧度/样本）线性增长</li><li>FFT用不同的模板去匹配这个相位变化速率</li><li>模板 $e^{-j2\pi km/N}$ 对应的相位变化速率是 $2\pi k/N$ 弧度/样本</li><li>当k=1时，模板的相位变化速率是 $2\pi/4 = 90°$/样本，恰好匹配样本</li><li>FFT求的就是相位变化速率（归一化频率），而不是直接求实际频率</li></ul>
+<p>实际中，目标的多普勒频率往往不会恰好落在某个整数k上。这时能量会”泄漏”到相邻的频点，峰值会变宽、变矮——这就是频谱泄漏现象。</p>
+<p>接下来的问题是：如何把这个”相位变化速率”转换成实际的多普勒频率？</p>
+<h2 id="section-6">从相位变化速率到多普勒频率</h2>
+<p>上面的计算告诉我们”在 $k=1$ 处有峰”，这意味着样本的相位变化速率是 $2\pi k/N = 2\pi/4 = 90°$/样本。但这个”归一化频率”如何对应到实际的多普勒频率（Hz）？</p>
+<p>关键在于：每个”样本”对应的时间间隔是 $T_r$（脉冲重复周期）。</p>
+<p>如果相位变化速率是 $2\pi k/N$ 弧度/样本，那么换算成单位时间的相位变化速率就是：</p>
+<div class="math-block">$$
+\omega = \frac{2\pi k/N}{T_r} = \frac{2\pi k}{N T_r} \quad \text{(弧度/秒)}
+$$</div>
+<p>对应的频率（Hz）为：</p>
+<div class="math-block">$$
+f = \frac{\omega}{2\pi} = \frac{k}{N T_r} = \frac{k \cdot f_s}{N}
+$$</div>
+<p>其中 $f_s = 1/T_r$ 是慢时间采样率。</p>
+<p>这个公式建立了”FFT峰值位置k”和”实际频率f”的对应关系：</p>
+<ul><li>k 反映相位变化速率（归一化频率）</li><li>乘以 $f_s/N$ 转换成实际频率（Hz）</li></ul>
+<p>回到刚才 $N=4$ 的例子。若脉冲重复周期 $T_r = 1\,\text{ms}$，则慢时间采样率 $f_s = 1000\,\text{Hz}$。频谱上 $k=1$ 对应的频率为</p>
+<div class="math-block">$$
+f = \frac{1 \times 1000}{4} = 250\,\text{Hz}
+$$</div>
+<p>这个 $f$ 就是多普勒频率 $f_d$。</p>
+<p>验证一下：如果多普勒频率是250 Hz，那么相邻脉冲间的相位差应该是</p>
+<div class="math-block">$$
+\Delta\phi = 2\pi f_d T_r = 2\pi \times 250 \times 0.001 = 0.5\pi = 90^\circ
+$$</div>
+<p>这正好和我们例子中的样本相位变化（每脉冲转90°）一致！FFT成功地测量出了相位变化速率，然后我们把它转换成了实际频率。</p>
+<p>最后，由多普勒频率换算成速度：</p>
+<div class="math-block">$$
+v = \frac{\lambda f_d}{2}
+$$</div>
+<p>例如，若雷达工作波长 $\lambda = 0.03\,\text{m}$（对应 10 GHz），则</p>
+<div class="math-block">$$
+v = \frac{0.03 \times 250}{2} = 3.75\,\text{m/s}
+$$</div>
+<p>这样就完成了从”脉冲间相位差”到”目标速度”的完整换算。</p>
+<p>至此，整个测速链条就清楚了：目标运动产生固定相位差，FFT通过模板匹配测出相位变化速率，再转换成多普勒频率，最后换算成速度。前面都是在单个距离单元里讨论速度测量。实际雷达数据是二维的——既有距离维度，又有速度维度。MTD就是把这套思想应用到整个二维数据阵列上的方法。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E9%80%9F%E5%BA%A6%E6%B5%8B%E9%87%8F.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%BA%94%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch05-02.html">← 5.2 多普勒频移与速度换算</a><a class="pager-link next" href="ch05-04.html">5.4 MTD的基本思想 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

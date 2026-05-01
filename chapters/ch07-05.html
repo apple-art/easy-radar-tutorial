@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>7.5 测角误差的主要来源 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="前面几节讲的都是&quot;理想情况&quot;：波束形状完美，天线指向准确，目标是个点，环境干干净净。但实际雷达工作时，测角结果总是会偏离真实值。理解这些误差从哪里来，对于评估雷达性能、设计系统、解释观测数据都很重要。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch07-05.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link active" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第7章</span>
+      <span>测角</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">7.5 测角误差的主要来源</h1>
+<p>前面几节讲的都是"理想情况"：波束形状完美，天线指向准确，目标是个点，环境干干净净。但实际雷达工作时，测角结果总是会偏离真实值。理解这些误差从哪里来，对于评估雷达性能、设计系统、解释观测数据都很重要。</p>
+<p>---</p>
+<h2 id="section-2">噪声引起的测角误差</h2>
+<p>第6章我们知道，接收机里总有噪声。噪声会让回波强度曲线变得"毛糙"，峰值位置也会抖动。</p>
+<p>假设真实目标在30°方向，理想情况下回波强度曲线应该在30°处达到峰值。但加上噪声后，峰值可能出现在29.8°或30.2°，每次测量都不太一样。信噪比越低，这个抖动越大。</p>
+<p>一个粗略的估计公式是：</p>
+<div class="math-block">$$
+\sigma_{\theta} \approx \frac{\theta_{\text{3dB}}}{\text{SNR}}
+$$</div>
+<p>其中 $\sigma_{\theta}$ 是角度测量的标准差，$\theta_{\text{3dB}}$ 是波束宽度，SNR 是信噪比（不是dB值，是功率比）。</p>
+<p>标准差就像是"测量结果的抖动范围"。如果标准差是0.15°，多次测量的结果大多会落在真实值±0.15°范围内。具体来说，约68%的测量结果在这个范围内，95%的测量结果在±0.3°（两倍标准差）范围内。标准差越小，测量越稳定。</p>
+<p>举个例子：波束宽度3°，信噪比20（约13 dB），角度测量标准差大约是 $3°/20 = 0.15°$。如果信噪比降到10（10 dB），标准差就变成 $3°/10 = 0.3°$。</p>
+<p>所以提高测角精度需要减小波束宽度和提高信噪比，与距离测量和速度测量的原理相同。</p>
+<p>---</p>
+<h2 id="section-3">多径效应引起的测角误差</h2>
+<p>这是实际系统最头疼的问题。电磁波不仅直接照目标，还可能先打地面反射到目标，回波也一样。两条路径，两个回波。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%B8%83%E7%AB%A0/fig7_11_multipath.png" alt="多径效应示意图" loading="lazy"><figcaption>多径效应示意图</figcaption></figure>
+<p>两条路径长度不同，回波时间和相位都不同。叠加后等效回波就像来自一个假角度，测角结果就偏了。</p>
+<p>多径效应在低仰角目标上特别严重。想象一架飞机在很低的高度飞行，雷达既能看到飞机的直射回波，也能看到地面反射的回波。两个回波的角度差很小，叠加后会让雷达"看到"一个偏离真实位置的目标。</p>
+<p>举个例子：一架飞机在300米高度、距离10公里处飞行，真实仰角约 $\arctan(300/10000) \approx 1.7°$。地面反射的回波相当于一个"镜像目标"在地下300米，对应仰角约-1.7°。两个回波叠加后，等效仰角可能变成0.5°到2.5°之间的某个值，具体取决于两个回波的相位关系。这个0.5°-1.2°的偏差，对于需要精确测高的雷达（如着陆引导雷达）是不能接受的。</p>
+<p>海面反射更麻烦，因为海面会随着波浪起伏，反射路径不断变化，导致测角误差也在不断变化。舰载雷达和岸基雷达都深受其害。</p>
+<p>应对多径效应的方法包括：</p>
+<ul><li>提高天线架设高度，减小反射路径的影响（但增加了结构成本和风载）</li><li>使用窄波束，减小地面反射进入主瓣的概率（但降低了搜索效率）</li><li>信号处理算法识别和抑制多径回波（但算法复杂度高，可能误判）</li><li>选择合适的工作频率和极化方式（但受其他系统约束）</li></ul>
+<p>但这些方法都只能缓解，无法完全消除多径效应。</p>
+<p>---</p>
+<h2 id="section-4">角闪烁引起的测角误差</h2>
+<p>前面我们一直假设目标是个"点"，但实际目标（比如飞机、导弹）是个复杂的三维物体，有很多散射中心（机头、机翼、尾翼、发动机……）。不同散射中心的回波叠加后，等效的"散射中心位置"会随着目标姿态变化而变化。</p>
+<p>想象你用手电筒照一串钥匙，转动钥匙时，反光最亮的点会在不同钥匙之间跳动——有时是这把钥匙的边缘最亮，有时是那把钥匙的表面最亮。雷达看飞机也是这样：不同部位的回波强度随姿态变化，等效的"最亮点"位置就会跳动。</p>
+<p>比如一架飞机在转弯，从雷达看过去，机头、机翼的相对位置在变化，等效散射中心可能从机头跳到机翼，再跳回机头。这会让测角结果在短时间内剧烈抖动，这种现象叫做<strong>角闪烁</strong>（Angular Glint）。</p>
+<p>角闪烁的幅度可能达到几度，对于需要精确跟踪的雷达（比如导弹制导雷达）是个大问题。应对方法包括：</p>
+<ul><li>使用更高的工作频率（波长更短，散射中心分布更稳定）</li><li>多个测量结果平滑滤波</li><li>使用多频率或宽带信号，减小相干叠加效应</li></ul>
+<p>---</p>
+<h2 id="section-5">天线指向误差</h2>
+<p>机械扫描雷达的天线是靠电机驱动转动的。电机有齿轮间隙、轴承磨损、安装误差，天线本身也会因为风载、温度变化而变形。这些都会导致天线实际指向和理论指向不一致。</p>
+<p>相控阵雷达没有机械转动，每个天线单元的相位控制也不是完美的。相位误差、幅度误差、单元位置误差都会让波束指向偏离设计值。</p>
+<p>这类误差通常通过定期校准来减小。比如用已知位置的信标源（地面信标、卫星）来校准天线指向，或者用自校准算法估计和补偿误差。</p>
+<p>---</p>
+<h2 id="section-6">主要误差来源比较</h2>
+<p>实际测角精度受到多种因素的综合影响：</p>
+<div class="table-wrap"><table><thead><tr><th>误差来源</th><th>典型影响</th><th>主要应对方法</th></tr></thead><tbody><tr><td>噪声</td><td>0.1°-1°</td><td>提高信噪比、多次测量平均</td></tr><tr><td>多径效应</td><td>0.5°-5°</td><td>提高天线高度、窄波束、信号处理</td></tr><tr><td>角闪烁</td><td>1°-5°</td><td>高频率、平滑滤波、宽带信号</td></tr><tr><td>天线指向误差</td><td>0.1°-0.5°</td><td>定期校准、自校准算法</td></tr></tbody></table></div>
+<p>当多种误差源同时存在时，如果是独立随机误差（如噪声、角闪烁），总误差按平方和开方计算：$\sigma_{\text{总}} = \sqrt{\sigma_1^2 + \sigma_2^2 + \sigma_3^2}$；如果是系统性误差（如天线指向偏差、多径效应的平均偏移），总误差直接叠加。</p>
+<p>哪种误差占主导取决于具体场景。舰载雷达跟踪低空目标时，多径效应通常是主要误差源，可达3-5°，远超噪声误差的0.2°。高信噪比、高仰角目标时，天线指向误差和角闪烁成为主要限制。低信噪比场景下，噪声误差占主导。</p>
+<p>设计良好的雷达系统需要在这些误差源之间权衡成本、性能和可靠性。</p>
+<p>但无论如何优化，扫描测角都有一个根本性的限制：需要时间。波束要转一圈，比较不同方向的回波强度，才能找到目标。对于快速机动的目标，或者需要同时跟踪多个目标的场景，这个"慢"就成了致命弱点。有没有办法"一次就测准"？</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%9A%E6%B5%8B%E8%A7%92.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%B8%83%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch07-04.html">← 7.4 波束宽度与角分辨力</a><a class="pager-link next" href="ch07-06.html">7.6 单脉冲测角 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

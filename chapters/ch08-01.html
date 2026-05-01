@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8.1 最小可运行示例 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="这一节只保留距离处理链中的最小部分：生成发射信号，构造单目标回波，做匹配滤波，再由主峰位置换算目标距离。这样可以先把第4章的时延公式和匹配滤波公式在 MATLAB 中对应起来。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch08-01.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link active" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第8章</span>
+      <span>完整处理流程</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">8.1 最小可运行示例</h1>
+<p>这一节只保留距离处理链中的最小部分：生成发射信号，构造单目标回波，做匹配滤波，再由主峰位置换算目标距离。这样可以先把第4章的时延公式和匹配滤波公式在 MATLAB 中对应起来。</p>
+<p>设目标真实距离为 $R_0=6\ \text{km}$，目标静止不动。第4章给出的距离关系式为</p>
+<div class="math-block">$$
+\tau_0 = \frac{2R_0}{c}, \qquad R = \frac{c\tau}{2}
+$$</div>
+<p>其中 $\tau_0$ 为目标回波的双程传播时延，$c$ 为光速。发射信号采用第4章介绍的 LFM 脉冲。为了与本节 MATLAB 程序一致，这里使用复包络基带形式：</p>
+<div class="math-block">$$
+s(t)=\exp\!\big(j\pi k t^2\big), \qquad 0\le t &lt; T_p
+$$</div>
+<div class="math-block">$$
+k = \frac{B}{T_p}
+$$</div>
+<p>其中 $B$ 为 LFM 带宽，$T_p$ 为脉冲宽度，$k$ 为调频斜率。接收回波可写成</p>
+<div class="math-block">$$
+r(t)=s(t-\tau_0)+w(t)
+$$</div>
+<p>其中 $w(t)$ 表示噪声。匹配滤波仍采用第4章的公式</p>
+<div class="math-block">$$
+h(t)=s^*(-t), \qquad y(t)=r(t)*h(t)
+$$</div>
+<p>其中 $s^<em>(t)$ 表示 $s(t)$ 的共轭，$</em>$ 表示卷积运算。</p>
+<h2 id="section-2">公式与程序变量对应</h2>
+<p>程序里的主要符号、变量和物理意义见表8-1。</p>
+<div class="table-wrap"><table><thead><tr><th>公式/符号</th><th>MATLAB 变量或表达式</th><th>含义</th></tr></thead><tbody><tr><td>$c$</td><td><code>c</code></td><td>光速 (m/s)</td></tr><tr><td>$B$</td><td><code>B</code></td><td>LFM 带宽 (Hz)</td></tr><tr><td>$T_p$</td><td><code>Tp</code></td><td>脉冲宽度 (s)</td></tr><tr><td>$f_s$</td><td><code>fs</code></td><td>采样率 (Hz)</td></tr><tr><td>$R_0$</td><td><code>R0</code></td><td>目标真实距离 (m)</td></tr><tr><td>$k=B/T_p$</td><td><code>k = B / Tp</code></td><td>调频斜率 (Hz/s)</td></tr><tr><td>$N_{\text{fast}}=T_p f_s$</td><td><code>N_fast = round(Tp * fs)</code></td><td>一个脉冲内的采样点数</td></tr><tr><td>$s(t)$</td><td><code>tx</code></td><td>发射基带 LFM 脉冲</td></tr><tr><td>$\tau_0 = 2R_0 / c$</td><td><code>delay_time = 2 * R0 / c</code></td><td>双程传播时延 (s)</td></tr><tr><td>$n_0 = \tau_0 f_s$</td><td><code>delay_samples = round(delay_time * fs)</code></td><td>时延对应的采样点数</td></tr><tr><td>$r(t)=s(t-\tau_0)+w(t)$</td><td><code>rx</code></td><td>延迟回波加噪声</td></tr><tr><td>$h(t)=s^*(-t)$</td><td><code>mf = conj(fliplr(tx))</code></td><td>匹配滤波器</td></tr><tr><td>$y(t)=r(t)*h(t)$</td><td><code>range_profile = conv(rx, mf, &#x27;same&#x27;)</code></td><td>匹配滤波输出</td></tr><tr><td>$\hat R$</td><td><code>R_est</code></td><td>距离估计值 (m)</td></tr></tbody></table></div>
+<p>下面给出完整 MATLAB 程序。</p>
+<p>如果你想直接运行本节代码，可参考 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_minimal_pulse_radar_demo.m"><code>ch08_minimal_pulse_radar_demo.m</code></a>。</p>
+<pre><code class="language-matlab">% 第八章示例1：单目标距离处理的最小可运行示例
+clear; close all; clc;
+
+% 基本参数：本例采用复包络基带模型，fc 只保留物理背景
+c = 3e8;           % 光速 (m/s)
+fc = 10e9;         % 载频 (Hz)
+B = 10e6;          % LFM 带宽 (Hz)
+Tp = 20e-6;        % 脉冲宽度 (s)
+fs = 20e6;         % 采样率 (Hz)
+R0 = 6000;         % 目标真实距离 (m)
+
+% 生成基带 LFM 脉冲，k = B / Tp
+N_fast = round(Tp * fs);
+t_fast = (0:N_fast-1) / fs;
+k = B / Tp;
+tx = exp(1j * pi * k * t_fast.^2);  % 对应公式 s(t)
+
+% 目标距离 -&gt; 双程时延 -&gt; 离散延迟样点
+delay_time = 2 * R0 / c;                      % 对应公式 τ₀ = 2R₀/c
+delay_samples = round(delay_time * fs);
+fast_len = N_fast + delay_samples + 200;
+
+% 构造单目标回波：把发射脉冲平移到延迟位置，再叠加复高斯噪声
+rx = zeros(1, fast_len);
+rx(delay_samples + (1:N_fast)) = tx;          % 对应公式 r(t) = s(t-τ₀)
+rx = rx + 0.05 * (randn(size(rx)) + 1j * randn(size(rx)));  % 加噪声 w(t)
+
+% 匹配滤波等价于与发射信号做相关，主峰对应目标回波时延
+mf = conj(fliplr(tx));                        % 对应公式 h(t) = s*(-t)
+range_profile = conv(rx, mf, &#x27;same&#x27;);         % 对应公式 y(t) = r(t)*h(t)
+
+% conv(...,&#x27;same&#x27;) 保留中心段，主峰索引需先扣除匹配滤波器中心偏移
+[~, idx_peak] = max(abs(range_profile));
+delay_est_samples = idx_peak - 1 - floor(N_fast / 2);
+
+% 先估计时延，再按 R = c * τ / 2 换算距离
+R_est = c * delay_est_samples / (2 * fs);     % 对应公式 R = cτ/2
+range_axis = ((0:fast_len-1) - floor(N_fast / 2)) * c / (2 * fs);
+
+fprintf(&#x27;真实距离: %.2f km\n&#x27;, R0 / 1e3);
+fprintf(&#x27;估计距离: %.2f km\n&#x27;, R_est / 1e3);
+
+figure(&#x27;Position&#x27;, [100, 100, 1000, 600]);
+subplot(2,1,1);
+plot(real(rx), &#x27;LineWidth&#x27;, 1.0);
+grid on;
+title(&#x27;接收回波（实部）&#x27;);
+xlabel(&#x27;采样点&#x27;); ylabel(&#x27;幅度&#x27;);
+
+subplot(2,1,2);
+plot(range_axis / 1e3, abs(range_profile), &#x27;LineWidth&#x27;, 1.5); hold on;
+plot(R_est / 1e3, abs(range_profile(idx_peak)), &#x27;ro&#x27;, &#x27;MarkerSize&#x27;, 8, &#x27;LineWidth&#x27;, 1.5);
+grid on;
+title(&#x27;匹配滤波后的距离像&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;幅度&#x27;);
+legend(&#x27;距离像&#x27;, &#x27;峰值&#x27;);</code></pre>
+<h2 id="section-3"><code>conv(..., &#x27;same&#x27;)</code> 的索引修正</h2>
+<p>上面这段程序中，<code>tx</code> 对应发射信号 $s(t)$，<code>rx</code> 对应回波 $r(t)$，<code>mf</code> 对应匹配滤波器 $h(t)$，<code>range_profile</code> 对应匹配滤波输出 $y(t)$。其中</p>
+<pre><code class="language-matlab">range_profile = conv(rx, mf, &#x27;same&#x27;);</code></pre>
+<p>就是卷积公式 $y(t)=r(t)*h(t)$ 的离散实现。由于这里使用 <code>conv(..., &#x27;same&#x27;)</code>，输出序列保留的是中心部分，因此主峰索引不能直接当作时延样点使用，而应写成</p>
+<div class="math-block">$$
+n_\tau = \text{idx}_{\text{peak}} - 1 - \left\lfloor \frac{N_{\text{fast}}}{2} \right\rfloor
+$$</div>
+<div class="math-block">$$
+\hat\tau = \frac{n_\tau}{f_s}, \qquad \hat R = \frac{c\hat\tau}{2}
+$$</div>
+<p>程序中的 <code>delay_est_samples</code> 和 <code>R_est</code> 正对应这两步修正。如果不扣除这部分中心偏移，距离估计会系统性偏大。</p>
+<p>图8-2给出了程序输出。上图中的接收信号已经叠加噪声，目标位置并不直接可见；下图经过匹配滤波后，目标在距离轴上形成明显主峰。这个主峰的横坐标，就是目标距离的估计值。</p>
+<figure><img src="../figures/%E7%AC%AC%E5%85%AB%E7%AB%A0/fig8_2_minimal_demo_result.png" alt="最小可运行示例中的回波与距离峰" loading="lazy"><figcaption>最小可运行示例中的回波与距离峰</figcaption></figure>
+<h2 id="section-4">匹配滤波与其他实现方式</h2>
+<p>虽然匹配滤波本质是相关运算，但它在加性高斯噪声下能达到最优信噪比增益。与其他方法的对比如下：</p>
+<div class="table-wrap"><table><thead><tr><th>方法</th><th>实现</th><th>优点</th><th>缺点</th></tr></thead><tbody><tr><td>匹配滤波</td><td><code>conv(rx, conj(fliplr(tx)), &#x27;same&#x27;)</code></td><td>最大化信噪比，理论最优</td><td>需要精确知道发射波形</td></tr><tr><td>频域乘法</td><td><code>ifft(fft(rx) .* conj(fft(tx)))</code></td><td>长序列计算快</td><td>需要补零对齐，边界效应</td></tr><tr><td>直接互相关</td><td><code>xcorr(rx, tx)</code></td><td>概念直观</td><td>输出长度不同，需要额外处理</td></tr></tbody></table></div>
+<p>本例选择时域卷积是因为代码直观，且序列长度适中。若 <code>fast_len</code> 超过 10000 点，频域方法会更高效。</p>
+<h2 id="section-5">参数变化对结果的影响</h2>
+<p>带宽 B 的影响：距离分辨率 $\Delta R = c/(2B)$。</p>
+<ul><li>B = 5 MHz → 分辨率 30 m，主瓣宽度加倍</li><li>B = 10 MHz → 分辨率 15 m（本例设置）</li><li>B = 20 MHz → 分辨率 7.5 m，但需要更高采样率</li></ul>
+<p>采样率 fs 的影响：必须满足 $f_s \ge 2B$。</p>
+<ul><li>fs = B → 欠采样，频谱混叠，匹配滤波失效</li><li>fs = 2B → 奈奎斯特临界，实际工程需留余量</li><li>fs = 5B → 过采样，计算量增加但精度提升有限</li></ul>
+<p>本例 fs = 20 MHz，B = 10 MHz，满足 fs = 2B，刚好达到采样定理要求。</p>
+<h2 id="section-6">边界条件与失效模式</h2>
+<p>情况1：目标距离超出采样窗口 若 <code>delay_samples &gt; fast_len</code>，回波完全落在采样窗外，<code>range_profile</code> 无明显峰值。解决方法是增加 <code>fast_len</code>。</p>
+<p>情况2：信噪比过低 当噪声标准差从 0.05 增加到 0.5 时，主峰可能被噪声淹没。此时需要增加脉冲积累（下一节内容）或提高发射功率。</p>
+<p>情况3：多目标距离接近 若两目标间隔 &lt; c/(2B) = 15 m，主瓣重叠，单脉冲无法分辨。这是距离分辨率的物理极限。</p>
+<p>这一节得到的是最简单的单目标距离处理结果。下一节在此基础上加入脉冲序列，把第5章的速度处理也并入同一套 MATLAB 框架中。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%9A%E5%AE%8C%E6%95%B4%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch08-00.html">← 8.0 本章导读</a><a class="pager-link next" href="ch08-02.html">8.2 MATLAB中的距离与速度处理 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

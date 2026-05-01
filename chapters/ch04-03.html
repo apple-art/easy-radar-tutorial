@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>4.3 线性调频信号 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="前一节已经把脉冲压缩的主线讲清楚了：若想在保持较长脉冲能量的同时提高分辨率，发射波形内部就必须带有足够丰富的结构。工程上最常见的选择，是线性调频信号，也就是 LFM。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch04-03.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link active" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第4章</span>
+      <span>距离测量</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">4.3 线性调频信号</h1>
+<p>前一节已经把脉冲压缩的主线讲清楚了：若想在保持较长脉冲能量的同时提高分辨率，发射波形内部就必须带有足够丰富的结构。工程上最常见的选择，是线性调频信号，也就是 LFM。</p>
+<h2 id="section-2">线性调频信号的基本形式</h2>
+<p>所谓<strong>线性调频</strong>，意思是脉冲内部的瞬时频率随着时间按线性规律上升或下降。在理解这个概念之前，先看一个更简单的例子。</p>
+<p>假设有一个信号，它的频率每秒增加 1 Hz：第 1 秒是 1 Hz，第 2 秒是 2 Hz，第 3 秒是 3 Hz，依此类推，直到第 5 秒达到 5 Hz。这个信号的频率在变化，但变化是阶梯式的，每秒跳一次。</p>
+<figure><img src="../figures/%E7%AC%AC%E5%9B%9B%E7%AB%A0/fig4_4_stepwise_frequency.png" alt="阶梯式频率变化示意图" loading="lazy"><figcaption>阶梯式频率变化示意图</figcaption></figure>
+<p>上图显示了这种阶梯式变化的信号波形，下图则是它的频率随时间的关系：一条阶梯状的曲线。用公式表示，频率为 $f(t) = \lfloor t \rfloor + 1$ Hz，信号则是 $s(t) = \sin(2\pi f(t) \cdot t)$。</p>
+<p>现在把这个想法推进一步：如果频率连续平滑地变化呢？从 1 Hz 开始，在 4 秒内连续上升到 5 Hz，中间没有任何跳跃。这就是线性调频的核心思想。</p>
+<figure><img src="../figures/%E7%AC%AC%E5%9B%9B%E7%AB%A0/fig4_5_continuous_frequency.png" alt="连续频率变化示意图" loading="lazy"><figcaption>连续频率变化示意图</figcaption></figure>
+<p>上图显示了连续变化的信号波形，可以看到振荡逐渐变密；下图是它的频率随时间的关系：一条平滑的直线，$f(t) = 1 + t$ Hz。对应的信号表达式是 $s(t) = \sin(2\pi f(t) \cdot t) = \sin(2\pi (1+t) \cdot t)$。这种频率随时间线性变化的信号，就是 LFM（线性调频）信号。</p>
+<p>若把它变成声音来听，会像一个持续时间有限、音调不断升高或降低的扫频声。LFM 的每一小段时间，都带着与前后略有不同的频率特征。</p>
+<p>现在把这个想法推广到一般情况。假设频率不是从 1 Hz 开始，而是从某个起始频率 $f_0$ 开始；调频率也不一定是 1 Hz/s，而是用 $\mu$ 来表示。那么频率随时间的关系就变成：</p>
+<div class="math-block">$$
+f(t) = f_0 + \mu t
+$$</div>
+<p>这里 $\mu$ 的单位是 Hz/s，表示频率每秒变化多少。如果 $\mu &gt; 0$，频率上升；如果 $\mu &lt; 0$，频率下降。</p>
+<p>接下来把这个频率关系转换成信号表达式，直接代入即可：</p>
+<div class="math-block">$$
+\begin{aligned}
+s(t)&amp;=\sin\big(2\pi f(t)\,t\big) \\
+&amp;=\sin\big(2\pi(f_0+\mu t)t\big) \\
+&amp;=\sin(2\pi f_0 t+2\pi\mu t^2)
+\end{aligned}
+$$</div>
+<p>这就是线性调频信号的核心表达式。其中 $2\pi f_0 t$ 是起始频率对应的相位项，$2\pi \mu t^2$ 是频率变化带来的额外相位。</p>
+<p>在信号处理中，常用复指数形式来表示：</p>
+<div class="math-block">$$
+s(t) = e^{j(2\pi f_0 t + 2\pi \mu t^2)}
+$$</div>
+<p>这里 $j$ 是虚数单位。复指数形式在数学推导和频域分析时更方便，实际发射的信号取其实部即可。两种写法本质相同，只是表达习惯不同。</p>
+<p>在实际雷达中，正如3.1小节所说的，脉冲雷达发射的是持续一段时间的脉冲，LFM 脉冲有一个持续时间 $\tau$，超出这个时间就不再发射。为了表示这个有限长度，引入矩形窗函数 $\operatorname{rect}(t/\tau)$：</p>
+<div class="math-block">$$
+\operatorname{rect}\!\left(\frac{t}{\tau}\right) = 
+\begin{cases}
+1, &amp; |t| \leq \tau/2 \\
+0, &amp; |t| &gt; \tau/2
+\end{cases}
+$$</div>
+<p>别看这个数学符号复杂，实际含义非常简单，它的作用是把信号限制在 $[-\tau/2, \tau/2]$ 这个时间窗内。因此，完整的 LFM 信号表达式为：</p>
+<div class="math-block">$$
+s(t) = \operatorname{rect}\!\left(\frac{t}{\tau}\right) e^{j(2\pi f_0 t + 2\pi \mu t^2)}
+$$</div>
+<p>如果用带宽 $B$ 来描述频率总共变化了多少，那么在 $\tau$ 时间内，频率从 $f_0$ 变化到 $f_0 + B$，因此：</p>
+<div class="math-block">$$
+\mu = \frac{B}{\tau}
+$$</div>
+<p>这个式子只是把"在 $\tau$ 这么长的时间里，频率一共扫过了 $B$"写成数学形式。真正需要抓住的是：$B$ 越大，LFM 在脉冲内部的变化越明显，可供接收机利用的结构也越丰富。</p>
+<figure><img src="../figures/%E7%AC%AC%E5%9B%9B%E7%AB%A0/fig4_6_lfm_signal.png" alt="LFM信号的时域和频域" loading="lazy"><figcaption>LFM信号的时域和频域</figcaption></figure>
+<p>图中上半部分是时域波形。随着时间推进，波形振荡逐渐变密，表示瞬时频率在变化；下半部分是频域能量分布，说明这个脉冲不再集中在一个很窄的频率点上，而是占据了宽度为 $B$ 的频带。</p>
+<h2 id="section-3">下变频与基带表示</h2>
+<p>实际雷达系统中，发射的 LFM 信号载频 $f_0$ 通常在几 GHz 量级，直接处理这么高的频率对硬件要求很高。因此接收端常先做下变频，把信号搬移到零中频附近，得到基带信号。</p>
+<p>下变频的过程是将接收信号与本振信号 $e^{-j2\pi f_0 t}$ 相乘：</p>
+<div class="math-block">$$
+s_{\text{基带}}(t) = s(t) \cdot e^{-j2\pi f_0 t} = \operatorname{rect}\!\left(\frac{t}{\tau}\right) e^{j2\pi \mu t^2}
+$$</div>
+<p>可以看到，下变频后载频项 $2\pi f_0 t$ 被消除，只剩下调频项 $2\pi \mu t^2$。这样得到的基带信号频谱以零频为中心对称分布，带宽仍为 $B$，但处理起来更方便，采样率也可以大幅降低。</p>
+<figure><img src="../figures/%E7%AC%AC%E5%9B%9B%E7%AB%A0/fig4_7_lfm_baseband.png" alt="零中频LFM信号" loading="lazy"><figcaption>零中频LFM信号</figcaption></figure>
+<p>上图展示了基带表示下的 LFM 信号：第一行是时域实部，第二行是时域虚部，第三行是幅频特性。可以看到频谱完全对称，以零频为中心，带宽为 30 MHz。这种基带表示在信号处理中很常见，既降低了采样率要求，又能得到对称美观的频谱图。</p>
+<p>有了 LFM 这种大带宽波形，发射端的问题就解决了。但接收端还有一个关键问题：回波仍然是一个拖得很长的脉冲，怎样才能把它压成窄峰？这就是下一节要讲的匹配滤波。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E8%B7%9D%E7%A6%BB%E6%B5%8B%E9%87%8F.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch04-02.html">← 4.2 脉冲压缩原理</a><a class="pager-link next" href="ch04-04.html">4.4 匹配滤波 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>6.2 检测阈值与固定阈值检测 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="上一节已经把检测问题压缩成一句很简单的话：某个单元的输出值，超过多大才算目标？这个“多大”，就是阈值。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch06-02.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link active" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第6章</span>
+      <span>目标检测</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">6.2 检测阈值与固定阈值检测</h1>
+<p>上一节已经把检测问题压缩成一句很简单的话：某个单元的输出值，超过多大才算目标？这个“多大”，就是阈值。</p>
+<p>阈值看上去只是一个数，但它其实决定了检测器的取向：是宁可多报也不放过，还是宁可保守也不轻易报警。</p>
+<p>---</p>
+<h2 id="section-2">固定阈值检测</h2>
+<p>假设某个雷达系统在一段时间内背景比较稳定。我们观察到，没有目标时，距离单元的幅度大多在 0.6 到 1.4 之间波动。于是可以把阈值设成 2.0，只要超过 2.0，就认定有目标。这就是最简单的<strong>固定阈值检测</strong>。</p>
+<p>它的规则可以写成：</p>
+<div class="math-block">$$
+\begin{cases}
+\text{判有目标}, &amp; x &gt; T \\
+\text{判无目标}, &amp; x \le T
+\end{cases}
+$$</div>
+<p>其中 $x$ 是当前单元的观测值，$T$ 是事先设定好的固定阈值。如果第一次接触检测问题，这个方法其实很自然。因为它直接回答了一个朴素问题：背景通常在 1 左右，那么 1.1、1.2 这些起伏大概率只是噪声；但如果某个单元突然冲到 4、5 甚至更高，就更像目标。固定阈值的价值，就在于它先给了我们一个最基础的判断标尺。</p>
+<p>---</p>
+<h2 id="section-3">固定阈值下的判决示例</h2>
+<p>先不看更复杂的统计公式，只用最简单的数字体会阈值的作用。假设阈值取 $T = 2.0$。</p>
+<p>某单元输出 $x = 4.7$，因为</p>
+<div class="math-block">$$
+4.7 &gt; 2.0
+$$</div>
+<p>所以判为有目标。这个结论通常较可靠，因为它比背景高出太多了。</p>
+<p>某单元输出 $x = 1.1$，因为</p>
+<div class="math-block">$$
+1.1 &lt; 2.0
+$$</div>
+<p>所以判为无目标。这也没有什么争议，因为它落在背景正常波动范围内。</p>
+<p>麻烦往往出在边缘区域。比如某单元输出 $x = 1.9$，因为</p>
+<div class="math-block">$$
+1.9 &lt; 2.0
+$$</div>
+<p>按规则仍然判为无目标。但这时就会犹豫：1.9 已经不算小了，会不会是一个较弱的真实目标？目标检测最难的不是 4.7 这种特别明显的峰，而是 1.8、1.9、2.1 这种“差一点”的情况。</p>
+<p>现在再把阈值从 2.0 降到 1.3，看一组没有目标时的数据：</p>
+<div class="math-block">$$
+0.9,
+1.1,
+1.4,
+1.0,
+1.2,
+1.5,
+0.8
+$$</div>
+<p>如果阈值是 2.0，这组数据一个都不会报警；但如果阈值降到 1.3，那么 1.4 和 1.5 都会报警。问题是，这里明明假设“没有目标”。也就是说，报警完全是由噪声起伏造成的。阈值一旦设得过低，系统就会变得过于敏感。</p>
+<p>反过来，如果把阈值从 2.0 提高到 3.5，假设有一个较弱目标，它所在单元的输出是 2.8。若阈值为 2.0，则</p>
+<div class="math-block">$$
+2.8 &gt; 2.0
+$$</div>
+<p>目标能够被检出；但若阈值改成 3.5，则</p>
+<div class="math-block">$$
+2.8 &lt; 3.5
+$$</div>
+<p>系统会判成“没有目标”，真实目标就被漏掉了。</p>
+<p>所以阈值高低带来的后果很清楚：阈值低，容易检出弱目标，但也容易误报；阈值高，误报减少，但弱目标更容易漏掉。这个矛盾不是后面某种高级算法才有，而是从最基础的阈值比较开始就已经存在了。</p>
+<figure><img src="../figures/%E7%AC%AC%E5%85%AD%E7%AB%A0/fig6_2_threshold_comparison.png" alt="同一组数据在不同阈值下的检测结果" loading="lazy"><figcaption>同一组数据在不同阈值下的检测结果</figcaption></figure>
+<p>---</p>
+<h2 id="section-4">阈值判决的数学形式</h2>
+<p>前面一直在用一个数 $x$ 和一个门槛 $T$ 做比较。现在可以稍作形式化，把这件事写成一个“判决器”：</p>
+<div class="math-block">$$
+\delta(x)=
+\begin{cases}
+1, &amp; x &gt; T \\
+0, &amp; x \le T
+\end{cases}
+$$</div>
+<p>这里的 $\delta(x)$ 只是一个记号，表示检测器最后的输出：$\delta(x)=1$ 表示“报目标”，$\delta(x)=0$ 表示“不报目标”。这个式子本身并不复杂，它只是把前面做过的算术比较压缩成了一个统一写法。</p>
+<p>这样写有两个好处。第一，后面讨论虚警率、检测概率时，更方便统一表述；第二，当阈值不再是固定常数，而是像 CFAR 那样随背景变化时，这个形式仍然能直接用。也就是说，复杂公式往往只是把前面反复做过的简单动作，写成一个更适合推广的形式。</p>
+<p>---</p>
+<h2 id="section-5">背景对阈值设计的影响</h2>
+<p>到这里你可能会继续追问：既然阈值这么重要，那实际工程里它到底依据什么来定？最粗略的想法，是参考背景噪声的典型大小。例如，背景平均在 1 左右，就把阈值放在 2 或 3 附近；背景平均在 5 左右，就不能还用 2 这样的阈值。</p>
+<p>这已经说明一个关键问题：阈值不能脱离背景单独讨论。若背景一直稳定，固定阈值还有可能好用；可一旦背景随距离、方位或场景发生变化，固定阈值就会开始失灵。</p>
+<p>想象你在看一幅距离-速度图。某个区域本来很干净，背景亮度大多只有 1 左右；另一个区域因为地杂波或海杂波，背景亮度可能一直在 4 到 6 之间起伏。如果你用同一个固定阈值 $T=3$，那么在干净区域，3 已经很高，虚警很少；可在杂波区域，3 反而比背景还低，会触发大量误报。</p>
+<p>这就是固定阈值最大的弱点：它默认整张图的背景都差不多，而真实世界往往不是这样。不过，在背景比较均匀、教学入门、或先建立基础直觉时，固定阈值依然是最好的起点。因为所有更复杂的方法，都是围绕这个基础判断规则改出来的。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%20%E2%80%94%E2%80%94%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch06-01.html">← 6.1 目标检测的基本问题</a><a class="pager-link next" href="ch06-03.html">6.3 虚警、漏检与检测性能 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>5.2 多普勒频移与速度换算 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="上一节介绍了多普勒效应的原理：目标运动导致回波频率发生偏移。这一节解决实际问题：如何从测量到的频率偏移 \Delta f 反推出目标速度 v？">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch05-02.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html">
+      <img src="../design/icon-concepts/logo-mark-light.svg" alt="易懂的雷达信号处理教程图标">
+      <span>Easy Radar Tutorial</span>
+    </a>
+    <div class="toplinks">
+      <a href="../index.html#chapters">章节</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a>
+    </div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-group"><div class="side-heading">第1章 雷达是什么</div><a class="side-link" href="../chapters/ch01-01.html">1.1 雷达的基本概念</a></div><div class="side-group"><div class="side-heading">第2章 信号基础</div><a class="side-link" href="../chapters/ch02-00.html">2.0 本章导读</a><a class="side-link" href="../chapters/ch02-01.html">2.1 信号的基本概念</a><a class="side-link" href="../chapters/ch02-02.html">2.2 时域与频域</a><a class="side-link" href="../chapters/ch02-03.html">2.3 采样定理</a><a class="side-link" href="../chapters/ch02-04.html">2.4 小练习</a></div><div class="side-group"><div class="side-heading">第3章 雷达信号的生成与接收</div><a class="side-link" href="../chapters/ch03-00.html">3.0 本章导读</a><a class="side-link" href="../chapters/ch03-01.html">3.1 雷达信号的基本形式</a><a class="side-link" href="../chapters/ch03-02.html">3.2 反射与截面积</a><a class="side-link" href="../chapters/ch03-03.html">3.3 距离衰减</a><a class="side-link" href="../chapters/ch03-04.html">3.4 接收端信号</a><a class="side-link" href="../chapters/ch03-05.html">3.5 小练习</a></div><div class="side-group"><div class="side-heading">第4章 距离测量</div><a class="side-link" href="../chapters/ch04-00.html">4.0 本章导读</a><a class="side-link" href="../chapters/ch04-01.html">4.1 时间延迟到距离</a><a class="side-link" href="../chapters/ch04-02.html">4.2 脉冲压缩原理</a><a class="side-link" href="../chapters/ch04-03.html">4.3 线性调频信号</a><a class="side-link" href="../chapters/ch04-04.html">4.4 匹配滤波</a><a class="side-link" href="../chapters/ch04-05.html">4.5 小练习</a></div><div class="side-group"><div class="side-heading">第5章 速度测量</div><a class="side-link" href="../chapters/ch05-00.html">5.0 本章导读</a><a class="side-link" href="../chapters/ch05-01.html">5.1 多普勒效应原理</a><a class="side-link active" href="../chapters/ch05-02.html">5.2 多普勒频移与速度换算</a><a class="side-link" href="../chapters/ch05-03.html">5.3 脉冲间相位变化与速度测量</a><a class="side-link" href="../chapters/ch05-04.html">5.4 MTD的基本思想</a><a class="side-link" href="../chapters/ch05-05.html">5.5 实际应用</a><a class="side-link" href="../chapters/ch05-06.html">5.6 小练习</a></div><div class="side-group"><div class="side-heading">第6章 目标检测</div><a class="side-link" href="../chapters/ch06-00.html">6.0 本章导读</a><a class="side-link" href="../chapters/ch06-01.html">6.1 目标检测的基本问题</a><a class="side-link" href="../chapters/ch06-02.html">6.2 检测阈值与固定阈值检测</a><a class="side-link" href="../chapters/ch06-03.html">6.3 虚警、漏检与检测性能</a><a class="side-link" href="../chapters/ch06-04.html">6.4 恒虚警率检测（CFAR）</a><a class="side-link" href="../chapters/ch06-05.html">6.5 小练习</a></div><div class="side-group"><div class="side-heading">第7章 测角</div><a class="side-link" href="../chapters/ch07-00.html">7.0 本章导读</a><a class="side-link" href="../chapters/ch07-01.html">7.1 测角的必要性</a><a class="side-link" href="../chapters/ch07-02.html">7.2 天线波束</a><a class="side-link" href="../chapters/ch07-03.html">7.3 波束扫描测角</a><a class="side-link" href="../chapters/ch07-04.html">7.4 波束宽度与角分辨力</a><a class="side-link" href="../chapters/ch07-05.html">7.5 测角误差的主要来源</a><a class="side-link" href="../chapters/ch07-06.html">7.6 单脉冲测角</a><a class="side-link" href="../chapters/ch07-07.html">7.7 小练习</a></div><div class="side-group"><div class="side-heading">第8章 完整处理流程</div><a class="side-link" href="../chapters/ch08-00.html">8.0 本章导读</a><a class="side-link" href="../chapters/ch08-01.html">8.1 最小可运行示例</a><a class="side-link" href="../chapters/ch08-02.html">8.2 MATLAB中的距离与速度处理</a><a class="side-link" href="../chapters/ch08-03.html">8.3 检测与结果解释</a><a class="side-link" href="../chapters/ch08-04.html">8.4 完整MATLAB示例</a></div>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta">
+      <span>第5章</span>
+      <span>速度测量</span>
+    </div>
+    <article class="prose">
+      <h1 id="section-1">5.2 多普勒频移与速度换算</h1>
+<p>上一节介绍了多普勒效应的原理：目标运动导致回波频率发生偏移。这一节解决实际问题：如何从测量到的频率偏移 $\Delta f$ 反推出目标速度 $v$？</p>
+<p>---</p>
+<h2 id="section-2">速度与多普勒频移的关系</h2>
+<p>从上一节的多普勒公式出发：</p>
+<div class="math-block">$$
+\Delta f = \frac{2v}{c} f_0
+$$</div>
+<p>解出速度 $v$：</p>
+<div class="math-block">$$
+v = \frac{c \Delta f}{2 f_0}
+$$</div>
+<p>这就是雷达测速的核心公式。只要测出频率偏移 $\Delta f$，就能算出目标的径向速度 $v$。</p>
+<p>公式里的三个量：</p>
+<ul><li>$c = 3\times10^8$ m/s：光速，常数</li><li>$f_0$：雷达发射频率，设计时确定</li><li>$\Delta f$：测量得到的频率偏移</li></ul>
+<p>关键点：速度测量的精度完全取决于频率测量的精度。频率测得越准，速度就越准。</p>
+<p>假设交警使用的测速雷达工作在 24 GHz 频段，测得回波的频率偏移是 $\Delta f = 4800$ Hz。目标速度是多少？代入公式：$v = (3\times10^8 \times 4800)/(2 \times 24\times10^9) = 30$ m/s，换算成 km/h 是 108 km/h。这个计算过程在实际雷达中是自动完成的。雷达内部的信号处理器测量频率偏移，然后用上面的公式实时计算速度，显示在屏幕上。</p>
+<p>---</p>
+<h2 id="section-3">多普勒频移的测量方法</h2>
+<p>理论上公式很简单，但实际测量频率偏移并不容易。回波信号极其微弱，淹没在噪声中，如何精确测出频率？最常用的方法是混频 + FFT。</p>
+<p>先说混频。雷达发射频率通常在GHz量级（比如24 GHz），而多普勒频移只有几kHz。如果直接对24 GHz的信号做FFT，需要极高的采样率（根据采样定理，至少48 GHz），这在硬件上很难实现，成本也极高。混频的作用是降频：把高频的回波信号和发射信号相乘，得到它们的差频。</p>
+<p>数学上，混频利用三角函数的乘法公式。假设发射信号是 $s_{\text{tx}}(t) = \cos(2\pi f_0 t)$，回波信号是 $s_{\text{rx}}(t) = \cos(2\pi (f_0 + \Delta f) t)$，两者相乘得到：</p>
+<div class="math-block">$$
+s_{\text{tx}}(t) \times s_{\text{rx}}(t) = \cos(2\pi f_0 t) \times \cos(2\pi (f_0 + \Delta f) t)
+$$</div>
+<p>根据三角函数乘法公式 $\cos A \times \cos B = \frac{1}{2}[\cos(A-B) + \cos(A+B)]$，展开后得到：</p>
+<div class="math-block">$$
+= \frac{1}{2}[\cos(2\pi \Delta f \cdot t) + \cos(2\pi (2f_0 + \Delta f) t)]
+$$</div>
+<p>乘积包含两个频率成分：差频 $\Delta f$（几kHz）和和频 $2f_0 + \Delta f$（约48 GHz）。用一个低通滤波器滤掉高频的和频项，就只剩下差频信号 $\cos(2\pi \Delta f \cdot t)$ 了。这个差频信号的频率就是多普勒频移 $\Delta f$，可以用普通的音频ADC采样（几十kHz采样率就够了）。</p>
+<p>接下来是FFT。对差频信号做傅里叶变换（第2章介绍过），得到频谱。频谱的峰值位置就是多普勒频移 $\Delta f$。最后用公式 $v = c\Delta f / (2f_0)$ 算出速度。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%BA%94%E7%AB%A0/fig5_2_frequency_measurement.png" alt="频率测量流程" loading="lazy"><figcaption>频率测量流程</figcaption></figure>
+<p>上图展示了完整流程：发射信号（蓝色）和回波信号（红色）混频后，得到低频的差频信号（绿色）。对差频信号做FFT，频谱出现明显的峰值，峰值位置就是多普勒频移。这个技术叫<strong>外差接收</strong>，是无线电工程的基础技术，不只用于雷达，收音机、手机、WiFi都用这个原理。</p>
+<p>---</p>
+<h2 id="section-4">速度分辨率与速度模糊</h2>
+<p>就像距离测量有分辨率限制（第4章），速度测量也有分辨率限制。</p>
+<p>速度分辨率取决于频率分辨率。回顾第2章的傅里叶变换：要分辨两个频率，需要足够长的观测时间。频率分辨率 $\Delta f_{\text{res}}$ 与观测时间 $T$ 成反比：</p>
+<div class="math-block">$$
+\Delta f_{\text{res}} = \frac{1}{T}
+$$</div>
+<p>这个公式怎么来的？和采样率没有关系吗？做FFT时，假设采样率是 $f_s$，采样点数是 $N$，那么总观测时间 $T = N/f_s$。FFT输出的频率点是均匀分布的，相邻两个频率点之间的间隔是：</p>
+<div class="math-block">$$
+\Delta f = \frac{f_s}{N} = \frac{f_s}{f_s \cdot T} = \frac{1}{T}
+$$</div>
+<p>可以看到，频率分辨率只取决于观测时间 $T$，与采样率无关。采样率决定的是能测量的最高频率（$f_s/2$），而不是频率分辨率。观测时间越长，频率分辨率越高。这个结论直接来自傅里叶变换的性质：时间窗口越宽，频域分辨率越高。</p>
+<p>对应的速度分辨率是多少？从速度公式 $v = c\Delta f / (2f_0)$ 出发，如果频率分辨率是 $\Delta f_{\text{res}}$，那么速度分辨率就是：</p>
+<div class="math-block">$$
+\Delta v = \frac{c \Delta f_{\text{res}}}{2 f_0} = \frac{c}{2 f_0 T}
+$$</div>
+<p>举例：24 GHz雷达，观测时间 $T = 0.1$ s，速度分辨率是：</p>
+<div class="math-block">$$
+\Delta v = \frac{3\times10^8}{2 \times 24\times10^9 \times 0.1} = 0.625 \text{ m/s} \approx 2.25 \text{ km/h}
+$$</div>
+<p>这意味着相差2 km/h以内的两个目标无法分辨。对于交通测速，2 km/h的分辨率完全够用。但对于精密制导或科学测量，可能需要更高的分辨率，这就要求更长的观测时间。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%BA%94%E7%AB%A0/fig5_3_velocity_resolution.png" alt="速度分辨率示意图" loading="lazy"><figcaption>速度分辨率示意图</figcaption></figure>
+<p>上图展示了观测时间对速度分辨率的影响：观测时间越长，FFT频谱的峰越窄，能分辨的速度差越小。</p>
+<p>速度模糊是另一个实际问题。如果目标速度太快，多普勒频移可能超出测量范围，导致测量错误。</p>
+<p>这个问题的根源是采样定理（第2章）。回顾采样定理：采样率 $f_s$ 必须大于信号最高频率的两倍，否则会发生频谱混叠。对于多普勒雷达，如果采样率是 $f_s$，能测量的最大频率偏移是 $f_s / 2$（奈奎斯特频率）。</p>
+<p>对应的最大速度是：</p>
+<div class="math-block">$$
+v_{\max} = \frac{c \cdot (f_s/2)}{2 f_0} = \frac{c f_s}{4 f_0}
+$$</div>
+<p>超过这个速度，频率会"折叠"回来，导致测量错误。举例：24 GHz雷达，采样率 $f_s = 20$ kHz，最大可测速度是：</p>
+<div class="math-block">$$
+v_{\max} = \frac{3\times10^8 \times 20000}{4 \times 24\times10^9} = 62.5 \text{ m/s} \approx 225 \text{ km/h}
+$$</div>
+<p>如果目标速度超过225 km/h，测量结果会出错。比如真实速度是250 km/h，可能被测成25 km/h（250 - 225 = 25）。</p>
+<figure><img src="../figures/%E7%AC%AC%E4%BA%94%E7%AB%A0/fig5_4_velocity_ambiguity.png" alt="速度模糊示意图" loading="lazy"><figcaption>速度模糊示意图</figcaption></figure>
+<p>上图展示了速度模糊的原理：当多普勒频移超过奈奎斯特频率时，频谱会发生混叠，高速目标被误判为低速目标。</p>
+<p>解决方法有两种：一是提高采样率，扩大可测速度范围；二是使用多个脉冲重复频率（PRF）交替测量，通过"解模糊"算法恢复真实速度。后者属于高级技术，本书不展开。</p>
+<p>测速有两种基本方式。<strong>连续波（CW）雷达</strong>持续发射单频信号，同时接收回波，混频后直接得到多普勒频移。结构简单，成本低，但无法测距离（因为信号一直在发射，无法区分回波的时间延迟）。<strong>脉冲多普勒雷达</strong>发射脉冲串，每个脉冲之间有间隔，既能测距离（通过时间延迟），又能测速度（通过脉冲间的相位变化）。结构复杂，但功能完整。交警的测速枪通常是连续波雷达——只需要测速度，不需要测距离。而军用雷达、气象雷达通常是脉冲多普勒雷达——既要知道目标在哪里，又要知道它有多快。</p>
+<p>---</p>
+<p>到这里，速度测量的基本理论已经完整了：目标运动引起多普勒频移，测出频移以后，就可以由</p>
+<div class="math-block">$$
+v = \frac{c \Delta f}{2 f_0}
+$$</div>
+<p>换算出目标速度。</p>
+<p>上面讲的连续波雷达结构简单，非常适合纯测速应用（比如测速枪）。但在实际雷达系统中，脉冲雷达更为常见——因为它既能测距离，又能测速度。对于脉冲雷达，速度信息不再表现为一段连续的差频信号，而是体现在相邻脉冲之间的相位变化中。下一节讨论的，正是这种脉冲体制下的测速原理：同样的多普勒频率，在脉冲串数据里是怎样出现的，又怎样沿慢时间方向把它提取出来。</p>
+    </article>
+    <div class="article-actions">
+      <a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E9%80%9F%E5%BA%A6%E6%B5%8B%E9%87%8F.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%BA%94%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a>
+    </div>
+    <nav class="pager"><a class="pager-link" href="ch05-01.html">← 5.1 多普勒效应原理</a><a class="pager-link next" href="ch05-03.html">5.3 脉冲间相位变化与速度测量 →</a></nav>
+  </main>
+</div>
+
+</body>
+</html>
