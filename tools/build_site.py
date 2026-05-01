@@ -441,7 +441,6 @@ class SiteBuilder:
                 f"""<article class="chapter-card reveal">
       <div class="chapter-kicker">{chapter["label"]}</div>
       <h3>{html.escape(chapter["title"])}</h3>
-      <p>{len(chapter["sections"])} 个小节合并成一页，左侧目录可直接跳转。</p>
       <div class="chapter-actions">{''.join(actions)}</div>
     </article>"""
             )
