@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第8章 完整处理流程 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="这一节只保留距离处理链中的最小部分：生成发射信号，构造单目标回波，做匹配滤波，再由主峰位置换算目标距离。这样可以先把第4章的时延公式和匹配滤波公式在 MATLAB 中对应起来。">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch08.html">
+  <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="../assets/site.js"></script>
+</head>
+<body><div class="read-progress" aria-hidden="true"><span></span></div>
+<header class="article-top">
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="教程图标"><span>Easy Radar Tutorial</span></a>
+    <div class="toplinks"><a href="../index.html#chapters">章节</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a><a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a></div>
+  </nav>
+</header>
+<div class="article-layout">
+  <aside class="sidebar">
+    <a class="back-home" href="../index.html">← 首页</a>
+    <div class="side-heading">第8章 完整处理流程</div>
+    <nav class="toc"><a class="toc-link" href="#ch08-s01">8.1 最小可运行示例</a><a class="toc-link" href="#ch08-s02">8.2 MATLAB中的距离与速度处理</a><a class="toc-link" href="#ch08-s03">8.3 检测与结果解释</a><a class="toc-link" href="#ch08-s04">8.4 完整MATLAB示例</a></nav>
+  </aside>
+  <main class="article-main reveal">
+    <div class="article-meta"><span>第8章</span><span>完整处理流程</span></div>
+    <article class="prose chapter-prose">
+      <h1>第8章 完整处理流程</h1>
+      <section class="chapter-section" data-section="ch08-s01"><h2 id="ch08-s01" class="section-title">8.1 最小可运行示例</h2>
+<p>这一节只保留距离处理链中的最小部分：生成发射信号，构造单目标回波，做匹配滤波，再由主峰位置换算目标距离。这样可以先把第4章的时延公式和匹配滤波公式在 MATLAB 中对应起来。</p>
+<p>设目标真实距离为 $R_0=6\ \text{km}$，目标静止不动。第4章给出的距离关系式为</p>
+<div class="math-block">$$
+\tau_0 = \frac{2R_0}{c}, \qquad R = \frac{c\tau}{2}
+$$</div>
+<p>其中 $\tau_0$ 为目标回波的双程传播时延，$c$ 为光速。发射信号采用第4章介绍的 LFM 脉冲。为了与本节 MATLAB 程序一致，这里使用复包络基带形式：</p>
+<div class="math-block">$$
+s(t)=\exp\!\big(j\pi k t^2\big), \qquad 0\le t &lt; T_p
+$$</div>
+<div class="math-block">$$
+k = \frac{B}{T_p}
+$$</div>
+<p>其中 $B$ 为 LFM 带宽，$T_p$ 为脉冲宽度，$k$ 为调频斜率。接收回波可写成</p>
+<div class="math-block">$$
+r(t)=s(t-\tau_0)+w(t)
+$$</div>
+<p>其中 $w(t)$ 表示噪声。匹配滤波仍采用第4章的公式</p>
+<div class="math-block">$$
+h(t)=s^*(-t), \qquad y(t)=r(t)*h(t)
+$$</div>
+<p>其中 $s^<em>(t)$ 表示 $s(t)$ 的共轭，$</em>$ 表示卷积运算。</p>
+<h3 id="sub-122">公式与程序变量对应</h3>
+<p>程序里的主要符号、变量和物理意义见表8-1。</p>
+<div class="table-wrap"><table><thead><tr><th>公式/符号</th><th>MATLAB 变量或表达式</th><th>含义</th></tr></thead><tbody><tr><td>$c$</td><td><code>c</code></td><td>光速 (m/s)</td></tr><tr><td>$B$</td><td><code>B</code></td><td>LFM 带宽 (Hz)</td></tr><tr><td>$T_p$</td><td><code>Tp</code></td><td>脉冲宽度 (s)</td></tr><tr><td>$f_s$</td><td><code>fs</code></td><td>采样率 (Hz)</td></tr><tr><td>$R_0$</td><td><code>R0</code></td><td>目标真实距离 (m)</td></tr><tr><td>$k=B/T_p$</td><td><code>k = B / Tp</code></td><td>调频斜率 (Hz/s)</td></tr><tr><td>$N_{\text{fast}}=T_p f_s$</td><td><code>N_fast = round(Tp * fs)</code></td><td>一个脉冲内的采样点数</td></tr><tr><td>$s(t)$</td><td><code>tx</code></td><td>发射基带 LFM 脉冲</td></tr><tr><td>$\tau_0 = 2R_0 / c$</td><td><code>delay_time = 2 * R0 / c</code></td><td>双程传播时延 (s)</td></tr><tr><td>$n_0 = \tau_0 f_s$</td><td><code>delay_samples = round(delay_time * fs)</code></td><td>时延对应的采样点数</td></tr><tr><td>$r(t)=s(t-\tau_0)+w(t)$</td><td><code>rx</code></td><td>延迟回波加噪声</td></tr><tr><td>$h(t)=s^*(-t)$</td><td><code>mf = conj(fliplr(tx))</code></td><td>匹配滤波器</td></tr><tr><td>$y(t)=r(t)*h(t)$</td><td><code>range_profile = conv(rx, mf, &#x27;same&#x27;)</code></td><td>匹配滤波输出</td></tr><tr><td>$\hat R$</td><td><code>R_est</code></td><td>距离估计值 (m)</td></tr></tbody></table></div>
+<p>下面给出完整 MATLAB 程序。</p>
+<p>如果你想直接运行本节代码，可参考 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_minimal_pulse_radar_demo.m"><code>ch08_minimal_pulse_radar_demo.m</code></a>。</p>
+<pre><code class="language-matlab">% 第八章示例1：单目标距离处理的最小可运行示例
+clear; close all; clc;
+
+% 基本参数：本例采用复包络基带模型，fc 只保留物理背景
+c = 3e8;           % 光速 (m/s)
+fc = 10e9;         % 载频 (Hz)
+B = 10e6;          % LFM 带宽 (Hz)
+Tp = 20e-6;        % 脉冲宽度 (s)
+fs = 20e6;         % 采样率 (Hz)
+R0 = 6000;         % 目标真实距离 (m)
+
+% 生成基带 LFM 脉冲，k = B / Tp
+N_fast = round(Tp * fs);
+t_fast = (0:N_fast-1) / fs;
+k = B / Tp;
+tx = exp(1j * pi * k * t_fast.^2);  % 对应公式 s(t)
+
+% 目标距离 -&gt; 双程时延 -&gt; 离散延迟样点
+delay_time = 2 * R0 / c;                      % 对应公式 τ₀ = 2R₀/c
+delay_samples = round(delay_time * fs);
+fast_len = N_fast + delay_samples + 200;
+
+% 构造单目标回波：把发射脉冲平移到延迟位置，再叠加复高斯噪声
+rx = zeros(1, fast_len);
+rx(delay_samples + (1:N_fast)) = tx;          % 对应公式 r(t) = s(t-τ₀)
+rx = rx + 0.05 * (randn(size(rx)) + 1j * randn(size(rx)));  % 加噪声 w(t)
+
+% 匹配滤波等价于与发射信号做相关，主峰对应目标回波时延
+mf = conj(fliplr(tx));                        % 对应公式 h(t) = s*(-t)
+range_profile = conv(rx, mf, &#x27;same&#x27;);         % 对应公式 y(t) = r(t)*h(t)
+
+% conv(...,&#x27;same&#x27;) 保留中心段，主峰索引需先扣除匹配滤波器中心偏移
+[~, idx_peak] = max(abs(range_profile));
+delay_est_samples = idx_peak - 1 - floor(N_fast / 2);
+
+% 先估计时延，再按 R = c * τ / 2 换算距离
+R_est = c * delay_est_samples / (2 * fs);     % 对应公式 R = cτ/2
+range_axis = ((0:fast_len-1) - floor(N_fast / 2)) * c / (2 * fs);
+
+fprintf(&#x27;真实距离: %.2f km\n&#x27;, R0 / 1e3);
+fprintf(&#x27;估计距离: %.2f km\n&#x27;, R_est / 1e3);
+
+figure(&#x27;Position&#x27;, [100, 100, 1000, 600]);
+subplot(2,1,1);
+plot(real(rx), &#x27;LineWidth&#x27;, 1.0);
+grid on;
+title(&#x27;接收回波（实部）&#x27;);
+xlabel(&#x27;采样点&#x27;); ylabel(&#x27;幅度&#x27;);
+
+subplot(2,1,2);
+plot(range_axis / 1e3, abs(range_profile), &#x27;LineWidth&#x27;, 1.5); hold on;
+plot(R_est / 1e3, abs(range_profile(idx_peak)), &#x27;ro&#x27;, &#x27;MarkerSize&#x27;, 8, &#x27;LineWidth&#x27;, 1.5);
+grid on;
+title(&#x27;匹配滤波后的距离像&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;幅度&#x27;);
+legend(&#x27;距离像&#x27;, &#x27;峰值&#x27;);</code></pre>
+<h3 id="sub-123"><code>conv(..., &#x27;same&#x27;)</code> 的索引修正</h3>
+<p>上面这段程序中，<code>tx</code> 对应发射信号 $s(t)$，<code>rx</code> 对应回波 $r(t)$，<code>mf</code> 对应匹配滤波器 $h(t)$，<code>range_profile</code> 对应匹配滤波输出 $y(t)$。其中</p>
+<pre><code class="language-matlab">range_profile = conv(rx, mf, &#x27;same&#x27;);</code></pre>
+<p>就是卷积公式 $y(t)=r(t)*h(t)$ 的离散实现。由于这里使用 <code>conv(..., &#x27;same&#x27;)</code>，输出序列保留的是中心部分，因此主峰索引不能直接当作时延样点使用，而应写成</p>
+<div class="math-block">$$
+n_\tau = \text{idx}_{\text{peak}} - 1 - \left\lfloor \frac{N_{\text{fast}}}{2} \right\rfloor
+$$</div>
+<div class="math-block">$$
+\hat\tau = \frac{n_\tau}{f_s}, \qquad \hat R = \frac{c\hat\tau}{2}
+$$</div>
+<p>程序中的 <code>delay_est_samples</code> 和 <code>R_est</code> 正对应这两步修正。如果不扣除这部分中心偏移，距离估计会系统性偏大。</p>
+<p>图8-2给出了程序输出。上图中的接收信号已经叠加噪声，目标位置并不直接可见；下图经过匹配滤波后，目标在距离轴上形成明显主峰。这个主峰的横坐标，就是目标距离的估计值。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig8_2_minimal_demo_result.png" alt="最小可运行示例中的回波与距离峰" loading="lazy"><figcaption>最小可运行示例中的回波与距离峰</figcaption></figure>
+<h3 id="sub-124">匹配滤波与其他实现方式</h3>
+<p>虽然匹配滤波本质是相关运算，但它在加性高斯噪声下能达到最优信噪比增益。与其他方法的对比如下：</p>
+<div class="table-wrap"><table><thead><tr><th>方法</th><th>实现</th><th>优点</th><th>缺点</th></tr></thead><tbody><tr><td>匹配滤波</td><td><code>conv(rx, conj(fliplr(tx)), &#x27;same&#x27;)</code></td><td>最大化信噪比，理论最优</td><td>需要精确知道发射波形</td></tr><tr><td>频域乘法</td><td><code>ifft(fft(rx) .* conj(fft(tx)))</code></td><td>长序列计算快</td><td>需要补零对齐，边界效应</td></tr><tr><td>直接互相关</td><td><code>xcorr(rx, tx)</code></td><td>概念直观</td><td>输出长度不同，需要额外处理</td></tr></tbody></table></div>
+<p>本例选择时域卷积是因为代码直观，且序列长度适中。若 <code>fast_len</code> 超过 10000 点，频域方法会更高效。</p>
+<h3 id="sub-125">参数变化对结果的影响</h3>
+<p>带宽 B 的影响：距离分辨率 $\Delta R = c/(2B)$。</p>
+<ul><li>B = 5 MHz → 分辨率 30 m，主瓣宽度加倍</li><li>B = 10 MHz → 分辨率 15 m（本例设置）</li><li>B = 20 MHz → 分辨率 7.5 m，但需要更高采样率</li></ul>
+<p>采样率 fs 的影响：必须满足 $f_s \ge 2B$。</p>
+<ul><li>fs = B → 欠采样，频谱混叠，匹配滤波失效</li><li>fs = 2B → 奈奎斯特临界，实际工程需留余量</li><li>fs = 5B → 过采样，计算量增加但精度提升有限</li></ul>
+<p>本例 fs = 20 MHz，B = 10 MHz，满足 fs = 2B，刚好达到采样定理要求。</p>
+<h3 id="sub-126">边界条件与失效模式</h3>
+<p>情况1：目标距离超出采样窗口 若 <code>delay_samples &gt; fast_len</code>，回波完全落在采样窗外，<code>range_profile</code> 无明显峰值。解决方法是增加 <code>fast_len</code>。</p>
+<p>情况2：信噪比过低 当噪声标准差从 0.05 增加到 0.5 时，主峰可能被噪声淹没。此时需要增加脉冲积累（下一节内容）或提高发射功率。</p>
+<p>情况3：多目标距离接近 若两目标间隔 &lt; c/(2B) = 15 m，主瓣重叠，单脉冲无法分辨。这是距离分辨率的物理极限。</p>
+<p>这一节得到的是最简单的单目标距离处理结果。下一节在此基础上加入脉冲序列，把第5章的速度处理也并入同一套 MATLAB 框架中。</p>
+<p>---</p>
+<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
+<p>即可获取：</p>
+<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
+<p>想易懂又深入学习雷达信号处理？</p>
+<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
+<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
+<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch08-s02"><h2 id="ch08-s02" class="section-title">8.2 MATLAB中的距离与速度处理</h2>
+<p>上一节只处理了单目标、单脉冲情形，得到的是一条距离像。要进一步估计目标速度，就必须把多个脉冲联合起来处理。本节在 8.1 的代码基础上修改，主要改动是：① 回波从 1D 向量改成 2D 矩阵；② 距离压缩加循环处理每个脉冲；③ 增加慢时间 FFT 得到距离-速度图。</p>
+<h3 id="sub-127">回波矩阵的组织方式</h3>
+<p>接收数据不再是一维波形，而是一个二维矩阵。记原始回波矩阵为 $X(m,n)$，其中 $m$ 表示脉冲序号（慢时间），$n$ 表示脉冲内的快时间采样点。沿快时间方向处理，得到距离像；沿慢时间方向处理，得到多普勒谱。</p>
+<p>这种二维处理方式正好把前两章的公式接在一起。对第 $m$ 个脉冲，距离压缩仍然对应第4章的匹配滤波</p>
+<div class="math-block">$$
+y_m(t)=r_m(t)*h(t), \qquad h(t)=s^*(-t)
+$$</div>
+<p>程序中写成</p>
+<pre><code class="language-matlab">for m = 1:Npulse
+    range_data(m, :) = conv(rx_matrix(m, :), mf, &#x27;same&#x27;);
+end</code></pre>
+<p>其中 <code>rx_matrix</code> 对应回波矩阵 $X(m,n)$，<code>mf</code> 对应匹配滤波器 $h(t)$，<code>range_data</code> 对应每个脉冲做完距离压缩后的结果。由于 <code>conv(..., &#x27;same&#x27;)</code> 保留的是中心段，程序需要扣除匹配滤波器带来的中心偏移，距离轴应写成</p>
+<pre><code class="language-matlab">group_delay = floor(length(tx) / 2);
+range_axis = ((0:Nfast-1) - group_delay) * c / (2 * fs);</code></pre>
+<p>这样 <code>range_data</code> 中主峰所在的列索引，才与第4章的关系式 $R=c\Delta t/2$ 一致。</p>
+<p>速度处理对应第5章的多普勒关系</p>
+<div class="math-block">$$
+f_d = \frac{2v}{\lambda}, \qquad v = \frac{\lambda f_d}{2}
+$$</div>
+<p>在脉冲序列模型中，这一关系体现为脉冲间相位项</p>
+<div class="math-block">$$
+\exp\!\big(j2\pi f_d (m-1)T_r\big)
+$$</div>
+<p>其中 $T_r$ 为脉冲重复间隔，$\lambda$ 为波长。距离压缩完成后，对每一个距离单元沿慢时间方向做傅里叶变换，就得到距离-速度图：</p>
+<pre><code class="language-matlab">rd_map = fftshift(fft(range_data, [], 1), 1);</code></pre>
+<p>这一步的输入是 <code>range_data</code>，输出是 <code>rd_map</code>。<code>rd_map</code> 的列仍然对应距离单元，行则对应多普勒频率，再通过</p>
+<div class="math-block">$$
+\text{vel\_axis} = \frac{\lambda}{2} \cdot \text{doppler\_freq}
+$$</div>
+<p>换成速度轴。</p>
+<p>本节示例采用两个目标：目标A位于 6 km、速度 30 m/s；目标B位于 9 km、速度 -20 m/s。程序中的三个核心数组如下。</p>
+<div class="table-wrap"><table><thead><tr><th>数学对象</th><th>MATLAB 变量</th><th>含义</th></tr></thead><tbody><tr><td>$X(m,n)$</td><td><code>rx_matrix</code></td><td>原始回波矩阵（行=脉冲，列=采样点）</td></tr><tr><td>$y_m(t)$</td><td><code>range_data</code></td><td>各脉冲距离压缩结果</td></tr><tr><td>$Y(f_d, R)$</td><td><code>rd_map</code></td><td>距离-速度图</td></tr></tbody></table></div>
+<h3 id="sub-128">从矩阵索引到物理坐标</h3>
+<p>距离-速度图的横纵坐标需要从矩阵索引转回物理单位。距离轴已经在上面给出，速度轴的构造如下：</p>
+<pre><code class="language-matlab">doppler_freq = (-Npulse/2:Npulse/2-1) * PRF / Npulse;
+vel_axis = doppler_freq * lambda / 2;</code></pre>
+<p>其中 <code>PRF</code> 为脉冲重复频率，<code>Npulse</code> 为脉冲数量。<code>fftshift</code> 把零频移到中心，因此多普勒频率范围是 $[-\text{PRF}/2, \text{PRF}/2)$。</p>
+<p>下面给出本节完整 MATLAB 程序。</p>
+<p>如果你想直接运行本节代码，可参考 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_range_doppler_demo.m"><code>ch08_range_doppler_demo.m</code></a>。</p>
+<pre><code class="language-matlab">% 第八章示例2：距离处理与多普勒处理
+clear; close all; clc;
+
+% 基本参数：采用复包络基带模型
+c = 3e8;
+fc = 10e9;
+lambda = c / fc;
+B = 10e6;
+Tp = 20e-6;
+fs = 20e6;
+PRF = 2e3;
+Tr = 1 / PRF;
+Npulse = 32;
+Nfast = 1024;
+
+% 两个目标的距离、速度和幅度
+range_targets = [6000, 9000];
+vel_targets = [30, -20];
+amp_targets = [1.0, 0.75];
+
+% 发射信号 s(t)，其中 k = B / Tp
+k = B / Tp;
+tx_t = (0:round(Tp * fs)-1) / fs;
+tx = exp(1j * pi * k * tx_t.^2);              % 对应公式 s(t)
+mf = conj(fliplr(tx));                          % 对应公式 h(t) = s*(-t)
+fast_time = (0:Nfast-1) / fs;
+
+% 回波矩阵：距离决定时延，速度决定脉冲间相位变化
+rx_matrix = zeros(Npulse, Nfast);
+for m = 1:Npulse
+    pulse_data = zeros(1, Nfast);
+    for i = 1:length(range_targets)
+        tau = 2 * range_targets(i) / c;         % 对应公式 τ = 2R/c
+        fd = 2 * vel_targets(i) / lambda;       % 对应公式 f_d = 2v/λ
+        delayed_t = fast_time - tau;
+        valid = delayed_t &gt;= 0 &amp; delayed_t &lt;= Tp;
+        echo = zeros(1, Nfast);
+        echo(valid) = amp_targets(i) * exp(1j * pi * k * delayed_t(valid).^2) ...
+                    .* exp(1j * 2*pi * fd * (m-1) * Tr);  % 对应公式 exp(j2πf_d(m-1)T_r)
+        pulse_data = pulse_data + echo;
+    end
+    rx_matrix(m, :) = pulse_data + 0.08 * (randn(1, Nfast) + 1j * randn(1, Nfast));
+end
+
+% 先沿快时间做匹配滤波，得到距离压缩结果
+range_data = zeros(size(rx_matrix));
+for m = 1:Npulse
+    range_data(m, :) = conv(rx_matrix(m, :), mf, &#x27;same&#x27;);  % 对应公式 y(t) = r(t)*h(t)
+end
+
+group_delay = floor(length(tx) / 2);
+range_axis = ((0:Nfast-1) - group_delay) * c / (2 * fs);
+
+% 再沿慢时间做 FFT，得到距离-速度图
+rd_map = fftshift(fft(range_data, [], 1), 1);
+rd_power = abs(rd_map);
+rd_power = rd_power / max(rd_power(:));
+
+doppler_freq = (-Npulse/2:Npulse/2-1) * PRF / Npulse;
+vel_axis = doppler_freq * lambda / 2;           % 对应公式 v = λf_d/2
+
+figure(&#x27;Position&#x27;, [120, 120, 1100, 700]);
+subplot(2,1,1);
+plot(range_axis / 1e3, abs(range_data(1, :)), &#x27;LineWidth&#x27;, 1.5);
+grid on;
+title(&#x27;第一个脉冲的距离像&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;幅度&#x27;);
+
+subplot(2,1,2);
+imagesc(range_axis / 1e3, vel_axis, rd_power);
+axis xy; colorbar;
+title(&#x27;距离-速度图&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;速度 (m/s)&#x27;);</code></pre>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig8_3_range_doppler_map.png" alt="距离-速度图示意" loading="lazy"><figcaption>距离-速度图示意</figcaption></figure>
+<p>图8-3中的亮点位置同时反映了距离与速度：横坐标对应目标距离，纵坐标对应目标速度。两个亮点分处不同距离和不同速度，说明两个目标具有不同的传播时延和不同的多普勒频率。</p>
+<h3 id="sub-129">fftshift 的作用</h3>
+<p>FFT 默认输出顺序是 [0, f_max] 然后 [-f_max, 0)，但距离-速度图习惯把零速度放中间。不用 <code>fftshift</code> 会导致速度轴错位：</p>
+<pre><code class="language-matlab">% 不用 fftshift：负速度在下半部分
+rd_map_raw = fft(range_data, [], 1);  
+vel_axis_raw = (0:Npulse-1) * PRF / Npulse;  % 0 到 PRF
+
+% 用 fftshift：零速度居中
+rd_map = fftshift(fft(range_data, [], 1), 1);
+vel_axis = (-Npulse/2:Npulse/2-1) * PRF / Npulse;  % -PRF/2 到 PRF/2</code></pre>
+<p><code>fftshift</code> 的第二个参数 <code>1</code> 表示沿第一维（行，即慢时间）移位。如果写成 <code>fftshift(fft(...), 2)</code> 会错误地移位距离维。</p>
+<h3 id="sub-130">速度模糊与 PRF 的权衡</h3>
+<p>最大不模糊速度由 PRF 决定：</p>
+<div class="math-block">$$
+v_{\text{max}} = \frac{\lambda \cdot \text{PRF}}{4}
+$$</div>
+<p>本例中 $\lambda = 0.03\ \text{m}$，PRF = 2 kHz，因此 $v_{\text{max}} = 15\ \text{m/s}$。</p>
+<div class="table-wrap"><table><thead><tr><th>PRF</th><th>$v_{\text{max}}$</th><th>优点</th><th>缺点</th></tr></thead><tbody><tr><td>1 kHz</td><td>7.5 m/s</td><td>最大探测距离远</td><td>速度范围窄，易模糊</td></tr><tr><td>2 kHz</td><td>15 m/s</td><td>本例设置</td><td>折中方案</td></tr><tr><td>10 kHz</td><td>75 m/s</td><td>速度范围宽</td><td>最大探测距离缩短</td></tr></tbody></table></div>
+<p>若目标速度 30 m/s 但 PRF = 2 kHz，实际测得速度会折叠到 [-15, 15) m/s 范围内，表现为 30 - 30 = 0 m/s（静止）或其他模糊值。本例中目标A速度 30 m/s 已经超出不模糊范围，实际应用需要提高 PRF 或使用解模糊算法。</p>
+<h3 id="sub-131">矩阵维度与坐标轴对应</h3>
+<p>MATLAB 中 <code>imagesc(X, Y, Z)</code> 要求 Z 的行对应 Y，列对应 X。这与直觉相反，容易出错：</p>
+<pre><code class="language-matlab">% 错误：行列颠倒
+imagesc(vel_axis, range_axis, rd_power);  % 速度变成横轴
+
+% 正确：速度是纵轴
+imagesc(range_axis, vel_axis, rd_power);
+axis xy;  % 必须加这行，否则纵轴倒置</code></pre>
+<p>如果不加 <code>axis xy</code>，MATLAB 默认图像坐标系（原点在左上角），速度轴会上下颠倒。</p>
+<p>下一节在此基础上增加检测模块，把距离-速度图上的响应变成目标列表。</p>
+<p>---</p>
+<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
+<p>即可获取：</p>
+<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
+<p>想易懂又深入学习雷达信号处理？</p>
+<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
+<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
+<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch08-s03"><h2 id="ch08-s03" class="section-title">8.3 检测与结果解释</h2>
+<p>经过距离压缩和多普勒处理之后，程序已经得到距离-速度图。但距离-速度图本身还只是幅度分布，不能直接作为目标列表输出。本节在 8.2 的代码基础上增加检测模块，把图上的响应分成"目标"与"非目标"两类。</p>
+<p>设距离-速度图的功率或归一化幅度记为 $x$，第6章的判决可写为</p>
+<div class="math-block">$$
+\delta(x)=
+\begin{cases}
+1, &amp; x &gt; T \\
+0, &amp; x \le T
+\end{cases}
+$$</div>
+<p>其中 $T$ 为检测阈值。在本章的最简实现中，先使用固定阈值。若 <code>rd_power</code> 表示归一化后的距离-速度图，则 MATLAB 程序写成</p>
+<pre><code class="language-matlab">threshold = 0.35;
+det_mask = rd_power &gt; threshold;</code></pre>
+<p>这里 <code>threshold</code> 对应阈值 $T$，<code>det_mask</code> 对应判决结果 $\delta(x)$ 在整张距离-速度图上的二维展开。也就是说，<code>det_mask</code> 中值为 1 的位置表示通过检测，值为 0 的位置表示未通过检测。这样的写法与第6章一维距离像上的判决完全一致，只是这里的判决对象由一个采样点扩展成了二维平面上的每一个网格点。</p>
+<p>固定阈值的优点是结构简单，便于先把整条处理链跑通；缺点也同样直接：当背景起伏不均匀、强目标旁瓣较高或者噪声水平变化明显时，统一阈值往往不能兼顾整张图。第6章介绍的 CFAR 正是为了解决这一类问题。本章先保留固定阈值，只为了把检测放回完整处理流程中。</p>
+<h3 id="sub-132">从检测掩码到目标参数</h3>
+<p>检测后的第二步，是把图上的行列索引重新换回物理量。若 <code>row_idx</code> 和 <code>col_idx</code> 分别表示检测点所在的速度维索引和距离维索引，则</p>
+<pre><code class="language-matlab">[row_idx, col_idx] = find(det_mask);
+range_est = range_axis(col_idx);
+vel_est = vel_axis(row_idx);</code></pre>
+<p>其中 <code>range_axis</code> 对应距离坐标轴，<code>vel_axis</code> 对应速度坐标轴，<code>range_est</code> 与 <code>vel_est</code> 则是最终输出的距离和速度估计值。到这一步，前面得到的距离-速度图才真正转化为可以汇报的目标结果。</p>
+<div class="table-wrap"><table><thead><tr><th>数学对象</th><th>MATLAB 变量</th><th>含义</th></tr></thead><tbody><tr><td>$T$</td><td><code>threshold</code></td><td>检测阈值</td></tr><tr><td>$\delta(x)$</td><td><code>det_mask</code></td><td>检测判决结果</td></tr><tr><td>距离索引</td><td><code>col_idx</code></td><td>通过检测的距离单元位置</td></tr><tr><td>速度索引</td><td><code>row_idx</code></td><td>通过检测的速度单元位置</td></tr><tr><td>$\hat R$</td><td><code>range_est</code></td><td>检测点对应的距离估计 (m)</td></tr><tr><td>$\hat v$</td><td><code>vel_est</code></td><td>检测点对应的速度估计 (m/s)</td></tr></tbody></table></div>
+<p>下面给出本节完整 MATLAB 程序。这是在 8.2 的完整代码基础上增加检测部分，前面的处理流程完全不变。</p>
+<p>如果你想直接运行本节代码，可参考 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_radar_detection_demo.m"><code>ch08_radar_detection_demo.m</code></a>。</p>
+<pre><code class="language-matlab">% 第八章示例3：加入检测模块
+clear; close all; clc;
+
+% 基本参数：采用复包络基带模型
+c = 3e8;
+fc = 10e9;
+lambda = c / fc;
+B = 10e6;
+Tp = 20e-6;
+fs = 20e6;
+PRF = 2e3;
+Tr = 1 / PRF;
+Npulse = 32;
+Nfast = 1024;
+
+% 两个目标的距离、速度和幅度
+range_targets = [6000, 9000];
+vel_targets = [30, -20];
+amp_targets = [1.0, 0.75];
+
+% 发射信号 s(t)，其中 k = B / Tp
+k = B / Tp;
+tx_t = (0:round(Tp * fs)-1) / fs;
+tx = exp(1j * pi * k * tx_t.^2);
+mf = conj(fliplr(tx));
+fast_time = (0:Nfast-1) / fs;
+
+% 回波矩阵：距离决定时延，速度决定脉冲间相位变化
+rx_matrix = zeros(Npulse, Nfast);
+for m = 1:Npulse
+    pulse_data = zeros(1, Nfast);
+    for i = 1:length(range_targets)
+        tau = 2 * range_targets(i) / c;
+        fd = 2 * vel_targets(i) / lambda;
+        delayed_t = fast_time - tau;
+        valid = delayed_t &gt;= 0 &amp; delayed_t &lt;= Tp;
+        echo = zeros(1, Nfast);
+        echo(valid) = amp_targets(i) * exp(1j * pi * k * delayed_t(valid).^2) ...
+                    .* exp(1j * 2*pi * fd * (m-1) * Tr);
+        pulse_data = pulse_data + echo;
+    end
+    rx_matrix(m, :) = pulse_data + 0.08 * (randn(1, Nfast) + 1j * randn(1, Nfast));
+end
+
+% 先沿快时间做匹配滤波，得到距离压缩结果
+range_data = zeros(size(rx_matrix));
+for m = 1:Npulse
+    range_data(m, :) = conv(rx_matrix(m, :), mf, &#x27;same&#x27;);
+end
+
+group_delay = floor(length(tx) / 2);
+range_axis = ((0:Nfast-1) - group_delay) * c / (2 * fs);
+
+% 再沿慢时间做 FFT，得到距离-速度图
+rd_map = fftshift(fft(range_data, [], 1), 1);
+rd_power = abs(rd_map);
+rd_power = rd_power / max(rd_power(:));
+
+doppler_freq = (-Npulse/2:Npulse/2-1) * PRF / Npulse;
+vel_axis = doppler_freq * lambda / 2;
+
+% 固定阈值检测（对应公式 δ(x)）
+threshold = 0.35;
+det_mask = rd_power &gt; threshold;                % 对应公式 δ(x) = 1 if x &gt; T
+[row_idx, col_idx] = find(det_mask);
+range_est = range_axis(col_idx);                % 对应公式 R̂
+vel_est = vel_axis(row_idx);                    % 对应公式 v̂
+
+figure(&#x27;Position&#x27;, [100, 100, 1200, 500]);
+subplot(1,2,1);
+imagesc(range_axis / 1e3, vel_axis, rd_power);
+axis xy; colorbar;
+title(&#x27;距离-速度图&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;速度 (m/s)&#x27;);
+
+subplot(1,2,2);
+imagesc(range_axis / 1e3, vel_axis, rd_power);
+axis xy; colorbar; hold on;
+plot(range_est / 1e3, vel_est, &#x27;ro&#x27;, &#x27;MarkerSize&#x27;, 6, &#x27;LineWidth&#x27;, 1.5);
+title(&#x27;检测结果叠加&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;速度 (m/s)&#x27;);
+legend(&#x27;检测点&#x27;);
+
+fprintf(&#x27;检测到的目标（可能含相邻阈值点）:\n&#x27;);
+for idx = 1:length(range_est)
+    fprintf(&#x27;距离 = %.2f km, 速度 = %.2f m/s\n&#x27;, range_est(idx)/1e3, vel_est(idx));
+end</code></pre>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig8_4_detection_result.png" alt="检测前后的距离-速度结果对比" loading="lazy"><figcaption>检测前后的距离-速度结果对比</figcaption></figure>
+<p>图8-4左图给出距离-速度幅度分布，右图给出通过阈值的检测点。若一个目标附近出现多个相邻检测点，并不意外，因为固定阈值会把主瓣附近多个高响应点一起保留下来。</p>
+<h3 id="sub-133">固定阈值的三种失效模式</h3>
+<p>模式1：强目标旁瓣触发虚警 LFM 脉冲压缩后的旁瓣约为 -13 dB。若目标A幅度归一化为 1.0，旁瓣幅度约为 0.22。如果 <code>threshold = 0.2</code>，旁瓣也会被检出，产生虚警。</p>
+<p>模式2：背景不均匀导致漏检 若不同距离单元的噪声功率不同：</p>
+<ul><li>距离单元1：噪声功率 0.1，目标信噪比 10 dB → 归一化幅度 0.32</li><li>距离单元2：噪声功率 0.3，目标信噪比 10 dB → 归一化幅度 0.95</li></ul>
+<p>统一阈值 0.35 会漏掉单元1的目标。这时需要 CFAR（恒虚警率检测）。</p>
+<p>模式3：弱目标被噪声淹没 若 <code>amp_targets = [1.0, 0.1]</code>，第二个目标很弱，归一化后可能 &lt; 0.35。需要降低阈值或增加脉冲积累。</p>
+<h3 id="sub-134">阈值选择的工程经验</h3>
+<div class="table-wrap"><table><thead><tr><th>归一化阈值</th><th>虚警率</th><th>漏检率</th><th>适用场景</th></tr></thead><tbody><tr><td>0.2</td><td>高</td><td>低</td><td>搜索模式，宁可多报</td></tr><tr><td>0.35</td><td>中</td><td>中</td><td>本例默认值</td></tr><tr><td>0.5</td><td>低</td><td>高</td><td>跟踪模式，只要强目标</td></tr></tbody></table></div>
+<p>本例选择 0.35 是经验值。实际工程中，阈值应根据虚警率要求反推：</p>
+<div class="math-block">$$
+T = \sigma_n \sqrt{-2\ln(P_{fa})}
+$$</div>
+<p>其中 $\sigma_n$ 为噪声标准差，$P_{fa}$ 为虚警概率。</p>
+<h3 id="sub-135">相邻检测点的聚类方法</h3>
+<p>一个目标可能对应多个检测点（主瓣展宽）。常用聚类方法：</p>
+<p>方法1：局部极大值抑制</p>
+<pre><code class="language-matlab">local_max = imregionalmax(rd_power);
+det_final = det_mask &amp; local_max;  % 只保留局部峰值</code></pre>
+<p>方法2：形态学膨胀 + 连通域标记</p>
+<pre><code class="language-matlab">det_mask_dilated = imdilate(det_mask, strel(&#x27;disk&#x27;, 2));
+cc = bwconncomp(det_mask_dilated);
+for k = 1:cc.NumObjects
+    [~, max_idx] = max(rd_power(cc.PixelIdxList{k}));
+    peak_idx = cc.PixelIdxList{k}(max_idx);
+    % peak_idx 就是该簇的代表点
+end</code></pre>
+<p>这些方法可以把相邻检测点合并成单个目标，但已经超出本章范围。</p>
+<p>下一节给出完整的、带详细注释的 MATLAB 程序，并展示从原始回波到检测结果的四个处理阶段。</p>
+<p>---</p>
+<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
+<p>即可获取：</p>
+<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
+<p>想易懂又深入学习雷达信号处理？</p>
+<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
+<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
+<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch08-s04"><h2 id="ch08-s04" class="section-title">8.4 完整MATLAB示例</h2>
+<p>前面三节分别给出了距离处理、速度处理和检测的分步实现。本节把它们合成一份完整程序，并给出四个处理阶段的可视化结果。程序虽然更长，但其内部关系并不比前面复杂，只是把第4章到第6章的公式按顺序写到同一个脚本里。</p>
+<h3 id="sub-136">完整代码与分段注释</h3>
+<p>完整程序可以按表8-2理解。</p>
+<div class="table-wrap"><table><thead><tr><th>处理环节</th><th>主要公式</th><th>MATLAB 变量</th></tr></thead><tbody><tr><td>发射信号生成</td><td>$k=B/T_p$, $s(t)$</td><td><code>k</code>, <code>tx</code></td></tr><tr><td>回波建模</td><td>$\tau_i=2R_i/c$, $f_{d,i}=2v_i/\lambda$</td><td><code>tau</code>, <code>fd</code>, <code>rx_matrix</code></td></tr><tr><td>距离压缩</td><td>$h(t)=s^<em>(-t)$, $y(t)=r(t)</em>h(t)$</td><td><code>mf</code>, <code>range_data</code></td></tr><tr><td>多普勒处理</td><td>$v=\lambda f_d/2$</td><td><code>rd_map</code>, <code>rd_power</code>, <code>vel_axis</code></td></tr><tr><td>检测判决</td><td>$\delta(x)$</td><td><code>threshold</code>, <code>det_mask</code></td></tr><tr><td>物理量输出</td><td>$\hat R$, $\hat v$</td><td><code>range_est</code>, <code>vel_est</code></td></tr></tbody></table></div>
+<p>下面给出完整 MATLAB 程序。</p>
+<p>如果你想把本章处理链一次完整跑通，可参考 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_full_processing_chain_demo.m"><code>ch08_full_processing_chain_demo.m</code></a>。若你是第一次看本章，更建议先按前面几节的顺序分别对照 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_minimal_pulse_radar_demo.m"><code>ch08_minimal_pulse_radar_demo.m</code></a>、<a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_range_doppler_demo.m"><code>ch08_range_doppler_demo.m</code></a> 和 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0/ch08_radar_detection_demo.m"><code>ch08_radar_detection_demo.m</code></a>，最后再回来看这一份完整脚本。</p>
+<pre><code class="language-matlab">% ch08_full_processing_chain_demo.m
+% 第八章完整示例：从原始回波到目标检测的完整处理链
+clear; close all; clc;
+
+%% 第一部分：参数定义（对应第4-6章的物理参数）
+c = 3e8;           % 光速 (m/s)
+fc = 10e9;         % 载频 (Hz)
+lambda = c / fc;   % 波长 (m)
+B = 10e6;          % LFM 带宽 (Hz)
+Tp = 20e-6;        % 脉冲宽度 (s)
+fs = 20e6;         % 采样率 (Hz)
+PRF = 2e3;         % 脉冲重复频率 (Hz)
+Tr = 1 / PRF;      % 脉冲重复间隔 (s)
+Npulse = 32;       % 脉冲数量
+Nfast = 1024;      % 快时间采样点数
+
+% 两个目标的距离、速度和幅度
+range_targets = [6000, 9000];    % 距离 (m)
+vel_targets = [30, -20];         % 速度 (m/s)
+amp_targets = [1.0, 0.75];       % 幅度
+
+%% 第二部分：发射信号生成（对应第4章 LFM 信号）
+k = B / Tp;                      % 调频斜率 (Hz/s)
+tx_t = (0:round(Tp*fs)-1) / fs;
+tx = exp(1j * pi * k * tx_t.^2);              % 对应公式 s(t)
+mf = conj(fliplr(tx));                      % 对应公式 h(t) = s*(-t)
+
+%% 第三部分：回波矩阵生成（对应第4章距离、第5章速度）
+rx_matrix = zeros(Npulse, Nfast);
+fast_time = (0:Nfast-1) / fs;
+
+for m = 1:Npulse
+    pulse_data = zeros(1, Nfast);
+    for i = 1:length(range_targets)
+        tau = 2 * range_targets(i) / c;         % 对应公式 τ = 2R/c
+        fd = 2 * vel_targets(i) / lambda;       % 对应公式 f_d = 2v/λ
+        delayed_t = fast_time - tau;
+        valid = delayed_t &gt;= 0 &amp; delayed_t &lt;= Tp;
+        echo = zeros(1, Nfast);
+        echo(valid) = amp_targets(i) * exp(1j * pi * k * delayed_t(valid).^2) ...
+                    .* exp(1j * 2*pi * fd * (m-1) * Tr);  % 对应公式 exp(j2πf_d(m-1)T_r)
+        pulse_data = pulse_data + echo;
+    end
+    noise = 0.08 * (randn(1, Nfast) + 1j * randn(1, Nfast));
+    rx_matrix(m, :) = pulse_data + noise;
+end
+
+%% 第四部分：距离压缩（对应第4章匹配滤波）
+range_data = zeros(size(rx_matrix));
+for m = 1:Npulse
+    range_data(m, :) = conv(rx_matrix(m, :), mf, &#x27;same&#x27;);  % 对应公式 y(t) = r(t)*h(t)
+end
+
+group_delay = floor(length(tx) / 2);
+range_axis = ((0:Nfast-1) - group_delay) * c / (2 * fs);
+
+%% 第五部分：多普勒处理（对应第5章 FFT）
+rd_map = fftshift(fft(range_data, [], 1), 1);
+rd_power = abs(rd_map);
+rd_power = rd_power / max(rd_power(:));
+
+doppler_freq = (-Npulse/2:Npulse/2-1) * PRF / Npulse;
+vel_axis = doppler_freq * lambda / 2;           % 对应公式 v = λf_d/2
+
+%% 第六部分：固定阈值检测（对应第6章判决）
+threshold = 0.35;
+det_mask = rd_power &gt; threshold;                % 对应公式 δ(x)
+[row_idx, col_idx] = find(det_mask);
+range_est = range_axis(col_idx);                % 对应公式 R̂
+vel_est = vel_axis(row_idx);                    % 对应公式 v̂
+
+%% 第七部分：结果可视化
+figure(&#x27;Position&#x27;, [100, 100, 1200, 800]);
+
+subplot(2,2,1);
+imagesc(real(rx_matrix)); colorbar;
+title(&#x27;原始回波矩阵（实部）&#x27;);
+xlabel(&#x27;快时间采样点&#x27;); ylabel(&#x27;脉冲序号&#x27;);
+
+subplot(2,2,2);
+plot(range_axis/1e3, abs(range_data(1,:)), &#x27;LineWidth&#x27;, 1.5); grid on;
+title(&#x27;第一个脉冲的距离像&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;幅度&#x27;);
+
+subplot(2,2,3);
+imagesc(range_axis/1e3, vel_axis, rd_power);
+axis xy; colorbar;
+title(&#x27;距离-速度图&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;速度 (m/s)&#x27;);
+
+subplot(2,2,4);
+imagesc(range_axis/1e3, vel_axis, rd_power);
+axis xy; colorbar; hold on;
+plot(range_est/1e3, vel_est, &#x27;ro&#x27;, &#x27;MarkerSize&#x27;, 8, &#x27;LineWidth&#x27;, 1.5);
+title(&#x27;检测结果叠加&#x27;);
+xlabel(&#x27;距离 (km)&#x27;); ylabel(&#x27;速度 (m/s)&#x27;);
+
+fprintf(&#x27;检测到的目标（可能含相邻阈值点）:\n&#x27;);
+for idx = 1:length(range_est)
+    fprintf(&#x27;距离 = %.2f km, 速度 = %.2f m/s\n&#x27;, range_est(idx)/1e3, vel_est(idx));
+end</code></pre>
+<h3 id="sub-137">处理结果的四阶段展示</h3>
+<p>这段程序中，<code>tau</code> 与 <code>fd</code> 分别实现第4章和第5章给出的时延关系与多普勒关系；<code>range_data(m,:) = conv(rx_matrix(m,:), mf, &#x27;same&#x27;)</code> 对应匹配滤波公式 $y(t)=r(t)*h(t)$；<code>rd_map = fftshift(fft(range_data, [], 1), 1)</code> 把脉冲间相位变化换成多普勒谱；<code>det_mask = rd_power &gt; threshold</code> 则对应第6章的阈值判决。由于距离压缩仍采用 <code>conv(..., &#x27;same&#x27;)</code>，程序专门通过 <code>group_delay</code> 修正了距离轴，因此 <code>range_axis</code> 上的峰值位置与目标真实距离能够对应起来。</p>
+<p>运行程序后，图窗中的四幅图分别对应四个处理阶段：左上是原始回波矩阵，右上是单脉冲距离像，左下是距离-速度图，右下是在距离-速度图上叠加检测结果。整条雷达处理链也就在这一份 MATLAB 程序中完整呈现出来。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig8_5_full_chain_result.png" alt="完整处理链的四阶段结果" loading="lazy"><figcaption>完整处理链的四阶段结果</figcaption></figure>
+<h3 id="sub-138">小练习</h3>
+<p>通过修改参数，可以观察不同设置对处理结果的影响。</p>
+<p>练习1：带宽与距离分辨率 把 <code>B</code> 从 10 MHz 改成 5 MHz，观察距离像主瓣变宽。这验证了第4章的结论：距离分辨率由带宽决定。</p>
+<p>练习2：脉冲数与速度分辨率 把 <code>Npulse</code> 从 32 改成 16，观察速度维模糊增加。这验证了第5章的结论：速度分辨率由相干积累时间决定。</p>
+<p>练习3：阈值与检测结果 把 <code>threshold</code> 从 0.35 改成 0.2 和 0.5，对比虚警和漏检。阈值过低会增加虚警点，阈值过高可能漏掉弱目标。</p>
+<p>练习4：PRF 与速度模糊 把 <code>PRF</code> 从 2 kHz 改成 1 kHz，观察速度轴范围变化。PRF 越低，不模糊速度范围越小，这对应第5章的多普勒模糊问题。</p>
+<p>练习5：综合题 给定目标参数（距离 8 km，速度 15 m/s），预测距离-速度图上的峰值位置，再运行程序验证。</p>
+<p>这些练习帮助读者把公式、代码和物理现象联系起来，加深对雷达信号处理完整流程的理解。</p>
+<p>---</p>
+<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
+<p>即可获取：</p>
+<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
+<p>想易懂又深入学习雷达信号处理？</p>
+<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
+<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
+<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section>
+    </article>
+    <div class="article-actions"><a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%9A%E5%AE%8C%E6%95%B4%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a></div>
+  </main>
+</div>
+</body>
+</html>
