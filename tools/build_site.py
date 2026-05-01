@@ -452,7 +452,7 @@ class SiteBuilder:
   </nav>
   <div class="hero-grid">
     <div class="hero-copy reveal">
-      <div class="eyebrow">One chapter, one page</div>
+      <div class="eyebrow">雷达信号处理</div>
       <h1>易懂的雷达信号处理教程</h1>
       <p>从雷达是什么开始，一路讲到距离、速度、检测、测角和完整 MATLAB 处理流程。</p>
       <div class="hero-actions"><a class="btn primary" href="chapters/ch01.html">开始阅读</a><a class="btn" href="#chapters">选择章节</a><a class="btn ghost" href="{html_attr(github_tree_url('matlab'))}">MATLAB 代码</a></div>
@@ -464,7 +464,7 @@ class SiteBuilder:
 </header>
 <main>
   <section id="chapters" class="chapters">
-    <div class="section-head reveal"><p class="eyebrow">Read Online</p><h2>在线章节</h2><p>每一章是一整页，左侧目录用于章节内跳转；PDF 保留给下载、打印和离线阅读。</p></div>
+    <div class="section-head reveal"><p class="eyebrow">章节目录</p><h2>在线章节</h2></div>
     <div class="chapter-grid">{''.join(cards)}</div>
   </section>
 </main>
