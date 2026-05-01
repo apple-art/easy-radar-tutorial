@@ -22,8 +22,7 @@
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.html">← 首页</a>
-    <div class="side-heading">第8章 完整处理流程</div>
-    <nav class="toc"><a class="toc-link" href="#ch08-s01">8.1 最小可运行示例</a><a class="toc-link" href="#ch08-s02">8.2 MATLAB中的距离与速度处理</a><a class="toc-link" href="#ch08-s03">8.3 检测与结果解释</a><a class="toc-link" href="#ch08-s04">8.4 完整MATLAB示例</a></nav>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch08.html">第8章 完整处理流程</a><div class="chapter-subtoc"><a class="toc-link" href="#ch08-s01">8.1 最小可运行示例</a><a class="toc-link" href="#ch08-s02">8.2 MATLAB中的距离与速度处理</a><a class="toc-link" href="#ch08-s03">8.3 检测与结果解释</a><a class="toc-link" href="#ch08-s04">8.4 完整MATLAB示例</a></div></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第8章</span><span>完整处理流程</span></div>
@@ -139,15 +138,7 @@ $$</div>
 <p>情况1：目标距离超出采样窗口 若 <code>delay_samples &gt; fast_len</code>，回波完全落在采样窗外，<code>range_profile</code> 无明显峰值。解决方法是增加 <code>fast_len</code>。</p>
 <p>情况2：信噪比过低 当噪声标准差从 0.05 增加到 0.5 时，主峰可能被噪声淹没。此时需要增加脉冲积累（下一节内容）或提高发射功率。</p>
 <p>情况3：多目标距离接近 若两目标间隔 &lt; c/(2B) = 15 m，主瓣重叠，单脉冲无法分辨。这是距离分辨率的物理极限。</p>
-<p>这一节得到的是最简单的单目标距离处理结果。下一节在此基础上加入脉冲序列，把第5章的速度处理也并入同一套 MATLAB 框架中。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch08-s02"><h2 id="ch08-s02" class="section-title">8.2 MATLAB中的距离与速度处理</h2>
+<p>这一节得到的是最简单的单目标距离处理结果。下一节在此基础上加入脉冲序列，把第5章的速度处理也并入同一套 MATLAB 框架中。</p></section><section class="chapter-section" data-section="ch08-s02"><h2 id="ch08-s02" class="section-title">8.2 MATLAB中的距离与速度处理</h2>
 <p>上一节只处理了单目标、单脉冲情形，得到的是一条距离像。要进一步估计目标速度，就必须把多个脉冲联合起来处理。本节在 8.1 的代码基础上修改，主要改动是：① 回波从 1D 向量改成 2D 矩阵；② 距离压缩加循环处理每个脉冲；③ 增加慢时间 FFT 得到距离-速度图。</p>
 <h3 id="sub-127">回波矩阵的组织方式</h3>
 <p>接收数据不再是一维波形，而是一个二维矩阵。记原始回波矩阵为 $X(m,n)$，其中 $m$ 表示脉冲序号（慢时间），$n$ 表示脉冲内的快时间采样点。沿快时间方向处理，得到距离像；沿慢时间方向处理，得到多普勒谱。</p>
@@ -289,15 +280,7 @@ imagesc(vel_axis, range_axis, rd_power);  % 速度变成横轴
 imagesc(range_axis, vel_axis, rd_power);
 axis xy;  % 必须加这行，否则纵轴倒置</code></pre>
 <p>如果不加 <code>axis xy</code>，MATLAB 默认图像坐标系（原点在左上角），速度轴会上下颠倒。</p>
-<p>下一节在此基础上增加检测模块，把距离-速度图上的响应变成目标列表。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch08-s03"><h2 id="ch08-s03" class="section-title">8.3 检测与结果解释</h2>
+<p>下一节在此基础上增加检测模块，把距离-速度图上的响应变成目标列表。</p></section><section class="chapter-section" data-section="ch08-s03"><h2 id="ch08-s03" class="section-title">8.3 检测与结果解释</h2>
 <p>经过距离压缩和多普勒处理之后，程序已经得到距离-速度图。但距离-速度图本身还只是幅度分布，不能直接作为目标列表输出。本节在 8.2 的代码基础上增加检测模块，把图上的响应分成"目标"与"非目标"两类。</p>
 <p>设距离-速度图的功率或归一化幅度记为 $x$，第6章的判决可写为</p>
 <div class="math-block">$$
@@ -437,15 +420,7 @@ for k = 1:cc.NumObjects
     % peak_idx 就是该簇的代表点
 end</code></pre>
 <p>这些方法可以把相邻检测点合并成单个目标，但已经超出本章范围。</p>
-<p>下一节给出完整的、带详细注释的 MATLAB 程序，并展示从原始回波到检测结果的四个处理阶段。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch08-s04"><h2 id="ch08-s04" class="section-title">8.4 完整MATLAB示例</h2>
+<p>下一节给出完整的、带详细注释的 MATLAB 程序，并展示从原始回波到检测结果的四个处理阶段。</p></section><section class="chapter-section" data-section="ch08-s04"><h2 id="ch08-s04" class="section-title">8.4 完整MATLAB示例</h2>
 <p>前面三节分别给出了距离处理、速度处理和检测的分步实现。本节把它们合成一份完整程序，并给出四个处理阶段的可视化结果。程序虽然更长，但其内部关系并不比前面复杂，只是把第4章到第6章的公式按顺序写到同一个脚本里。</p>
 <h3 id="sub-136">完整代码与分段注释</h3>
 <p>完整程序可以按表8-2理解。</p>
@@ -564,15 +539,7 @@ end</code></pre>
 <p>练习3：阈值与检测结果 把 <code>threshold</code> 从 0.35 改成 0.2 和 0.5，对比虚警和漏检。阈值过低会增加虚警点，阈值过高可能漏掉弱目标。</p>
 <p>练习4：PRF 与速度模糊 把 <code>PRF</code> 从 2 kHz 改成 1 kHz，观察速度轴范围变化。PRF 越低，不模糊速度范围越小，这对应第5章的多普勒模糊问题。</p>
 <p>练习5：综合题 给定目标参数（距离 8 km，速度 15 m/s），预测距离-速度图上的峰值位置，再运行程序验证。</p>
-<p>这些练习帮助读者把公式、代码和物理现象联系起来，加深对雷达信号处理完整流程的理解。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section>
+<p>这些练习帮助读者把公式、代码和物理现象联系起来，加深对雷达信号处理完整流程的理解。</p></section>
     </article>
     <div class="article-actions"><a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%9A%E5%AE%8C%E6%95%B4%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E5%85%AB%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a></div>
   </main>

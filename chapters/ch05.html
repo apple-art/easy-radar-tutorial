@@ -22,8 +22,7 @@
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.html">← 首页</a>
-    <div class="side-heading">第5章 速度测量</div>
-    <nav class="toc"><a class="toc-link" href="#ch05-s01">5.1 多普勒效应原理</a><a class="toc-link" href="#ch05-s02">5.2 多普勒频移与速度换算</a><a class="toc-link" href="#ch05-s03">5.3 脉冲间相位变化与速度测量</a><a class="toc-link" href="#ch05-s04">5.4 MTD的基本思想</a><a class="toc-link" href="#ch05-s05">5.5 实际应用</a><a class="toc-link" href="#ch05-s06">5.6 小练习</a></nav>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch05.html">第5章 速度测量</a><div class="chapter-subtoc"><a class="toc-link" href="#ch05-s01">5.1 多普勒效应原理</a><a class="toc-link" href="#ch05-s02">5.2 多普勒频移与速度换算</a><a class="toc-link" href="#ch05-s03">5.3 脉冲间相位变化与速度测量</a><a class="toc-link" href="#ch05-s04">5.4 MTD的基本思想</a><a class="toc-link" href="#ch05-s05">5.5 实际应用</a><a class="toc-link" href="#ch05-s06">5.6 小练习</a></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第5章</span><span>速度测量</span></div>
@@ -32,7 +31,6 @@
       <section class="chapter-section" data-section="ch05-s01"><h2 id="ch05-s01" class="section-title">5.1 多普勒效应原理</h2>
 <p>站在路边，救护车从远处驶来，鸣笛声越来越尖；车开过去后，声音又变得低沉。这个现象每个人都经历过，它有个专门的名字：<strong>多普勒效应</strong>。</p>
 <p>雷达测速的原理就是多普勒效应。目标运动时，回波的频率会发生偏移：靠近时频率升高，远离时频率降低。测量这个频率偏移，就能算出目标的速度。</p>
-<p>---</p>
 <p>先从声音说起，因为声音的多普勒效应最容易感受。声音是空气的振动。声源（比如救护车的喇叭）每秒发出若干次振动，这个次数就是频率 $f$。声波以固定速度 $v_s \approx 340$ m/s 在空气中传播。</p>
 <p>假设救护车静止不动,喇叭发出频率 $f_0 = 1000$ Hz 的声音。这意味着每秒有 1000 个波峰从喇叭发出,均匀分布在空间中。相邻两个波峰之间的距离就是波长 $\lambda = v_s / f_0 = 0.34$ m。</p>
 <p>现在让救护车以速度 $v$ 向你驶来。喇叭还是每秒发出 1000 个波峰,但因为车在运动,后一个波峰发出时,车已经向前移动了一小段距离。这导致波峰之间的间距被"压缩"了。你站在路边不动,单位时间内经过你的波峰数量变多了——频率升高了。</p>
@@ -93,17 +91,8 @@ $$</div>
 $$</div>
 <p>频率偏移达到 40 kHz,测量相对容易,但需要更高的采样率。</p>
 <p>从这些例子可以看出:雷达频率越高,目标速度越快,多普勒频移越大。这也是为什么高速目标探测通常使用高频雷达。</p>
-<p>多普勒效应不只用于雷达。天文学中，恒星光谱的红移/蓝移揭示了恒星的运动方向和速度，宇宙膨胀的证据就来自遥远星系的红移。5.5 节会介绍测速枪、气象雷达、汽车防撞雷达等工程应用。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch05-s02"><h2 id="ch05-s02" class="section-title">5.2 多普勒频移与速度换算</h2>
+<p>多普勒效应不只用于雷达。天文学中，恒星光谱的红移/蓝移揭示了恒星的运动方向和速度，宇宙膨胀的证据就来自遥远星系的红移。5.5 节会介绍测速枪、气象雷达、汽车防撞雷达等工程应用。</p></section><section class="chapter-section" data-section="ch05-s02"><h2 id="ch05-s02" class="section-title">5.2 多普勒频移与速度换算</h2>
 <p>上一节介绍了多普勒效应的原理：目标运动导致回波频率发生偏移。这一节解决实际问题：如何从测量到的频率偏移 $\Delta f$ 反推出目标速度 $v$？</p>
-<p>---</p>
 <h3 id="sub-58">速度与多普勒频移的关系</h3>
 <p>从上一节的多普勒公式出发：</p>
 <div class="math-block">$$
@@ -118,7 +107,6 @@ $$</div>
 <ul><li>$c = 3\times10^8$ m/s：光速，常数</li><li>$f_0$：雷达发射频率，设计时确定</li><li>$\Delta f$：测量得到的频率偏移</li></ul>
 <p>关键点：速度测量的精度完全取决于频率测量的精度。频率测得越准，速度就越准。</p>
 <p>假设交警使用的测速雷达工作在 24 GHz 频段，测得回波的频率偏移是 $\Delta f = 4800$ Hz。目标速度是多少？代入公式：$v = (3\times10^8 \times 4800)/(2 \times 24\times10^9) = 30$ m/s，换算成 km/h 是 108 km/h。这个计算过程在实际雷达中是自动完成的。雷达内部的信号处理器测量频率偏移，然后用上面的公式实时计算速度，显示在屏幕上。</p>
-<p>---</p>
 <h3 id="sub-59">多普勒频移的测量方法</h3>
 <p>理论上公式很简单，但实际测量频率偏移并不容易。回波信号极其微弱，淹没在噪声中，如何精确测出频率？最常用的方法是混频 + FFT。</p>
 <p>先说混频。雷达发射频率通常在GHz量级（比如24 GHz），而多普勒频移只有几kHz。如果直接对24 GHz的信号做FFT，需要极高的采样率（根据采样定理，至少48 GHz），这在硬件上很难实现，成本也极高。混频的作用是降频：把高频的回波信号和发射信号相乘，得到它们的差频。</p>
@@ -134,7 +122,6 @@ $$</div>
 <p>接下来是FFT。对差频信号做傅里叶变换（第2章介绍过），得到频谱。频谱的峰值位置就是多普勒频移 $\Delta f$。最后用公式 $v = c\Delta f / (2f_0)$ 算出速度。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig5_2_frequency_measurement.png" alt="频率测量流程" loading="lazy"><figcaption>频率测量流程</figcaption></figure>
 <p>上图展示了完整流程：发射信号（蓝色）和回波信号（红色）混频后，得到低频的差频信号（绿色）。对差频信号做FFT，频谱出现明显的峰值，峰值位置就是多普勒频移。这个技术叫<strong>外差接收</strong>，是无线电工程的基础技术，不只用于雷达，收音机、手机、WiFi都用这个原理。</p>
-<p>---</p>
 <h3 id="sub-60">速度分辨率与速度模糊</h3>
 <p>就像距离测量有分辨率限制（第4章），速度测量也有分辨率限制。</p>
 <p>速度分辨率取决于频率分辨率。回顾第2章的傅里叶变换：要分辨两个频率，需要足够长的观测时间。频率分辨率 $\Delta f_{\text{res}}$ 与观测时间 $T$ 成反比：</p>
@@ -172,21 +159,12 @@ $$</div>
 <p>上图展示了速度模糊的原理：当多普勒频移超过奈奎斯特频率时，频谱会发生混叠，高速目标被误判为低速目标。</p>
 <p>解决方法有两种：一是提高采样率，扩大可测速度范围；二是使用多个脉冲重复频率（PRF）交替测量，通过"解模糊"算法恢复真实速度。后者属于高级技术，本书不展开。</p>
 <p>测速有两种基本方式。<strong>连续波（CW）雷达</strong>持续发射单频信号，同时接收回波，混频后直接得到多普勒频移。结构简单，成本低，但无法测距离（因为信号一直在发射，无法区分回波的时间延迟）。<strong>脉冲多普勒雷达</strong>发射脉冲串，每个脉冲之间有间隔，既能测距离（通过时间延迟），又能测速度（通过脉冲间的相位变化）。结构复杂，但功能完整。交警的测速枪通常是连续波雷达——只需要测速度，不需要测距离。而军用雷达、气象雷达通常是脉冲多普勒雷达——既要知道目标在哪里，又要知道它有多快。</p>
-<p>---</p>
 <p>到这里，速度测量的基本理论已经完整了：目标运动引起多普勒频移，测出频移以后，就可以由</p>
 <div class="math-block">$$
 v = \frac{c \Delta f}{2 f_0}
 $$</div>
 <p>换算出目标速度。</p>
-<p>上面讲的连续波雷达结构简单，非常适合纯测速应用（比如测速枪）。但在实际雷达系统中，脉冲雷达更为常见——因为它既能测距离，又能测速度。对于脉冲雷达，速度信息不再表现为一段连续的差频信号，而是体现在相邻脉冲之间的相位变化中。下一节讨论的，正是这种脉冲体制下的测速原理：同样的多普勒频率，在脉冲串数据里是怎样出现的，又怎样沿慢时间方向把它提取出来。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch05-s03"><h2 id="ch05-s03" class="section-title">5.3 脉冲间相位变化与速度测量</h2>
+<p>上面讲的连续波雷达结构简单，非常适合纯测速应用（比如测速枪）。但在实际雷达系统中，脉冲雷达更为常见——因为它既能测距离，又能测速度。对于脉冲雷达，速度信息不再表现为一段连续的差频信号，而是体现在相邻脉冲之间的相位变化中。下一节讨论的，正是这种脉冲体制下的测速原理：同样的多普勒频率，在脉冲串数据里是怎样出现的，又怎样沿慢时间方向把它提取出来。</p></section><section class="chapter-section" data-section="ch05-s03"><h2 id="ch05-s03" class="section-title">5.3 脉冲间相位变化与速度测量</h2>
 <p>上一节主要站在连续波雷达的角度讨论测速：先把高频回波混到低频，再从频率偏移算速度。这个思路很直观，但在实际雷达系统中，脉冲雷达更为常见——因为它既能测距又能测速。</p>
 <p>脉冲雷达里的速度信息不再表现成一段连续差频信号，而是体现在相邻脉冲之间的相位变化中。更具体地说：距离靠单个脉冲测出来，速度靠多个脉冲之间的规律变化测出来。</p>
 <p>那么为什么相邻脉冲之间固定的相位差，能换算成多普勒频率，进而得到速度？</p>
@@ -329,18 +307,9 @@ $$</div>
 v = \frac{0.03 \times 250}{2} = 3.75\,\text{m/s}
 $$</div>
 <p>这样就完成了从”脉冲间相位差”到”目标速度”的完整换算。</p>
-<p>至此，整个测速链条就清楚了：目标运动产生固定相位差，FFT通过模板匹配测出相位变化速率，再转换成多普勒频率，最后换算成速度。前面都是在单个距离单元里讨论速度测量。实际雷达数据是二维的——既有距离维度，又有速度维度。MTD就是把这套思想应用到整个二维数据阵列上的方法。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch05-s04"><h2 id="ch05-s04" class="section-title">5.4 MTD的基本思想</h2>
+<p>至此，整个测速链条就清楚了：目标运动产生固定相位差，FFT通过模板匹配测出相位变化速率，再转换成多普勒频率，最后换算成速度。前面都是在单个距离单元里讨论速度测量。实际雷达数据是二维的——既有距离维度，又有速度维度。MTD就是把这套思想应用到整个二维数据阵列上的方法。</p></section><section class="chapter-section" data-section="ch05-s04"><h2 id="ch05-s04" class="section-title">5.4 MTD的基本思想</h2>
 <p>上一节已经说明：相位差对应多普勒频率，FFT 能把这个频率提取出来。</p>
 <p>这一节把这件事放回真实的二维数据结构里，看看 MTD 怎样在整个处理流程中应用这个思想，最终得到距离-速度二维图。</p>
-<p>---</p>
 <h3 id="sub-66">慢时间处理与速度提取</h3>
 <p>把多个脉冲的回波按"脉冲序号 × 脉冲内采样点"排开，就得到二维数据矩阵。若记为 $X(m,n)$，则：</p>
 <ul><li>$m$ 表示脉冲序号，常称为慢时间；</li><li>$n$ 表示脉冲内采样点，常称为快时间。</li></ul>
@@ -356,7 +325,6 @@ $$</div>
 <p>如果目标静止，这一列里的数值在相邻脉冲之间通常变化不大；如果目标在运动，这一列里的相位就会按固定节奏一点一点转动。于是，原来的测速问题就变成了一个更具体的问题：这串样本到底在按多快的节奏变化？</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig5_8_mtd_basic.png" alt="MTD 的基本思想示意图" loading="lazy"><figcaption>MTD 的基本思想示意图</figcaption></figure>
 <p>上图展示了这一过程。左图中固定某一列以后，就得到中图所示的慢时间序列。这个序列的实部和虚部随脉冲编号呈现规律变化，说明目标在该距离单元上存在稳定的相位转动。右图对这串慢时间序列做 FFT 后，得到明显的频谱峰值，这个峰值所对应的多普勒频率，就是速度估计的依据。</p>
-<p>---</p>
 <h3 id="sub-67">距离-速度图的表示</h3>
 <p>到这里，距离处理和速度处理的分工就清楚了。沿快时间方向做距离压缩以后，系统已经知道目标大致落在哪一个距离单元上，也就是先回答了"目标在什么距离位置"。随后，对这个距离单元里的慢时间样本做傅里叶变换，得到多普勒频率，再由多普勒频率换成速度，这一步回答的是"目标以多大速度运动"。</p>
 <p>换句话说，在脉冲雷达中：</p>
@@ -368,10 +336,8 @@ $$</div>
 <p>读这类二维图时，可以按一个固定顺序来看。先看横向，判断亮点分别落在哪些距离单元上；再看纵向，判断这些亮点对应哪些速度单元。若某一片区域比周围更亮，通常表示该距离—速度位置上存在较强目标响应。</p>
 <p>就这张图而言，可以看到 3 个比较明显的亮区，因此可以把它理解为 3 个目标响应。左下方的亮区表示一个目标位于较近距离、较高速度单元；左上方的亮区表示另一个目标位于稍远一些的距离、但速度单元不同；右侧的亮区则表示第三个目标位于更远距离，并且速度单元也与前两个目标不同。这样读者就能直接看到：不同目标不仅会在距离轴上分开，也会在速度轴上分开。</p>
 <p>同时还要注意，图中的每个目标并不一定只表现为一个孤立像素点，主峰周围常常还会出现邻近抬升。这是因为实际处理结果往往会带有主瓣展宽、能量泄漏或相邻单元响应，因此二维图看上去通常会比单一频谱更接近真实雷达输出。</p>
-<p>---</p>
 <p>MTD 把第 4 章的距离处理和本章前两节的多普勒关系结合起来：先对每个脉冲做距离压缩，把目标分到不同距离单元；再固定某一距离单元，对它在多个脉冲上的复数样本做 FFT，由频谱峰值估计多普勒频率和速度。前面讲的 $f_d = 2v/\lambda$ 说明了测速的物理基础，5.3 节的 FFT 说明了频率提取方法，这一节说明了在脉冲雷达里的具体应用。</p>
 <p>本书只保留 MTD 的基本思想，不展开更复杂的滤波器组、杂波抑制和工程实现细节。到第七章进入 MATLAB 实现时，读者会看到距离—速度二维处理就是这一节慢时间处理思想的直接应用。</p>
-<p>---</p>
 <h3 id="sub-68">附录：脉冲压缩后慢时间相位关系的证明</h3>
 <p>本节正文中提到，虽然每个脉冲都经过了脉冲压缩，但慢时间上的相位差仍然保持 $\Delta\phi = 2\pi f_d T_r$。这里给出详细推导。</p>
 <p>假设发射信号为 $s(t)$，载频为 $\omega_c$。第 0 个脉冲发射后，目标距离 $R_0$，回波延迟 $\tau_0 = 2R_0/c$。回波信号可以写成</p>
@@ -404,24 +370,14 @@ $$</div>
 <div class="math-block">$$
 \Delta\phi = \phi_1 - \phi_0 = -\frac{4\pi(R_0 + vT_r)}{\lambda} - \left(-\frac{4\pi R_0}{\lambda}\right) = -\frac{4\pi vT_r}{\lambda} = 2\pi \cdot \frac{2v}{\lambda} \cdot T_r = 2\pi f_d T_r
 $$</div>
-<p>这证明了：匹配滤波把回波的载波相位保留在了脉压后的复数值中，相邻脉冲间的相位差仍然由目标运动决定，与 5.3 节的推导完全一致。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch05-s05"><h2 id="ch05-s05" class="section-title">5.5 实际应用</h2>
+<p>这证明了：匹配滤波把回波的载波相位保留在了脉压后的复数值中，相邻脉冲间的相位差仍然由目标运动决定，与 5.3 节的推导完全一致。</p></section><section class="chapter-section" data-section="ch05-s05"><h2 id="ch05-s05" class="section-title">5.5 实际应用</h2>
 <p>前面几节讲的多普勒测速原理，在日常生活中随处可见。这一节挑三个典型场景来看：交警的测速枪、气象雷达的风速测量、以及汽车上的防撞雷达。它们使用的雷达体制各不相同，但背后的测速思路是一样的。</p>
-<p>---</p>
 <h3 id="sub-69">应用1：交警测速枪</h3>
 <p>路边的测速枪是最常见的多普勒雷达应用。它采用连续波体制——雷达持续发射单频信号（通常 24 GHz 或 35 GHz），回波与发射信号混频后得到差频信号，再做 FFT 找到频率峰值，由 $v = c\Delta f/(2f_0)$ 算出速度。整个过程在几十毫秒内完成。</p>
 <p>为什么用连续波而不是脉冲？因为测速枪只需要测速度，不需要测距离。连续波结构简单、成本低、功耗小，适合做成手持设备。测量精度通常在 ±1 km/h 以内，足够用于交通执法。</p>
 <p>如果测速枪不是正对着车辆，而是成角度 $\theta$，测得的速度是真实速度的 $\cos\theta$ 倍。例如，卡口与车道成30°角，测得速度会比真实速度低约13%。这就是为什么警察通常尽量正对车道测速。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig5_10_speed_gun.png" alt="测速枪工作示意图" loading="lazy"><figcaption>测速枪工作示意图</figcaption></figure>
 <p>上图展示了正对和偏角两种情况：正对时测得的速度准确，偏角时得到的是径向速度分量，因此偏低。</p>
-<p>---</p>
 <h3 id="sub-70">应用2：气象雷达测风速</h3>
 <p>天气预报里的风速数据，很多来自多普勒天气雷达。它的工作原理和测速枪类似，但目标是空气中的雨滴、雪花等微小颗粒。</p>
 <p>和测速枪不同，气象雷达采用脉冲体制——因为它不仅要知道风有多快，还要知道风在哪里。雷达发射脉冲后，通过回波的时间延迟确定雨滴的距离，再通过相邻脉冲之间的相位差（正是 5.3 节讲的原理）计算多普勒频移，从而得到风速。雷达旋转扫描一圈，就能画出整个区域的风速分布图。</p>
@@ -430,7 +386,6 @@ $$</div>
 <p>气象雷达通常工作在 S 波段（2-4 GHz）或 C 波段（4-8 GHz），扫频时不能用过高频率以免被雨水衰减，也不能用过低频以免分辨率不足。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig5_11_weather_radar.png" alt="气象雷达风速测量" loading="lazy"><figcaption>气象雷达风速测量</figcaption></figure>
 <p>图中展示了气象雷达的扫描方式，尤其是龙卷风的识别：局部相对方向性改变显而易见。</p>
-<p>---</p>
 <h3 id="sub-71">应用3：汽车防撞雷达</h3>
 <p>现代汽车上的自适应巡航（ACC）和自动紧急制动（AEB）功能都依赖车载毫米波雷达，这类雷达既要测距离，也要测速度。</p>
 <p>汽车雷达采用的是第三种体制：调频连续波（FMCW）。它发射频率随时间线性变化的信号（类似第 4 章的 LFM），回波与当前发射信号混频后，差频信号里同时包含了时间延迟（对应距离）和多普勒频移（对应速度）的信息。通过上下扫频两次测量，就能把距离和速度分离出来。</p>
@@ -440,22 +395,12 @@ $$</div>
 <p>汽车雷达常面对多目标场景，因此背后需要目标检测、聚类、跟踪等算法。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig5_12_automotive_radar.png" alt="汽车防撞雷达工作示意图" loading="lazy"><figcaption>汽车防撞雷达工作示意图</figcaption></figure>
 <p>图中示意 FMCW 雷达的距离-速度谱，可同时看到多个目标的距离和速度信息。</p>
-<p>---</p>
 <h3 id="sub-72">实际系统面对的问题</h3>
 <p>上面三个应用看起来原理都很清楚，但真正做起来会碰到不少麻烦：</p>
 <p><strong>杂波</strong>。地面、建筑物等静止目标也会产生回波，只是频移为零。如果不把这些零频附近的信号滤掉，真正的运动目标就会被淹没。常用的办法是高通滤波，把零频附近的成分去掉。</p>
 <p><strong>多目标叠加</strong>。同一距离单元里可能有不止一个目标，它们的回波叠在一起。5.4 节讲的 FFT 能在频率上把它们分开，但如果两个目标速度很接近，就需要更长的观测时间来提高分辨率。</p>
-<p><strong>速度模糊</strong>。5.2 节已经提到，如果多普勒频移超过采样率的一半，就会发生混叠。实际系统常用多个脉冲重复频率交替测量来解决这个问题。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch05-s06"><h2 id="ch05-s06" class="section-title">5.6 小练习</h2>
+<p><strong>速度模糊</strong>。5.2 节已经提到，如果多普勒频移超过采样率的一半，就会发生混叠。实际系统常用多个脉冲重复频率交替测量来解决这个问题。</p></section><section class="chapter-section" data-section="ch05-s06"><h2 id="ch05-s06" class="section-title">5.6 小练习</h2>
 <p>这些练习围绕本章的主线展开：先把多普勒频移和径向速度的对应关系算清楚，再逐步加入角度、分辨率、采样率和工程设计约束。建议先自己做，再对照解析检查思路。</p>
-<p>---</p>
 <h3 id="sub-73">练习 1：基础计算</h3>
 <p><strong>问题：</strong> 一个工作在 10 GHz 的雷达，测得回波的多普勒频移为 3000 Hz。目标的径向速度是多少？</p>
 <p><strong>解析：</strong> 根据公式</p>
@@ -471,7 +416,6 @@ $$</div>
 45 \times 3.6 = 162\,\text{km/h}
 $$</div>
 <p>因此目标的径向速度为 45 m/s，约 162 km/h。</p>
-<p>---</p>
 <h3 id="sub-74">练习 2：测速枪的角度误差</h3>
 <p><strong>问题：</strong> 交警使用 24 GHz 测速枪测量车速。测速枪与车道成 30°角，测得多普勒频移为 4157 Hz。车辆的真实速度是多少？</p>
 <p><strong>解析：</strong> 先用多普勒公式算出测得的径向速度：</p>
@@ -487,7 +431,6 @@ $$</div>
 v = \frac{v_r}{\cos 30^\circ} \approx \frac{26}{0.866} \approx 30\,\text{m/s}
 $$</div>
 <p>换算后约为 108 km/h。这个练习说明：测量角度越偏，测速误差越大。</p>
-<p>---</p>
 <h3 id="sub-75">练习 3：速度分辨率</h3>
 <p><strong>问题：</strong> 一个 35 GHz 的测速雷达，观测时间为 0.2 秒。它能分辨的最小速度差是多少？</p>
 <p><strong>解析：</strong> 速度分辨率近似为</p>
@@ -499,7 +442,6 @@ $$</div>
 \Delta v = \frac{3\times10^8}{2 \times 35\times10^9 \times 0.2} \approx 0.214\,\text{m/s}
 $$</div>
 <p>换算成 km/h，约为 0.77 km/h。也就是说，这部雷达理论上能够区分约 0.21 m/s 的速度差。</p>
-<p>---</p>
 <h3 id="sub-76">练习 4：最大可测速度</h3>
 <p><strong>问题：</strong> 一个汽车防撞雷达工作在 77 GHz，采样率为 100 kHz。它能测量的最大速度是多少？如果目标速度超过这个值会发生什么？</p>
 <p><strong>解析：</strong> 最大可测速度可按</p>
@@ -511,7 +453,6 @@ $$</div>
 v_{\max} = \frac{3\times10^8 \times 100000}{4 \times 77\times10^9} \approx 97.4\,\text{m/s}
 $$</div>
 <p>约合 351 km/h。若目标速度超过这个上限，频谱会发生混叠，测速结果出现速度模糊，也就是测得的值不再是真实速度，而是折叠后的假象。</p>
-<p>---</p>
 <h3 id="sub-77">练习 5：气象雷达的风速测量</h3>
 <p><strong>问题：</strong> 一个 S 波段气象雷达（频率 3 GHz）测得某区域的多普勒频移为 200 Hz。这个区域的风速是多少？如果频移为 -150 Hz 呢？</p>
 <p><strong>解析：</strong> 当频移为 200 Hz 时，速度为</p>
@@ -524,12 +465,11 @@ $$</div>
 v = \frac{3\times10^8 \times (-150)}{2 \times 3\times10^9} = -7.5\,\text{m/s}
 $$</div>
 <p>负号表示目标远离雷达。因此这两种情况分别对应 10 m/s 的来向风和 7.5 m/s 的去向风。</p>
-<p>---</p>
 <h3 id="sub-78">练习 6：综合应用</h3>
 <p><strong>问题：</strong> 设计一个测速枪，要求：</p>
 <ul><li>测量范围：0 到 200 km/h</li><li>速度精度：约 ±1 km/h</li><li>观测时间：不超过 0.1 秒</li></ul>
 <p>请选择合适的雷达频率和采样率。</p>
-<p>如果你想把不同参数快速代进去比较，可到公众号下载配套附件后运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%94%E7%AB%A0/ch05_doppler_calculator.m"><code>ch05_doppler_calculator.m</code></a>。</p>
+<p>如果你想把不同参数快速代进去比较，可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%94%E7%AB%A0/ch05_doppler_calculator.m"><code>ch05_doppler_calculator.m</code></a>。</p>
 <p><strong>解析：</strong> 先把 200 km/h 换成约 55.6 m/s。为了覆盖这个速度范围，需要满足</p>
 <div class="math-block">$$
 f_s \ge \frac{4f_0v_{\max}}{c}
@@ -541,11 +481,10 @@ $$</div>
 $$</div>
 <p>在 24 GHz 下约为 0.625 m/s，也就是约 2.25 km/h。这个精度比 ±1 km/h 稍差，因此如果要更稳地达到精度要求，可以提高雷达频率到 35 GHz，或适当延长观测时间。</p>
 <p>因此，这道题的合理答案是：24 GHz + 20 kHz 可以满足速度范围，但若要更高精度，35 GHz 会更合适。</p>
-<p>---</p>
 <h3 id="sub-79">练习 7：编程实践（可选）</h3>
 <p><strong>问题：</strong> 编写一个 MATLAB 或 Python 程序，模拟多普勒测速的过程：</p>
 <ol><li>生成一个频率为 10 GHz 的发射信号</li><li>模拟一个速度为 30 m/s 的目标，生成带有多普勒频移的回波信号</li><li>将发射信号和回波信号混频</li><li>对混频后的信号做 FFT，找到多普勒频移</li><li>从频移计算出速度，验证是否为 30 m/s</li></ol>
-<p>如果你不想从空白开始写，可到公众号下载配套附件后运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%94%E7%AB%A0/ch05_doppler_velocity_measurement.m"><code>ch05_doppler_velocity_measurement.m</code></a>，先把完整流程跑通，再按自己的理解重写一遍。</p>
+<p>如果你不想从空白开始写，可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%94%E7%AB%A0/ch05_doppler_velocity_measurement.m"><code>ch05_doppler_velocity_measurement.m</code></a>，先把完整流程跑通，再按自己的理解重写一遍。</p>
 <p><strong>解析：</strong> 这道题的关键不是把代码写长，而是把处理链写对。先根据</p>
 <div class="math-block">$$
 \Delta f = \frac{2vf_0}{c}
@@ -555,18 +494,9 @@ $$</div>
 v = \frac{c\Delta f}{2f_0}
 $$</div>
 <p>把频移换回速度。若程序正确，计算结果应接近 30 m/s。</p>
-<p>---</p>
 <h3 id="sub-80">思考题</h3>
 <p><strong>问题：</strong> 请继续思考下面几个问题：</p>
-<ol><li>为什么高速公路上的测速雷达通常架设在路边，而不是路中间？</li><li>气象雷达如何区分雨滴和鸟群？</li><li>如果一辆车同时向前开、向上坡爬，雷达测得的速度是什么？</li><li>为什么汽车防撞雷达更常用 77 GHz，而不是 24 GHz？</li><li>连续波雷达为什么不能直接测距离？若既要测速又要测距，应采用什么办法？</li></ol>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section>
+<ol><li>为什么高速公路上的测速雷达通常架设在路边，而不是路中间？</li><li>气象雷达如何区分雨滴和鸟群？</li><li>如果一辆车同时向前开、向上坡爬，雷达测得的速度是什么？</li><li>为什么汽车防撞雷达更常用 77 GHz，而不是 24 GHz？</li><li>连续波雷达为什么不能直接测距离？若既要测速又要测距，应采用什么办法？</li></ol></section>
     </article>
     <div class="article-actions"><a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E9%80%9F%E5%BA%A6%E6%B5%8B%E9%87%8F.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%BA%94%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a></div>
   </main>

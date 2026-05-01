@@ -22,8 +22,7 @@
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.html">← 首页</a>
-    <div class="side-heading">第2章 信号基础</div>
-    <nav class="toc"><a class="toc-link" href="#ch02-s01">2.1 什么是信号</a><a class="toc-link" href="#ch02-s02">2.2 时域与频域</a><a class="toc-link" href="#ch02-s03">2.3 采样定理</a><a class="toc-link" href="#ch02-s04">2.4 小练习</a></nav>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch02.html">第2章 信号基础</a><div class="chapter-subtoc"><a class="toc-link" href="#ch02-s01">2.1 什么是信号</a><a class="toc-link" href="#ch02-s02">2.2 时域与频域</a><a class="toc-link" href="#ch02-s03">2.3 采样定理</a><a class="toc-link" href="#ch02-s04">2.4 小练习</a></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第2章</span><span>信号基础</span></div>
@@ -32,7 +31,6 @@
       <section class="chapter-section" data-section="ch02-s01"><h2 id="ch02-s01" class="section-title">2.1 什么是信号</h2>
 <p>物理课上量温度,结果是一个数:36.5℃。但温度计放在室外,早上冷、中午热、傍晚又凉下来——这个数在变。把"随时间变化的物理量"记录下来画成曲线,就是<strong>信号</strong>。</p>
 <p>雷达发出的电磁波、麦克风收到的声音、心电图的电压,都是信号。它们的共同点:值在持续变化,变化本身携带信息。医生盯着心电图看的不是某一刻的数值,而是波形的节律是否平稳,从而判断心脏的跳动,波形一旦消失则意味着心跳停止。雷达的逻辑也一样:发出信号,等待回波,回波的形态里藏着目标的距离、速度,乃至形状。</p>
-<p>---</p>
 <h3 id="sub-4">正弦波</h3>
 <p>工程里最常用的信号形式是<strong>正弦波</strong>:</p>
 <div class="math-block">$$
@@ -49,7 +47,6 @@ $$</div>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_1_sinusoids.png" alt="图 2.1 三种频率的正弦波" loading="lazy"><figcaption>图 2.1 三种频率的正弦波</figcaption></figure>
 <p>数学上可以证明,任何形状的周期信号都能分解成若干正弦波的叠加。这个结论叫傅里叶定理,也是正弦波在工程里被反复使用的根本原因。你可能会想:为什么不用方波或三角波做基本单元?因为方波本身就可以分解成无穷多个正弦波的叠加。正弦波是"不可再分"的最小振动模式(当然余弦也行,只是相位90°),用它做基底才能保证分解的唯一性。下一节从这里展开。</p>
 <p>顺带提一个记号问题:公式里的 $2\pi f$ 经常被写成一个字母 $\omega$,叫<strong>角频率</strong>,单位是 rad/s(弧度每秒)。两者的关系是 $\omega = 2\pi f$。你在其他教材里会频繁遇到 $\omega$,知道它和 $f$ 只差一个 $2\pi$ 的倍数就够了,后续章节我们统一用 $f$。</p>
-<p>---</p>
 <h3 id="sub-5">频率为什么是雷达工程师最关心的参数</h3>
 <p>电磁波在空间传播时,相邻两个波峰之间的距离叫<strong>波长</strong> $\lambda$,它和频率的关系是:</p>
 <div class="math-block">$$
@@ -61,46 +58,33 @@ $$</div>
 <p>低频电磁波绕射能力强,能翻越山丘、穿过云层;高频方向性好,但容易被雨水和水汽衰减。实际雷达的工作频段,是在这两者之间做权衡。</p>
 <p>这东西就像是显示屏的分辨率一样,4K看上去就是比1080p,更加清晰,能看到更多的细节。</p>
 <p>目标运动时,回波的频率会发生轻微偏移——靠近时频率升高,就像迎面而来的救护车鸣笛声变尖。雷达靠检测这个频率差来测量目标速度,具体原理见第 5 章。</p>
-<p>---</p>
 <h3 id="sub-6">真实信号是叠加出来的</h3>
 <p>雷达回波很少是单纯的正弦波。不同距离、不同速度的目标各贡献一个频率成分,混在一起返回接收机。</p>
 <p>下图把 3 Hz(振幅 1.0)、7 Hz(振幅 0.6)、15 Hz(振幅 0.3)三个正弦波画在同一张图里。三条细线是各自的分量,红色粗线是它们相加后的复合信号。可以看到,复合信号的波形忽高忽低、毫无规律可言——仅凭肉眼几乎猜不出它是由三个频率合成的。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_2_composite.png" alt="图 2.2 三个正弦波及其叠加" loading="lazy"><figcaption>图 2.2 三个正弦波及其叠加</figcaption></figure>
-<p>这样的复合信号,怎么看出里面藏了哪些频率?这个问题引出了频域分析,下一节从这里出发。 ---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch02-s02"><h2 id="ch02-s02" class="section-title">2.2 时域与频域</h2>
+<p>这样的复合信号,怎么看出里面藏了哪些频率?这个问题引出了频域分析,下一节从这里出发。</p></section><section class="chapter-section" data-section="ch02-s02"><h2 id="ch02-s02" class="section-title">2.2 时域与频域</h2>
 <p>上一节末尾留了一个问题:把 3 Hz、7 Hz、15 Hz 三个正弦波叠加之后,得到一条看起来杂乱的波形。怎么从这条曲线里看出它是由哪些频率构成的?</p>
 <p>答案是换一个角度看同一个信号。</p>
-<p>---</p>
 <h3 id="sub-7">两种描述方式</h3>
 <p>同一个信号可以用两种方式描述,就像同一栋楼可以从正面看,也可以从侧面看。</p>
 <p><strong>时域</strong>是我们最熟悉的视角:横轴是时间,纵轴是信号的值。心电图、录音波形、示波器屏幕上的曲线,都是时域的表示。它回答的问题是:这个信号在某一刻的值是多少?</p>
 <p><strong>频域</strong>换了一个角度:横轴是频率,纵轴是该频率成分的强度。它回答的问题是:这个信号里有哪些频率,各占多大比重?</p>
 <p>两种描述携带的信息完全等价——没有任何信息丢失,只是呈现方式不同。选择哪种视角,取决于你想回答什么问题。</p>
-<p>---</p>
 <h3 id="sub-8">从时域到频域</h3>
 <p>还是上一节那三个分量:3 Hz(振幅 1.0)、7 Hz(振幅 0.6)、15 Hz(振幅 0.3)。下面这张四宫格图把时域和频域的对应关系摆在一起。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_3_spectrum.png" alt="图 2.3 时域与频域的对应关系" loading="lazy"><figcaption>图 2.3 时域与频域的对应关系</figcaption></figure>
 <p>先看上面一行。左上是三条分量各自的时域波形,颜色不同,节奏不同,这一步还分得清楚。右上是它们相加后的复合信号——和上一节图 2.2 一样,杂乱无章。</p>
 <p>再看下面一行。左下是单独一个 3 Hz 正弦波的频域:整张图只有一根谱线,立在 3 Hz 的位置,高度等于振幅 1.0。一个纯正弦波在频域里就是这么干净——一根线,没有任何多余的成分。</p>
 <p>右下是复合信号的频域:三根竖线分别立在 3、7、15 Hz 的位置,高度正好是 1.0、0.6、0.3。上面时域里那条杂乱的波形,到了频域里结构完全暴露——三个分量的频率和强度一目了然。</p>
-<p>---</p>
 <h3 id="sub-9">傅里叶变换</h3>
 <p>从时域波形计算出频域频谱,用的工具叫<strong>傅里叶变换</strong>(Fourier Transform)。反过来,从频谱还原时域波形,叫<strong>傅里叶逆变换</strong>。</p>
 <p>傅里叶变换实现的数学的细节不是本节的重点,读者可以去看奥本海姆的信号与系统补补基础,或者网上找个短平快的教程。你现在只需要建立一个直觉:傅里叶变换做的事情,就像把一束白光送入棱镜,白光看起来是一种颜色,经过棱镜折射之后分解成红橙黄绿蓝紫,每种颜色对应一个频率。傅里叶变换对信号做的,正是这件事。</p>
 <p>实际计算中用的是离散版本,叫<strong>快速傅里叶变换</strong>(FFT,Fast Fourier Transform),计算效率极高。</p>
-<p>---</p>
 <h3 id="sub-10">雷达为什么需要频域</h3>
 <p>雷达接收到的回波是一个时域信号:振幅随时间变化的电压。但雷达想知道的不是"此刻电压是多少",而是"回波里有没有某个特定频率,有多强"。</p>
 <p>目标的距离信息藏在回波的<strong>时间延迟</strong>里——回波比发射信号晚了多少时间,就对应多远的距离。延迟是时间轴上的位移,时域分析直接可读。</p>
 <p>目标的速度信息藏在回波的<strong>频率偏移</strong>里——运动目标让回波频率相对发射频率发生轻微变化(多普勒效应)。这个偏移在时域波形里几乎看不出来,但在频域里是一根谱线的位移,一目了然。</p>
 <p>这也是为什么雷达信号处理要在两个视角之间来回切换:距离用时域,速度用频域,各有各的用武之地。</p>
-<p>---</p>
 <h3 id="sub-11">频率分辨率</h3>
 <p>频谱图上能分开两根相邻谱线的最小间距,叫<strong>频率分辨率</strong>,记作 $\Delta f$。它和观测时间 $T_{\text{obs}}$ 之间有一个简单的关系:</p>
 <div class="math-block">$$
@@ -109,19 +93,10 @@ $$</div>
 <p>观测 1 秒,能分辨 1 Hz 的差异;观测 0.1 秒,只能分辨 10 Hz 的差异——观测时间越长,能分辨的频率间距越小,分辨能力越精细。</p>
 <p>如果你只听了一个声音 0.01 秒,很难判断它是 440 Hz 还是 441 Hz;但如果听了 1 秒,两个音高的差别就能分辨出来。</p>
 <p>这个限制在雷达里有实际影响:观测目标的时间越长,测速精度越高,但代价是雷达需要持续照射目标更长时间。时间和频率之间存在一个基本的权衡关系,第4章讨论脉冲压缩时还会回到这一点。</p>
-<p>---</p>
-<p>到这里,我们一直在讨论连续信号——信号在每一个时刻都有值。但计算机处理不了连续信号,必须把它变成一串离散的数字。怎么变?变的时候会丢信息吗?下一节回答这个问题。 ---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch02-s03"><h2 id="ch02-s03" class="section-title">2.3 采样定理</h2>
+<p>到这里,我们一直在讨论连续信号——信号在每一个时刻都有值。但计算机处理不了连续信号,必须把它变成一串离散的数字。怎么变?变的时候会丢信息吗?下一节回答这个问题。</p></section><section class="chapter-section" data-section="ch02-s03"><h2 id="ch02-s03" class="section-title">2.3 采样定理</h2>
 <p>前两节讨论的正弦波、叠加、频谱,都是在"连续时间"的框架下说的:信号在每一个时刻都有值,时间轴是一条不间断的实数轴。</p>
 <p>但计算机没法处理连续信号。计算机只能存数字,存一个就是一个,存不了无穷多个。要让计算机处理信号,必须把连续信号变成一串离散的数值——这个过程叫<strong>采样</strong>。</p>
 <p>采样的操作很简单:每隔固定时间取一个点,记录下那一刻的信号值,其余时刻全部丢弃。问题是:丢了那么多信息,还能还原出原来的信号吗?</p>
-<p>---</p>
 <h3 id="sub-12">采样率和奈奎斯特条件</h3>
 <p>每秒取多少个点,就是<strong>采样率</strong> $f_s$,单位 Hz。</p>
 <p>采样率越高,还原越准确,但存储和传输都有成本。那最低需要多高?</p>
@@ -131,7 +106,6 @@ f_s &gt; 2 f_{\max}
 $$</div>
 <p>$f_{\max}$ 是信号中包含的最高频率分量。采样率只要严格大于最高频率的两倍,信号就能被完整还原,不丢失任何信息。</p>
 <p>$f_s / 2$ 这个分界线有个专门的名字,叫<strong>奈奎斯特频率</strong>。采样率 1000 Hz 对应的奈奎斯特频率就是 500 Hz——意味着这个采样率最多能正确捕捉 500 Hz 以下的信号成分。</p>
-<p>---</p>
 <h3 id="sub-13">采样不够快会怎样:混叠</h3>
 <p>下图对一个 10 Hz 正弦波做了三种采样率的实验。灰色线是原始信号,橙色圆点是采样点,蓝色虚线是从采样点重建出来的波形。从上到下依次看:</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_4_aliasing.png" alt="图 2.4 采样定理与混叠演示" loading="lazy"><figcaption>图 2.4 采样定理与混叠演示</figcaption></figure>
@@ -143,20 +117,11 @@ $$</div>
 <p>混叠一旦发生就无法挽回——你没办法从已有的采样数据中分辨出那个 2 Hz 到底是"真的 2 Hz 信号"还是"10 Hz 被混叠下来的假象"。这就是为什么采样率必须满足奈奎斯特条件,没有余地可以打折。</p>
 <p>混叠在生活中经常能观察到,电影里汽车轮毂看起来"倒转",就是视觉采样率(每秒 24 帧)不够高,轮辐的旋转频率超过了奈奎斯特频率,高频运动被混叠成低频的反向旋转。</p>
 <p>荧光灯下用手机拍屏幕出现滚动条纹,也是类似的道理:手机快门频率和屏幕刷新频率之间的关系不满足采样条件,导致出现虚假的低频图案。</p>
-<p>---</p>
 <h3 id="sub-14">ADC</h3>
 <p>雷达接收机里有一个关键器件叫<strong>模数转换器</strong>(ADC,Analog-to-Digital Converter),它的工作就是对回波信号做采样——把连续的模拟电压变成离散的数字序列,交给后续的数字信号处理器。</p>
 <p>ADC 的采样率直接决定了雷达能处理多大带宽的信号。如果雷达发射的信号带宽是 50 MHz,ADC 的采样率至少需要 100 MHz 以上。高采样率的 ADC 很贵,功耗也大,这是雷达设计中的一个现实约束。</p>
-<p>另一个实际问题是:采样率越高,每秒产生的数据量越大,对存储和实时处理的要求也越高。所以雷达工程师不是简单地把采样率拉到最高,而是根据信号带宽选择"刚好够用再留一点余量"的采样率。 ---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch02-s04"><h2 id="ch02-s04" class="section-title">2.4 小练习</h2>
+<p>另一个实际问题是:采样率越高,每秒产生的数据量越大,对存储和实时处理的要求也越高。所以雷达工程师不是简单地把采样率拉到最高,而是根据信号带宽选择"刚好够用再留一点余量"的采样率。</p></section><section class="chapter-section" data-section="ch02-s04"><h2 id="ch02-s04" class="section-title">2.4 小练习</h2>
 <p>这些练习覆盖本章的三个核心概念：正弦波参数、时域与频域的关系、采样定理。建议先自己做，再对照解析检查思路。</p>
-<p>---</p>
 <h3 id="sub-15">练习 1：频率与周期的换算</h3>
 <p><strong>问题：</strong> 一个正弦信号的周期是 $T = 0.02\,\text{s}$，它的频率是多少？这个频率在人耳可听范围内吗（人耳可听范围约 20 Hz - 20000 Hz）？</p>
 <p><strong>解析：</strong> 由 $f = 1/T$ 可得</p>
@@ -164,7 +129,6 @@ $$</div>
 f = \frac{1}{0.02} = 50\,\text{Hz}
 $$</div>
 <p>50 Hz 在人耳可听范围内，是一个比较低的频率。日常生活中的交流电频率就是 50 Hz，因此有时能听到设备发出的低频嗡嗡声。</p>
-<p>---</p>
 <h3 id="sub-16">练习 2：从频谱读信息</h3>
 <p><strong>问题：</strong> 某信号的频谱图上有两根谱线：一根在 100 Hz 处，高度 3 V；另一根在 250 Hz 处，高度 1 V。</p>
 <p>（a）写出这个信号的时域表达式（忽略相位）。</p>
@@ -179,7 +143,6 @@ $$</div>
 f_s &gt; 2f_{\max} = 2 \times 250 = 500\,\text{Hz}
 $$</div>
 <p>因此采样率至少要大于 500 Hz。实际工程中通常会留一点余量，例如取 600 Hz 或 1000 Hz。</p>
-<p>---</p>
 <h3 id="sub-17">练习 3：混叠判断</h3>
 <p><strong>问题：</strong> 你用 800 Hz 的采样率对一个信号采样。信号里包含三个频率分量：100 Hz、300 Hz、500 Hz。哪些分量会发生混叠？混叠后会表现为什么频率？</p>
 <p>可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0/ch02_exercise_signals.m"><code>ch02_exercise_signals.m</code></a> 中练习 3 的部分，重点观察 500 Hz 分量如何折叠到 300 Hz。</p>
@@ -192,7 +155,6 @@ $$</div>
 f_{\text{alias}} = f_s - f_{\text{signal}} = 800 - 500 = 300\,\text{Hz}
 $$</div>
 <p>也就是说，500 Hz 分量会折叠到 300 Hz 处，并和原本就存在的 300 Hz 分量重合。这样不仅会出现假象，还会把原来的 300 Hz 分量一起污染掉。</p>
-<p>---</p>
 <h3 id="sub-18">练习 4：雷达场景计算</h3>
 <p><strong>问题：</strong> 一部雷达发射频率为 10 GHz 的电磁波。</p>
 <p>（a）这个信号的波长是多少？（$c = 3 \times 10^8\,\text{m/s}$）</p>
@@ -207,7 +169,6 @@ $$</div>
 $$</div>
 <p>这属于 X 波段雷达常见的波长范围。</p>
 <p>当目标向雷达靠近时，回波频率会升高。原因和救护车靠近时鸣笛声变尖是一样的：波源与观察者相对靠近，波被压缩，频率上升。</p>
-<p>---</p>
 <h3 id="sub-19">练习 5（动手题）：观察混叠现象</h3>
 <p><strong>问题：</strong> 运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0/ch02_exercise_signals.m"><code>ch02_exercise_signals.m</code></a> 中练习 5 的代码，观察 7 Hz 采样 5 Hz 信号时的波形结果。这个场景下，混叠后的表观频率是多少？和图中结果是否一致？</p>
 <p>这道题最好直接动手运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0/ch02_exercise_signals.m"><code>ch02_exercise_signals.m</code></a>。先自己算出结果，再看图里重建波形的频率是否和你的计算一致。</p>
@@ -220,7 +181,6 @@ $$</div>
 f_{\text{alias}} = 7 - 5 = 2\,\text{Hz}
 $$</div>
 <p>所以图中重建出来的波形应表现为一个 2 Hz 的低频信号，而不是原来的 5 Hz 信号。若你运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0/ch02_exercise_signals.m"><code>ch02_exercise_signals.m</code></a>，会看到图形结果与这个结论一致。</p>
-<p>---</p>
 <h3 id="sub-20">练习 6：频率分辨率</h3>
 <p><strong>问题：</strong> 雷达对一个目标连续观测了 0.05 秒。目标回波中可能包含两个多普勒频率分量：1000 Hz 和 1015 Hz。这两个分量在频谱上能分开吗？如果不能，至少需要观测多长时间？</p>
 <p><strong>解析：</strong> 频率分辨率近似为</p>
@@ -237,7 +197,6 @@ $$</div>
 T_{\text{obs}} \ge \frac{1}{15} \approx 0.067\,\text{s}
 $$</div>
 <p>也就是至少需要大约 67 ms 的观测时间。</p>
-<p>---</p>
 <h3 id="sub-21">练习 7：临界采样不总是归零</h3>
 <p><strong>问题：</strong> 2.3 节演示了 $f_s = 2f$、初始相位为零时，采样点全落在零点上。现在换一个情况：信号</p>
 <div class="math-block">$$
@@ -257,15 +216,7 @@ $$</div>
 \sin(\pi + \pi/4) = -\frac{\sqrt{2}}{2}
 $$</div>
 <p>因此采样值不再全是零，而是在 $\pm \sqrt{2}/2$ 之间交替出现。</p>
-<p>但这并不表示信号已经被正确重建。因为在临界采样条件 $f_s = 2f$ 下，采样值并不能唯一对应原始连续信号。也就是说，虽然采样点不全为零，但原信号依然不能被稳定、唯一地恢复出来。这正是采样定理要求 $f_s$ 必须严格大于 $2f$ 的原因。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section>
+<p>但这并不表示信号已经被正确重建。因为在临界采样条件 $f_s = 2f$ 下，采样值并不能唯一对应原始连续信号。也就是说，虽然采样点不全为零，但原信号依然不能被稳定、唯一地恢复出来。这正是采样定理要求 $f_s$ 必须严格大于 $2f$ 的原因。</p></section>
     </article>
     <div class="article-actions"><a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E4%BF%A1%E5%8F%B7%E5%9F%BA%E7%A1%80.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a></div>
   </main>

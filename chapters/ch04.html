@@ -22,8 +22,7 @@
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.html">← 首页</a>
-    <div class="side-heading">第4章 距离测量</div>
-    <nav class="toc"><a class="toc-link" href="#ch04-s01">4.1 时间延迟到距离</a><a class="toc-link" href="#ch04-s02">4.2 脉冲压缩原理</a><a class="toc-link" href="#ch04-s03">4.3 线性调频信号</a><a class="toc-link" href="#ch04-s04">4.4 匹配滤波</a><a class="toc-link" href="#ch04-s05">4.5 小练习</a></nav>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch04.html">第4章 距离测量</a><div class="chapter-subtoc"><a class="toc-link" href="#ch04-s01">4.1 时间延迟到距离</a><a class="toc-link" href="#ch04-s02">4.2 脉冲压缩原理</a><a class="toc-link" href="#ch04-s03">4.3 线性调频信号</a><a class="toc-link" href="#ch04-s04">4.4 匹配滤波</a><a class="toc-link" href="#ch04-s05">4.5 小练习</a></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第4章</span><span>距离测量</span></div>
@@ -65,15 +64,7 @@ $$</div>
 $$</div>
 <p>也就是说，相距 150 m 以内的两个目标，很可能会在距离向上合成一个响应。</p>
 <p>这里就出现了第4章后面几节要解决的矛盾。若把脉冲做得很短，分辨率会提高，但发射能量随之下降，回波特别微弱；若把脉冲做长，能量会提高，分辨率却会变差。远距离探测希望脉冲长一些，精细测距又希望脉冲短一些，这两件事很难同时满足。</p>
-<p>后面几节讨论的脉冲压缩，正是为了解决这个矛盾。它并不改变测距公式 $R=c\Delta t/2$，改变的是接收机区分相近回波的能力。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch04-s02"><h2 id="ch04-s02" class="section-title">4.2 脉冲压缩原理</h2>
+<p>后面几节讨论的脉冲压缩，正是为了解决这个矛盾。它并不改变测距公式 $R=c\Delta t/2$，改变的是接收机区分相近回波的能力。</p></section><section class="chapter-section" data-section="ch04-s02"><h2 id="ch04-s02" class="section-title">4.2 脉冲压缩原理</h2>
 <p>上一节讲的是一个目标有多远，核心关系是”回波晚回来多少，就对应多远的距离”。但一旦真要把距离测得更细，读者很快会遇到一个新问题：想把距离分得更开，往往需要更短的脉冲；可脉冲一短，带出去的能量又会变少。</p>
 <p>这测距体制里最典型的一组矛盾。脉冲压缩要解决的，正是这组矛盾：能不能在发射时保留长脉冲的能量优势，而在接收时又得到接近短脉冲的分辨能力？</p>
 <h3 id="sub-40">带宽决定分辨能力</h3>
@@ -141,15 +132,7 @@ $$</div>
 = 15\ \text{m}
 $$</div>
 <p>这个例子体现了本章的核心：脉冲压缩让长脉冲内部带上可利用的结构，发射时保留能量，接收时再把这些结构重新对齐，于是获得接近短脉冲的分辨能力。</p>
-<p>下一节就顺着这条线往前走，看工程上最常见的一类大带宽波形——LFM——到底长什么样。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch04-s03"><h2 id="ch04-s03" class="section-title">4.3 线性调频信号</h2>
+<p>下一节就顺着这条线往前走，看工程上最常见的一类大带宽波形——LFM——到底长什么样。</p></section><section class="chapter-section" data-section="ch04-s03"><h2 id="ch04-s03" class="section-title">4.3 线性调频信号</h2>
 <p>前一节已经把脉冲压缩的主线讲清楚了：若想在保持较长脉冲能量的同时提高分辨率，发射波形内部就必须带有足够丰富的结构。工程上最常见的选择，是线性调频信号，也就是 LFM。</p>
 <h3 id="sub-43">线性调频信号的基本形式</h3>
 <p>所谓<strong>线性调频</strong>，意思是脉冲内部的瞬时频率随着时间按线性规律上升或下降。在理解这个概念之前，先看一个更简单的例子。</p>
@@ -207,15 +190,7 @@ $$</div>
 <p>可以看到，下变频后载频项 $2\pi f_0 t$ 被消除，只剩下调频项 $\pi \mu t^2$。这样得到的基带信号频谱以零频为中心对称分布，带宽仍为 $B$，但处理起来更方便，采样率也可以大幅降低。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_7_lfm_baseband.png" alt="零中频LFM信号" loading="lazy"><figcaption>零中频LFM信号</figcaption></figure>
 <p>上图展示了基带表示下的 LFM 信号：第一行是时域实部，第二行是时域虚部，第三行是幅频特性。可以看到频谱完全对称，以零频为中心，带宽为 30 MHz。这种基带表示在信号处理中很常见，既降低了采样率要求，又能得到对称美观的频谱图。</p>
-<p>有了 LFM 这种大带宽波形，发射端的问题就解决了。但接收端还有一个关键问题：回波仍然是一个拖得很长的脉冲，怎样才能把它压成窄峰？这就是下一节要讲的匹配滤波。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch04-s04"><h2 id="ch04-s04" class="section-title">4.4 匹配滤波</h2>
+<p>有了 LFM 这种大带宽波形，发射端的问题就解决了。但接收端还有一个关键问题：回波仍然是一个拖得很长的脉冲，怎样才能把它压成窄峰？这就是下一节要讲的匹配滤波。</p></section><section class="chapter-section" data-section="ch04-s04"><h2 id="ch04-s04" class="section-title">4.4 匹配滤波</h2>
 <p>现在脉冲内部有了丰富的信息，稍微错位就可以表现出很大的差异，那么如何让这个差异显现出来，表征成方便测量的参数呢？</p>
 <h3 id="sub-45">互相关与时间延迟估计</h3>
 <p>假设雷达发射了信号 $s(t)$,目标在距离 $R$ 处反射回来,回波就是 $s(t - \tau)$,其中 $\tau = 2R/c$ 是往返延迟。接收机的任务是:从回波中找出这个延迟 $\tau$。</p>
@@ -363,22 +338,13 @@ $$</div>
 <p>图中间最高的一部分叫<strong>主瓣</strong>，两侧逐渐衰减的起伏叫<strong>旁瓣</strong>。主瓣宽度决定两个相近目标能否分开，旁瓣则会带来另一个实际问题：若一个强目标旁边挨着一个弱目标，强目标的旁瓣可能会把弱目标淹没。因此工程上常会再配合加窗处理，在压低旁瓣和保持主瓣宽度之间做折中。</p>
 <p>参数怎么选：带宽 $B$ 越大，主瓣越窄，距离分辨率越高，但对硬件的采样率要求也越高。脉冲宽度 $\tau$ 越长，能量越大，探测距离越远，但时宽带宽积 $TB$ 也要相应增大，否则压缩比不够。实际雷达中，$TB$ 通常在 100 到 10000 之间，取决于具体应用场景。</p>
 <p>什么时候不管用：匹配滤波假设回波与发射信号完全匹配。如果目标有径向速度，回波会产生多普勒频移，导致频率失配，压缩效果变差（这个问题在第5章会详细讨论）。如果有多个目标，互相关函数会出现多个峰值，需要用检测算法来区分（这个问题在第7章会讨论）。</p>
-<p>第4章的主线到这里已经闭合。4.1 节给出"时间延迟对应距离",4.2 节解释"为什么压缩后开始看带宽",4.3 节介绍了最常用的 LFM 波形,这一节则从互相关出发,自然引出匹配滤波器,并展示了它对 LFM 的压缩效果。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section><section class="chapter-section" data-section="ch04-s05"><h2 id="ch04-s05" class="section-title">4.5 小练习</h2>
+<p>第4章的主线到这里已经闭合。4.1 节给出"时间延迟对应距离",4.2 节解释"为什么压缩后开始看带宽",4.3 节介绍了最常用的 LFM 波形,这一节则从互相关出发,自然引出匹配滤波器,并展示了它对 LFM 的压缩效果。</p></section><section class="chapter-section" data-section="ch04-s05"><h2 id="ch04-s05" class="section-title">4.5 小练习</h2>
 <p>这些练习围绕本章的主线展开：距离由时延决定，分辨率由带宽决定，脉冲压缩依靠匹配滤波实现。建议先自己判断，再结合结果图验证。</p>
-<p>---</p>
 <h3 id="sub-53">练习 1：从单目标回波恢复距离</h3>
 <p><strong>问题：</strong> 设一部脉冲雷达的参数如下：</p>
 <ul><li>载频：$f_0 = 10$ GHz</li><li>脉冲宽度：$\tau = 10$ μs</li><li>带宽：$B = 20$ MHz</li><li>采样率：$f_s = 100$ MHz</li><li>目标距离：$R = 15$ km</li></ul>
 <p>请说明：在这个场景下，如何通过生成 LFM 发射信号、构造延迟回波、进行匹配滤波，再由主峰位置恢复目标距离？</p>
-<p>如果你想先把完整流程跑一遍，可到公众号下载配套附件后运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_pulse_compression_demo.m"><code>ch04_pulse_compression_demo.m</code></a>。</p>
+<p>如果你想先把完整流程跑一遍，可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_pulse_compression_demo.m"><code>ch04_pulse_compression_demo.m</code></a>。</p>
 <p><strong>解析：</strong> 这道题的主线只有四步。</p>
 <p>第一步，由带宽和脉宽确定调频斜率</p>
 <div class="math-block">$$
@@ -401,38 +367,26 @@ $$</div>
 R = \frac{c\,t_{\text{peak}}}{2}
 $$</div>
 <p>这就是从回波恢复目标距离的完整处理链。</p>
-<p>---</p>
 <h3 id="sub-54">练习 2：改变信噪比</h3>
 <p><strong>问题：</strong> 把信噪比从 <code>-10 dB</code> 改成 <code>-20 dB</code>，主峰会发生什么变化？目标是否还能被辨认出来？</p>
-<p>可到公众号下载配套附件后运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 1 的部分，比较不同 SNR 下的距离像。</p>
+<p>可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 1 的部分，比较不同 SNR 下的距离像。</p>
 <p><strong>解析：</strong> 当 SNR 下降时，噪声底会抬高，主峰与背景的对比度变差，因此目标会更难被直接看出来。但只要匹配滤波后的主峰仍明显高于周围噪声，就仍有机会完成检测。这个练习的重点不是算出一个固定数值，而是建立直觉：信噪比越低，峰值越不稳定，检测难度越大。</p>
-<p>---</p>
 <h3 id="sub-55">练习 3：加入第二个目标</h3>
 <p><strong>问题：</strong> 在原来的单目标场景中，再加入一个距离为 20 km 的目标。匹配滤波输出会出现什么变化？什么时候两个目标会合并成一个峰？</p>
-<p>可到公众号下载配套附件后运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 2 的部分，观察双目标距离像。</p>
+<p>可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 2 的部分，观察双目标距离像。</p>
 <p><strong>解析：</strong> 增加第二个目标后，距离像上会出现第二个主峰。若两个目标的距离差大于系统距离分辨率，它们会显示为两个可分离的峰；若距离差小于距离分辨率，两个峰会重叠甚至合并。这个练习的关键，是把“距离分辨率由带宽决定”这句话和图上的双峰分离效果对应起来。</p>
-<p>---</p>
 <h3 id="sub-56">练习 4：改变带宽</h3>
 <p><strong>问题：</strong> 把带宽 $B$ 从 20 MHz 改成 5 MHz，主峰宽度会怎样变化？这说明了什么？</p>
-<p>可到公众号下载配套附件后运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 3 的部分，对比不同带宽下的距离像。</p>
+<p>可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 3 的部分，对比不同带宽下的距离像。</p>
 <p><strong>解析：</strong> 距离分辨率满足</p>
 <div class="math-block">$$
 \Delta R \approx \frac{c}{2B}
 $$</div>
 <p>因此带宽减小后，距离分辨率会变差，主峰会变宽，两个相近目标也更难分开。这个练习的意义，是把公式里的 $B$ 和图形里的主瓣宽度直接对应起来。</p>
-<p>---</p>
 <h3 id="sub-57">练习 5：加入窗函数</h3>
 <p><strong>问题：</strong> 在匹配滤波前加入汉明窗，会对主瓣宽度和旁瓣高度造成什么影响？</p>
-<p>可到公众号下载配套附件后运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 4 的部分，比较无窗和加窗后的压缩结果。</p>
-<p><strong>解析：</strong> 加窗的主要作用是压低旁瓣，因此图上会看到旁瓣下降；但代价是主瓣通常会变宽，也就是分辨率会有所牺牲。这个练习体现的不是“窗越强越好”，而是工程上常见的折中：要更低的旁瓣，往往就要接受更宽的主瓣。</p>
-<p>---</p>
-<p>相关资料放在了公众号：<strong>四臂西瓜</strong> 后台回复：<strong>雷达</strong></p>
-<p>即可获取：</p>
-<ul><li>📦 配套MATLAB/Python代码</li><li>📄 完整PDF教材</li><li>📱 在线阅读电子书版本</li><li>👥 雷达交流群</li></ul>
-<p>想易懂又深入学习雷达信号处理？</p>
-<p>欢迎关注我的<strong>“知乎专栏”</strong>与<strong>“公众号”</strong>。</p>
-<p>本文来自我的系统性雷达信号处理教材，完整内容包括：</p>
-<ul><li>雷达基础原理（测距、测速、测角）</li><li>信号处理技术（脉冲压缩、多普勒滤波、MTD）</li><li>目标检测算法（CFAR、恒虚警率检测）</li><li>提高篇（抗干扰等）</li><li>MATLAB完整代码实现</li></ul></section>
+<p>可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 4 的部分，比较无窗和加窗后的压缩结果。</p>
+<p><strong>解析：</strong> 加窗的主要作用是压低旁瓣，因此图上会看到旁瓣下降；但代价是主瓣通常会变宽，也就是分辨率会有所牺牲。这个练习体现的不是“窗越强越好”，而是工程上常见的折中：要更低的旁瓣，往往就要接受更宽的主瓣。</p></section>
     </article>
     <div class="article-actions"><a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E8%B7%9D%E7%A6%BB%E6%B5%8B%E9%87%8F.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a></div>
   </main>

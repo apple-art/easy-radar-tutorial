@@ -28,10 +28,16 @@ CHAPTERS = [
     ("ch08", "第八章", "第8章", "完整处理流程"),
 ]
 
-INTRO = "面向学生和工程师的雷达信号处理入门教材：先建立直觉，再跑通 MATLAB 示例。"
+INTRO = "一本从直觉出发的雷达信号处理入门教程。"
 GITHUB_URL = "https://github.com/apple-art/easy-radar-tutorial"
 SITE_URL = "https://apple-art.github.io/easy-radar-tutorial/"
 DEFAULT_SOURCE_DIR = Path(r"D:\Obsidian\唐承乾的笔记本\雷达教材\知乎版\系列文章")
+PROMO_CUTOFF_MARKERS = (
+    "相关资料放在了公众号",
+    "后台回复：**雷达**",
+    "即可获取：",
+    "欢迎关注我的**“知乎专栏”**与**“公众号”**",
+)
 
 
 def url_path(path: str) -> str:
@@ -92,6 +98,21 @@ def clean_title(title: str) -> str:
     return title.strip()
 
 
+def clean_markdown(markdown_text: str) -> str:
+    """Remove platform-specific copy from the Zhihu version before publishing."""
+    cleaned_lines: list[str] = []
+    for line in markdown_text.splitlines():
+        if any(marker in line for marker in PROMO_CUTOFF_MARKERS):
+            break
+        cleaned_lines.append(line)
+    text = "\n".join(cleaned_lines)
+    text = text.replace("可到公众号下载配套附件后运行", "可直接运行")
+    text = text.replace("到公众号下载配套附件后运行", "直接运行")
+    text = text.replace("如果你想把这些数量级和曲线一起看，可到公众号下载配套附件后运行", "如果你想把这些数量级和曲线一起看，可直接运行")
+    text = text.replace("如果你想把时域和频域的差别直观看出来，可到公众号下载配套附件后运行", "如果你想把时域和频域的差别直观看出来，可直接运行")
+    return text
+
+
 def extract_title(markdown_text: str, fallback: str) -> str:
     for line in markdown_text.splitlines():
         match = re.match(r"^#\s+(.+?)\s*$", line)
@@ -107,6 +128,8 @@ def paragraph_summary(markdown_text: str) -> str:
         if not stripped or stripped.startswith("#") or stripped.startswith("![") or stripped == "$$":
             if captured:
                 break
+            continue
+        if stripped in {"---", "***", "___"}:
             continue
         if stripped.startswith("```") or stripped.startswith("|"):
             continue
@@ -221,6 +244,10 @@ class MarkdownRenderer:
                 index += 1
                 continue
             if not stripped:
+                flush_paragraph()
+                index += 1
+                continue
+            if stripped in {"---", "***", "___"}:
                 flush_paragraph()
                 index += 1
                 continue
@@ -370,6 +397,7 @@ class SiteBuilder:
             sections = []
             for section_index, path in enumerate(files, start=1):
                 text = path.read_text(encoding="utf-8")
+                text = clean_markdown(text)
                 fallback = path.stem.split("_", 1)[-1].replace("_", " ")
                 section_id = f"{chapter_slug}-s{section_index:02d}"
                 sections.append(
@@ -427,8 +455,8 @@ class SiteBuilder:
     <div class="hero-copy reveal">
       <div class="eyebrow">One chapter, one page</div>
       <h1>易懂的雷达信号处理教程</h1>
-      <p>{INTRO}</p>
-      <div class="hero-actions"><a class="btn primary" href="chapters/ch01.html">开始阅读</a><a class="btn" href="#chapters">选择章节</a><a class="btn ghost" href="{html_attr(GITHUB_URL)}">GitHub 仓库</a></div>
+      <p>从雷达是什么开始，一路讲到距离、速度、检测、测角和完整 MATLAB 处理流程。</p>
+      <div class="hero-actions"><a class="btn primary" href="chapters/ch01.html">开始阅读</a><a class="btn" href="#chapters">选择章节</a><a class="btn ghost" href="{html_attr(github_tree_url('matlab'))}">MATLAB 代码</a></div>
     </div>
     <aside class="signal-panel reveal" aria-label="教材数据">
       <div class="scope-ring"></div><div class="metric"><span>8</span><small>章网页</small></div><div class="metric"><span>{sum(len(c["sections"]) for c in self.chapters)}</span><small>个小节</small></div><div class="metric"><span>{len(self.matlab_files_by_name)}</span><small>个 MATLAB 脚本</small></div>
@@ -436,7 +464,6 @@ class SiteBuilder:
   </div>
 </header>
 <main>
-  <section class="intro-strip reveal"><p><strong>发布原则：</strong>公开仓库只保留生成后的网页、PDF 和 MATLAB 示例；图片直接使用知乎版中的在线图床链接，原始 Markdown 稿件不进入公开仓库。</p></section>
   <section id="chapters" class="chapters">
     <div class="section-head reveal"><p class="eyebrow">Read Online</p><h2>在线章节</h2><p>每一章是一整页，左侧目录用于章节内跳转；PDF 保留给下载、打印和离线阅读。</p></div>
     <div class="chapter-grid">{''.join(cards)}</div>
@@ -454,10 +481,20 @@ class SiteBuilder:
                 + renderer.render(section["text"], section["id"], section["title"])
                 + "</section>"
             )
-        toc = "".join(
-            f'<a class="toc-link" href="#{html_attr(section["id"])}">{html.escape(section["title"])}</a>'
-            for section in chapter["sections"]
-        )
+        sidebar_items = []
+        for item in self.chapters:
+            chapter_link = (
+                f'<a class="chapter-toc-link{" active" if item["slug"] == chapter["slug"] else ""}" '
+                f'href="{html_attr(url_path(item["slug"] + ".html"))}">{html.escape(item["label"])} {html.escape(item["title"])}</a>'
+            )
+            if item["slug"] == chapter["slug"]:
+                subsection_links = "".join(
+                    f'<a class="toc-link" href="#{html_attr(section["id"])}">{html.escape(section["title"])}</a>'
+                    for section in item["sections"]
+                )
+                chapter_link += f'<div class="chapter-subtoc">{subsection_links}</div>'
+            sidebar_items.append(f'<div class="book-toc-group">{chapter_link}</div>')
+        sidebar = "".join(sidebar_items)
         actions = []
         if chapter.get("pdf"):
             actions.append(f'<a class="btn" href="../{html_attr(url_path(chapter["pdf"]))}">本章 PDF</a>')
@@ -473,8 +510,7 @@ class SiteBuilder:
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.html">← 首页</a>
-    <div class="side-heading">{html.escape(chapter["label"])} {html.escape(chapter["title"])}</div>
-    <nav class="toc">{toc}</nav>
+    <nav class="book-toc">{sidebar}</nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>{html.escape(chapter["label"])}</span><span>{html.escape(chapter["title"])}</span></div>
@@ -558,7 +594,7 @@ h1{font-size:clamp(46px,7vw,88px);line-height:.98;letter-spacing:-.06em;margin:1
 .signal-panel{min-height:420px;border:1px solid rgba(29,37,36,.14);border-radius:38px;background:linear-gradient(145deg,rgba(18,52,58,.92),rgba(116,57,31,.88));color:#fff8ed;box-shadow:var(--shadow);position:relative;overflow:hidden;padding:34px;display:grid;align-content:end;grid-template-columns:repeat(3,1fr);gap:12px}.scope-ring{position:absolute;left:50%;top:42%;width:320px;height:320px;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(90deg,transparent 49%,rgba(156,203,183,.5) 50%,transparent 51%),linear-gradient(0deg,transparent 49%,rgba(156,203,183,.5) 50%,transparent 51%),repeating-radial-gradient(circle,transparent 0 42px,rgba(156,203,183,.28) 43px 44px);animation:pulse 5s ease-in-out infinite}.metric{position:relative;padding:18px 12px;border-radius:20px;background:rgba(255,248,237,.12);backdrop-filter:blur(8px);text-align:center}.metric span{display:block;font-size:42px;font-weight:900;font-family:var(--sans)}.metric small{color:rgba(255,248,237,.78)}
 main{width:min(1180px,calc(100% - 40px));margin:0 auto}.intro-strip{margin:-70px 0 70px;position:relative;padding:22px 26px;border-radius:24px;background:rgba(255,255,255,.72);border:1px solid var(--line);box-shadow:var(--shadow)}.intro-strip p{margin:0;line-height:1.8;color:#526059}.section-head{max-width:760px;margin-bottom:28px}h2{font-size:clamp(32px,4vw,54px);margin:8px 0 14px;letter-spacing:-.04em}.section-head p{color:var(--muted);line-height:1.8}
 .chapter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.chapter-card{padding:28px;border:1px solid var(--line);border-radius:30px;background:rgba(255,255,255,.68);box-shadow:0 16px 36px rgba(39,30,21,.08)}.chapter-kicker{font-family:var(--sans);color:var(--copper-dark);font-weight:900}.chapter-card h3{font-size:28px;margin:8px 0 10px}.chapter-card p,.site-footer{color:var(--muted);line-height:1.75}.site-footer{width:min(1180px,calc(100% - 40px));margin:80px auto 32px;padding-top:24px;border-top:1px solid var(--line);font-family:var(--sans)}
-.article-top{position:sticky;top:0;z-index:20;background:rgba(255,248,237,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.article-layout{width:min(1360px,calc(100% - 32px));margin:0 auto;display:grid;grid-template-columns:320px minmax(0,1fr);gap:44px;align-items:start}.sidebar{position:sticky;top:90px;max-height:calc(100vh - 110px);overflow:auto;padding:22px 0 40px;font-family:var(--sans)}.back-home{display:inline-flex;margin-bottom:18px;color:var(--copper-dark);font-weight:900}.side-heading{margin:16px 0 10px;color:var(--muted);font-size:14px;font-weight:900;letter-spacing:.04em}.toc{display:grid;gap:6px}.toc-link{display:block;padding:12px 14px;border-radius:18px;color:#52605b;line-height:1.35;font-size:16px}.toc-link.active{background:#efdac6;color:var(--copper-dark);font-weight:900}
+.article-top{position:sticky;top:0;z-index:20;background:rgba(255,248,237,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.article-layout{width:min(1360px,calc(100% - 32px));margin:0 auto;display:grid;grid-template-columns:340px minmax(0,1fr);gap:44px;align-items:start}.sidebar{position:sticky;top:90px;max-height:calc(100vh - 110px);overflow:auto;padding:22px 0 40px;font-family:var(--sans)}.back-home{display:inline-flex;margin-bottom:18px;color:var(--copper-dark);font-weight:900}.book-toc{display:grid;gap:10px}.book-toc-group{display:grid;gap:6px}.chapter-toc-link{display:block;padding:10px 12px;border-radius:16px;color:#5d6a64;font-weight:900;line-height:1.35}.chapter-toc-link:hover{background:rgba(255,255,255,.56)}.chapter-toc-link.active{color:var(--copper-dark);background:rgba(183,101,56,.10)}.chapter-subtoc{display:grid;gap:4px;margin:2px 0 10px 16px;padding-left:14px;border-left:2px solid rgba(183,101,56,.20)}.toc-link{display:block;padding:10px 12px;border-radius:16px;color:#52605b;line-height:1.35;font-size:15px}.toc-link.active{background:#efdac6;color:var(--copper-dark);font-weight:900}
 .article-main{padding:44px 0 80px;min-width:0}.article-meta{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}.article-meta span{padding:6px 10px;border-radius:999px;background:rgba(183,101,56,.12);color:var(--copper-dark);font-family:var(--sans);font-size:13px;font-weight:900}.prose{padding:clamp(26px,4vw,56px);border:1px solid var(--line);border-radius:32px;background:rgba(255,255,255,.82);box-shadow:var(--shadow)}.prose h1{font-size:clamp(34px,5vw,58px);line-height:1.12;margin:0 0 34px}.section-title{font-size:clamp(28px,3.4vw,42px);line-height:1.25;margin:72px 0 26px;padding-top:28px;border-top:1px solid rgba(29,37,36,.13);letter-spacing:-.03em}.chapter-section:first-of-type .section-title{margin-top:14px;border-top:0;padding-top:0}.prose h3{font-size:24px;margin-top:38px}.prose h4{font-size:21px;margin-top:30px}.prose p,.prose li,.prose blockquote{font-size:18px;line-height:2.02}.prose p{margin:18px 0}.prose ul,.prose ol{padding-left:1.5em}.prose li{margin:8px 0}.prose a{color:var(--copper-dark);border-bottom:1px solid rgba(183,101,56,.35)}.prose code{font-family:var(--mono);font-size:.92em;background:rgba(18,52,58,.08);border-radius:7px;padding:.12em .38em}.inline-code-link{border-bottom:none!important}.prose pre{overflow:auto;padding:18px;border-radius:18px;background:#102b2f;color:#f7ead6;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}.prose pre code{background:transparent;padding:0;color:inherit}.prose blockquote{margin:26px 0;padding:18px 22px;border-left:5px solid var(--copper);background:rgba(183,101,56,.09);border-radius:0 18px 18px 0;color:#4d5c55}.math-block,.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:16px;background:rgba(255,255,255,.5)}th,td{padding:12px 14px;border:1px solid rgba(29,37,36,.14);text-align:left;vertical-align:top}th{background:rgba(18,52,58,.08);font-family:var(--sans)}figure{margin:32px 0}figure img{display:block;max-width:100%;height:auto;border-radius:20px;box-shadow:0 18px 44px rgba(39,30,21,.14);margin:0 auto;background:#fff}figcaption{margin-top:10px;color:var(--muted);text-align:center;font-family:var(--sans);font-size:14px}
 .reveal{animation:lift .65s ease both}@keyframes lift{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(.96);opacity:.74}50%{transform:translate(-50%,-50%) scale(1.04);opacity:1}}
 @media(max-width:920px){.topbar,.topbar.compact{width:min(100% - 24px,760px);align-items:flex-start}.toplinks{overflow-x:auto;max-width:100%;padding-bottom:4px}.hero{min-height:auto;padding-bottom:80px}.hero-grid,.chapter-grid,.article-layout{grid-template-columns:1fr}.hero-grid{margin-top:24px}.signal-panel{min-height:300px}.intro-strip{margin-top:0}.sidebar{position:relative;top:auto;max-height:none;padding-bottom:0}.toc{grid-template-columns:1fr}.article-main{padding-top:18px}.prose{padding:24px;border-radius:24px}.prose p,.prose li,.prose blockquote{font-size:17px;line-height:1.9}}
