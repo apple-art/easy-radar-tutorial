@@ -474,7 +474,7 @@ class SiteBuilder:
         <div class="hero-mark"><img src="design/icon-concepts/logo-mark-light.svg" alt="项目图标"><span class="eyebrow">Radar signal processing</span></div>
         <h1>易懂的雷达信号处理教程</h1>
         <p>面向学生与工程师</p>
-        <div class="hero-actions"><a class="btn primary" href="chapters/ch01.html">开始阅读</a><a class="btn" href="#chapters">选择章节</a><a class="btn ghost" href="{html_attr(github_tree_url('matlab'))}">MATLAB 代码</a></div>
+        <div class="hero-actions"><a class="btn primary" href="chapters/ch01.html">开始阅读</a><a class="btn" href="#chapters">选择章节</a><a class="btn ghost" href="{html_attr(github_tree_url('matlab'))}">MATLAB 代码</a><a class="btn" href="{html_attr(GITHUB_URL + '/releases/latest')}">下载资料包</a></div>
         <div class="hero-proof" aria-label="教程概览">
           <span><strong>8</strong> 个章节</span>
           <span><strong>{sum(len(c["sections"]) for c in self.chapters)}</strong> 个小节</span>
