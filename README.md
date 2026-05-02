@@ -10,6 +10,15 @@
     <td align="left" valign="middle">
       <h1>易懂的雷达信号处理教程</h1>
       <p><em>An Easy-to-Understand Radar Signal Processing Tutorial for Students and Engineers</em></p>
+    </td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/status-updating-8E44AD" alt="status">
+  <img src="https://img.shields.io/badge/level-beginner_friendly-4CAF50" alt="level">
+  <img src="https://img.shields.io/badge/focus-radar_signal_processing-1976D2" alt="focus">
+</p>
 
 ## 快速入口
 
