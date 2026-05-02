@@ -557,7 +557,7 @@ class SiteBuilder:
   <meta name="description" content="{html_attr(description)}">
   <link rel="canonical" href="{html_attr(canonical)}">
   <link rel="icon" href="{depth}design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="{depth}assets/site.css">
+  <link rel="stylesheet" href="{depth}assets/site.css?v=20260502-author-card">
   <script>window.MathJax = {{ tex: {{ inlineMath: [['$', '$'], ['\\\\(', '\\\\)']], displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']] }}, svg: {{ fontCache: 'global' }} }};</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <script defer src="{depth}assets/site.js"></script>
