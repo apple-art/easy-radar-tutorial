@@ -42,7 +42,7 @@ CHAPTER_DESCRIPTIONS = {
 INTRO = "一本从直觉出发的雷达信号处理入门教程。"
 GITHUB_URL = "https://github.com/apple-art/easy-radar-tutorial"
 SITE_URL = "https://apple-art.github.io/easy-radar-tutorial/"
-ASSET_VERSION = "20260502-toc"
+ASSET_VERSION = "20260502-toc2"
 DEFAULT_SOURCE_DIR = Path(r"D:\Obsidian\唐承乾的笔记本\雷达教材\知乎版\系列文章")
 PROMO_CUTOFF_MARKERS = (
     "相关资料放在了公众号",
