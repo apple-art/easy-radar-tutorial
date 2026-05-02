@@ -19,16 +19,24 @@
   <img src="https://img.shields.io/badge/level-beginner_friendly-4CAF50" alt="level">
   <img src="https://img.shields.io/badge/focus-radar_signal_processing-1976D2" alt="focus">
 </p>
+在线阅读地址：[https://apple-art.github.io/easy-radar-tutorial/](https://apple-art.github.io/easy-radar-tutorial/)
+
+读者可以前往：[Release 页面](https://github.com/apple-art/easy-radar-tutorial/releases/latest) 下载打包好的 PDF 与 MATLAB 资料包。
 
 ## 项目简介
 
 这是一本从直觉出发的雷达信号处理入门教程。本书尝试用通俗易懂的语言，从零开始讲解雷达的基本原理、信号处理方法和实际应用。本书从生活中实际问题触发，循序渐进，引导读者一步步了解雷达。
 
-在线阅读地址：[https://apple-art.github.io/easy-radar-tutorial/](https://apple-art.github.io/easy-radar-tutorial/)
-
-建议读者前往 [Release 页面](https://github.com/apple-art/easy-radar-tutorial/releases/latest) 下载打包好的 PDF 与 MATLAB 资料包。
-
 在这里，你不会看到从天而降的抽象概念，有的只有从生活中类比过来的新伙伴；不会看到高等数学随机组合一番的炫技公式，只有从小学一加一，一步步引导到初高中的线性代数，最后到大学的高等数学。书中配有图示、案例和 MATLAB 示例，帮助读者动手实践。
+
+本书主要涵盖下面的内容：
+
+1. 测距：目标到底离我们多远
+2. 测速：目标到底跑得多快
+3. CFAR：在噪声和杂波里，怎么判断它是不是目标
+4. 测角：目标到底从哪个方向来
+
+不追求大而全，教程的目的很简单，最短的时间带大家入门；不追求深入，这几点已经很好的涵盖了雷达的基础，当需要更高级的处理算法和主题的时候，按照需要去学习即可。
 
 这本书不适合下面的人群：
 
