@@ -42,6 +42,7 @@ CHAPTER_DESCRIPTIONS = {
 INTRO = "一本从直觉出发的雷达信号处理入门教程。"
 GITHUB_URL = "https://github.com/apple-art/easy-radar-tutorial"
 SITE_URL = "https://apple-art.github.io/easy-radar-tutorial/"
+ASSET_VERSION = "20260502-toc"
 DEFAULT_SOURCE_DIR = Path(r"D:\Obsidian\唐承乾的笔记本\雷达教材\知乎版\系列文章")
 PROMO_CUTOFF_MARKERS = (
     "相关资料放在了公众号",
@@ -158,6 +159,7 @@ class MarkdownRenderer:
     def __init__(self, matlab_files_by_name: dict[str, str]) -> None:
         self.matlab_files_by_name = matlab_files_by_name
         self.heading_counter = 0
+        self.last_subheadings: list[dict[str, str]] = []
 
     def inline(self, text: str) -> str:
         code_tokens: list[str] = []
@@ -214,6 +216,7 @@ class MarkdownRenderer:
         return f'<div class="table-wrap"><table><thead><tr>{head_html}</tr></thead><tbody>{body_html}</tbody></table></div>'
 
     def render(self, markdown_text: str, section_id: str, section_title: str) -> str:
+        self.last_subheadings = []
         lines = markdown_text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
         out: list[str] = []
         paragraph: list[str] = []
@@ -284,7 +287,11 @@ class MarkdownRenderer:
                     first_h1_done = True
                 else:
                     self.heading_counter += 1
-                    out.append(f'<h{min(level + 1, 6)} id="sub-{self.heading_counter}">{self.inline(title)}</h{min(level + 1, 6)}>')
+                    output_level = min(level + 1, 6)
+                    heading_id = f"sub-{self.heading_counter}"
+                    if output_level == 3:
+                        self.last_subheadings.append({"id": heading_id, "title": title})
+                    out.append(f'<h{output_level} id="{heading_id}">{self.inline(title)}</h{output_level}>')
                 index += 1
                 continue
             if (
@@ -496,9 +503,11 @@ class SiteBuilder:
     def render_chapter(self, chapter: dict, renderer: MarkdownRenderer) -> str:
         section_html = []
         for section in chapter["sections"]:
+            rendered_section = renderer.render(section["text"], section["id"], section["title"])
+            section["subheadings"] = renderer.last_subheadings.copy()
             section_html.append(
                 f'<section class="chapter-section" data-section="{html_attr(section["id"])}">'
-                + renderer.render(section["text"], section["id"], section["title"])
+                + rendered_section
                 + "</section>"
             )
         sidebar_items = []
@@ -508,11 +517,19 @@ class SiteBuilder:
                 f'href="{html_attr(url_path(item["slug"] + ".html"))}">{html.escape(item["label"])} {html.escape(item["title"])}</a>'
             )
             if item["slug"] == chapter["slug"]:
-                subsection_links = "".join(
-                    f'<a class="toc-link" href="#{html_attr(section["id"])}">{html.escape(section["title"])}</a>'
-                    for section in item["sections"]
-                )
-                chapter_link += f'<div class="chapter-subtoc">{subsection_links}</div>'
+                subsection_links = []
+                for section in item["sections"]:
+                    third_level_links = "".join(
+                        f'<a class="subtoc-link" href="#{html_attr(subheading["id"])}">{html.escape(subheading["title"])}</a>'
+                        for subheading in section.get("subheadings", [])
+                    )
+                    subitems = f'<div class="toc-subitems">{third_level_links}</div>' if third_level_links else ""
+                    subsection_links.append(
+                        f'<div class="toc-section" data-section="{html_attr(section["id"])}">'
+                        f'<a class="toc-link" href="#{html_attr(section["id"])}">{html.escape(section["title"])}</a>'
+                        f'{subitems}</div>'
+                    )
+                chapter_link += f'<div class="chapter-subtoc">{"".join(subsection_links)}</div>'
             sidebar_items.append(f'<div class="book-toc-group">{chapter_link}</div>')
         sidebar = "".join(sidebar_items)
         actions = []
@@ -557,10 +574,10 @@ class SiteBuilder:
   <meta name="description" content="{html_attr(description)}">
   <link rel="canonical" href="{html_attr(canonical)}">
   <link rel="icon" href="{depth}design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="{depth}assets/site.css?v=20260502-author-card">
+  <link rel="stylesheet" href="{depth}assets/site.css?v={ASSET_VERSION}">
   <script>window.MathJax = {{ tex: {{ inlineMath: [['$', '$'], ['\\\\(', '\\\\)']], displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']] }}, svg: {{ fontCache: 'global' }} }};</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-  <script defer src="{depth}assets/site.js"></script>
+  <script defer src="{depth}assets/site.js?v={ASSET_VERSION}"></script>
 </head>
 <body><div class="read-progress" aria-hidden="true"><span></span></div>{body}</body>
 </html>
@@ -684,6 +701,12 @@ h2{font-size:clamp(34px,4.2vw,56px);margin:8px 0 14px;letter-spacing:-.045em;tex
 .toc-link{display:block;padding:9px 11px;border-radius:14px;color:#57645e;line-height:1.4;font-size:15px}
 .toc-link:hover{background:rgba(18,59,63,.06);color:var(--teal)}
 .toc-link.active{background:#f0ddc4;color:var(--copper-dark);font-weight:900;box-shadow:inset 0 0 0 1px rgba(209,151,69,.24)}
+.toc-section{display:grid;gap:4px}
+.toc-subitems{display:none;gap:3px;margin:2px 0 10px 18px;padding-left:12px;border-left:1px solid rgba(209,151,69,.28)}
+.toc-section.open .toc-subitems{display:grid}
+.subtoc-link{display:block;padding:7px 10px;border-radius:12px;color:#6a756f;line-height:1.45;font-size:14px}
+.subtoc-link:hover{background:rgba(18,59,63,.06);color:var(--teal)}
+.subtoc-link.active{background:rgba(209,151,69,.18);color:var(--copper-dark);font-weight:900}
 .article-main{padding:0 0 84px;min-width:0}
 .article-meta{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
 .article-meta span{padding:7px 11px;border-radius:999px;background:rgba(209,151,69,.14);color:var(--copper-dark);font-family:var(--sans);font-size:13px;font-weight:900}
@@ -723,8 +746,10 @@ figcaption{margin-top:12px;color:var(--muted);text-align:center;font-family:var(
 JS = r"""
 (function(){
   const bar=document.querySelector('.read-progress span');
-  const links=[...document.querySelectorAll('.toc-link')];
-  const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const tocLinks=[...document.querySelectorAll('.toc-link')];
+  const subtocLinks=[...document.querySelectorAll('.subtoc-link')];
+  const sections=tocLinks.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const subSections=subtocLinks.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
   function updateProgress(){
     if(!bar)return;
     const max=document.documentElement.scrollHeight-window.innerHeight;
@@ -735,7 +760,16 @@ JS = r"""
     for(const sec of sections){
       if(sec.getBoundingClientRect().top<160) current=sec;
     }
-    links.forEach(a=>a.classList.toggle('active', current && a.getAttribute('href')==='#'+current.id));
+    let currentSub=null;
+    const currentSection=current && current.closest ? current.closest('.chapter-section') : null;
+    for(const sec of subSections){
+      if(sec.closest('.chapter-section')===currentSection && sec.getBoundingClientRect().top<260) currentSub=sec;
+    }
+    tocLinks.forEach(a=>a.classList.toggle('active', current && a.getAttribute('href')==='#'+current.id));
+    subtocLinks.forEach(a=>a.classList.toggle('active', currentSub && a.getAttribute('href')==='#'+currentSub.id));
+    document.querySelectorAll('.toc-section').forEach(group=>{
+      group.classList.toggle('open', current && group.dataset.section===current.id);
+    });
   }
   window.addEventListener('scroll',()=>{updateProgress();updateActive();},{passive:true});
   window.addEventListener('resize',()=>{updateProgress();updateActive();});
