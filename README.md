@@ -19,9 +19,9 @@
   <img src="https://img.shields.io/badge/level-beginner_friendly-4CAF50" alt="level">
   <img src="https://img.shields.io/badge/focus-radar_signal_processing-1976D2" alt="focus">
 </p>
-在线阅读地址：[https://apple-art.github.io/easy-radar-tutorial/](https://apple-art.github.io/easy-radar-tutorial/)
+在线阅读地址：<https://apple-art.github.io/easy-radar-tutorial/>
 
-读者可以前往：[Release 页面](https://github.com/apple-art/easy-radar-tutorial/releases/latest) 下载打包好的 PDF 与 MATLAB 资料包。
+读者可以前往 [Release 页面](https://github.com/apple-art/easy-radar-tutorial/releases/latest) 下载打包好的 PDF 与 MATLAB 资料包。
 
 ## 项目简介
 
@@ -50,7 +50,7 @@
 
 现在学会了后回想起来，发现并不能怪当时的自己，那些教科书对于初学者来说，因缺少合适的引导而困难重重，雷达的中文社区，需要一本真正适合入门者的书籍。
 
-当值研三写完了大论文，空闲时间寻找有意义的事情做，准备来个大的：一人写一本雷达信号处理书！书本免费在线阅读，如果能帮到大家，回望这段实践就算是没有虚度光阴啦。
+当值研三写完了大论文，空闲时间寻找有意义的事情做，准备来个大的：一人写一本雷达信号处理书！书本免费在线阅读，如果能帮到大家，回望这段时间就算是没有虚度光阴啦。
 
 ## 仓库内容
 
