@@ -486,7 +486,7 @@ class SiteBuilder:
 </header>
 <main>
   <section id="chapters" class="chapters">
-    <div class="section-head reveal"><p class="eyebrow">Read online</p><h2>在线章节</h2><p>像浏览现代技术文档一样阅读：左侧章节、正文公式、PDF 与 MATLAB 代码入口都放在手边。</p></div>
+    <div class="section-head reveal"><p class="eyebrow">Read online</p><h2>在线章节</h2></div>
     <div class="chapter-grid">{''.join(cards)}</div>
   </section>
   <section class="author-card reveal" aria-labelledby="author-card-title">
