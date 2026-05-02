@@ -26,7 +26,7 @@
 
 在线阅读地址：[https://apple-art.github.io/easy-radar-tutorial/](https://apple-art.github.io/easy-radar-tutorial/)
 
-如果你不熟悉 GitHub，直接到 [Release 页面](https://github.com/apple-art/easy-radar-tutorial/releases/latest) 下载 PDF 与 MATLAB 资料包会更方便。
+建议读者前往 [Release 页面](https://github.com/apple-art/easy-radar-tutorial/releases/latest) 下载打包好的 PDF 与 MATLAB 资料包。
 
 在这里，你不会看到从天而降的抽象概念，有的只有从生活中类比过来的新伙伴；不会看到高等数学随机组合一番的炫技公式，只有从小学一加一，一步步引导到初高中的线性代数，最后到大学的高等数学。书中配有图示、案例和 MATLAB 示例，帮助读者动手实践。
 
