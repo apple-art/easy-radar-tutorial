@@ -479,6 +479,15 @@ class SiteBuilder:
     <div class="section-head reveal"><p class="eyebrow">章节目录</p><h2>在线章节</h2></div>
     <div class="chapter-grid">{''.join(cards)}</div>
   </section>
+  <section class="author-card reveal" aria-labelledby="author-card-title">
+    <div class="section-head author-card-copy">
+      <h2 id="author-card-title">作者名片</h2>
+      <p>如果这套教程对你有帮助，可以通过这张名片找到我。</p>
+    </div>
+    <figure class="personal-card-frame">
+      <img src="design/personal-card/athens-card-minimal-2-hd.png" alt="唐承乾个人名片" loading="lazy">
+    </figure>
+  </section>
 </main>
 <footer class="site-footer"><p>© 唐承乾. 本仓库内容按 LICENSE 中的条款发布。</p><p><a href="{html_attr(GITHUB_URL)}">GitHub 仓库</a> · <a href="LICENSE">LICENSE</a></p></footer>
 """
@@ -614,7 +623,7 @@ a{color:inherit;text-decoration:none}
 a:hover{color:var(--copper-dark)}
 .read-progress{position:fixed;inset:0 0 auto;height:4px;z-index:50;background:rgba(255,253,247,.5)}
 .read-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brass),var(--teal),var(--sage));box-shadow:0 0 18px rgba(18,59,63,.35)}
-.topbar{width:min(1180px,calc(100% - 40px));margin:18px auto 0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:24px;border:1px solid rgba(255,255,255,.62);border-radius:999px;background:rgba(255,253,247,.70);box-shadow:0 14px 38px rgba(49,41,29,.08);backdrop-filter:blur(18px)}
+.topbar{width:min(1180px,calc(100% - 40px));margin:18px auto 0;padding:12px 14px;display:flex;position:relative;z-index:2;align-items:center;justify-content:space-between;gap:24px;border:1px solid rgba(255,255,255,.62);border-radius:999px;background:rgba(255,253,247,.70);box-shadow:0 14px 38px rgba(49,41,29,.08);backdrop-filter:blur(18px)}
 .topbar.compact{width:min(1320px,calc(100% - 40px));margin-top:10px}
 .brand{display:inline-flex;align-items:center;gap:12px;font-family:var(--sans);font-weight:900;letter-spacing:.01em}
 .brand img{width:40px;height:40px;filter:drop-shadow(0 8px 14px rgba(18,59,63,.16))}
@@ -622,9 +631,9 @@ a:hover{color:var(--copper-dark)}
 .toplinks a{padding:8px 12px;border-radius:999px}
 .toplinks a:hover{background:rgba(18,59,63,.08);color:var(--teal)}
 .hero{min-height:760px;position:relative;overflow:hidden;padding-bottom:90px}
-.hero:before{content:"";position:absolute;right:-18vw;top:78px;width:min(760px,58vw);aspect-ratio:1;border-radius:50%;background:repeating-radial-gradient(circle,rgba(18,59,63,.16) 0 2px,transparent 2px 34px);opacity:.82;mask-image:linear-gradient(90deg,transparent,#000 20%,#000)}
-.hero:after{content:"";position:absolute;left:-18vw;bottom:-34vw;width:54vw;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(209,151,69,.18),transparent 68%)}
-.hero-grid{width:min(1180px,calc(100% - 40px));margin:76px auto 0;display:grid;grid-template-columns:minmax(0,1.04fr) minmax(320px,.96fr);gap:64px;align-items:center;position:relative}
+.hero:before{content:"";position:absolute;right:-18vw;top:78px;width:min(760px,58vw);aspect-ratio:1;border-radius:50%;background:repeating-radial-gradient(circle,rgba(18,59,63,.16) 0 2px,transparent 2px 34px);opacity:.82;mask-image:linear-gradient(90deg,transparent,#000 20%,#000);pointer-events:none}
+.hero:after{content:"";position:absolute;left:-18vw;bottom:-34vw;width:54vw;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(209,151,69,.18),transparent 68%);pointer-events:none}
+.hero-grid{width:min(1180px,calc(100% - 40px));margin:76px auto 0;display:grid;grid-template-columns:minmax(0,1.04fr) minmax(320px,.96fr);gap:64px;align-items:center;position:relative;z-index:1}
 .eyebrow{font-family:var(--sans);text-transform:uppercase;letter-spacing:.2em;font-size:12px;color:var(--copper-dark);font-weight:900}
 h1{font-size:clamp(50px,7.4vw,96px);line-height:.96;letter-spacing:-.065em;margin:18px 0 26px;text-wrap:balance}
 .hero-copy p{font-size:clamp(19px,2vw,25px);color:#465850;line-height:1.88;max-width:720px;margin:0}
@@ -656,6 +665,11 @@ h2{font-size:clamp(34px,4.2vw,56px);margin:8px 0 14px;letter-spacing:-.045em;tex
 .chapter-card h3{position:relative;z-index:1;font-size:30px;line-height:1.24;margin:16px 0 12px;letter-spacing:-.025em}
 .chapter-card p{position:relative;z-index:1;color:#58665f;line-height:1.8;margin:0 0 22px;font-size:17px}
 .chapter-card .chapter-actions{position:relative;z-index:1;margin-top:auto}
+.author-card{position:relative;margin-top:74px;padding:clamp(24px,4vw,42px);border:1px solid rgba(255,255,255,.72);border-radius:36px;background:linear-gradient(145deg,rgba(255,253,247,.92),rgba(232,237,227,.74));box-shadow:var(--shadow-soft);overflow:hidden}
+.author-card:before{content:"";position:absolute;right:-110px;top:-130px;width:360px;height:360px;border-radius:50%;background:repeating-radial-gradient(circle,rgba(18,59,63,.10) 0 2px,transparent 2px 24px);pointer-events:none}
+.author-card-copy{position:relative;z-index:1}
+.personal-card-frame{position:relative;z-index:1;margin:0}
+.personal-card-frame img{display:block;width:min(100%,960px);height:auto;margin:0 auto;border-radius:28px;box-shadow:0 26px 72px rgba(48,42,31,.18);background:#fff}
 .site-footer{width:min(1180px,calc(100% - 40px));margin:84px auto 34px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-family:var(--sans);line-height:1.75}
 .article-top{position:sticky;top:0;z-index:40;background:rgba(248,241,227,.72);backdrop-filter:blur(18px);border-bottom:1px solid rgba(27,36,32,.10);padding-bottom:10px}
 .article-layout{width:min(1380px,calc(100% - 32px));margin:28px auto 0;display:grid;grid-template-columns:330px minmax(0,1fr);gap:42px;align-items:start}
