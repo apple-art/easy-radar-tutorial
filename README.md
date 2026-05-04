@@ -23,6 +23,7 @@
 ## 快速入口
 
 - 在线阅读：[在线阅读网页版](https://apple-art.github.io/easy-radar-tutorial/)
+- 知乎阅读：[知乎专栏](https://www.zhihu.com/column/c_2025369741573800586)
 - 资料包下载：[Release 页面](https://github.com/apple-art/easy-radar-tutorial/releases/latest) 提供打包好的 PDF 与 MATLAB 资料包。
 
 ## 项目简介
