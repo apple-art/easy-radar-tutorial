@@ -4,6 +4,35 @@
   const subtocLinks=[...document.querySelectorAll('.subtoc-link')];
   const sections=tocLinks.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
   const subSections=subtocLinks.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const articleLayout=document.querySelector('.article-layout');
+  const sidebar=document.querySelector('.sidebar');
+  const storageKey='easy-radar-toc-collapsed';
+  let tocToggle=null;
+  function setTocCollapsed(collapsed){
+    document.body.classList.toggle('toc-collapsed', collapsed);
+    if(tocToggle){
+      tocToggle.setAttribute('aria-expanded', String(!collapsed));
+      const icon=collapsed
+        ? '<svg viewBox="0 0 28 28" aria-hidden="true"><path class="toc-toggle-rail" d="M22 6.5v15"/><path d="m9.5 7.5 6.5 6.5-6.5 6.5"/><path d="m14.5 7.5 6.5 6.5-6.5 6.5"/></svg>'
+        : '<svg viewBox="0 0 28 28" aria-hidden="true"><path class="toc-toggle-rail" d="M6 6.5v15"/><path d="m18.5 7.5-6.5 6.5 6.5 6.5"/><path d="m13.5 7.5-6.5 6.5 6.5 6.5"/></svg>';
+      tocToggle.innerHTML=icon;
+      tocToggle.setAttribute('aria-label', collapsed ? '展开目录' : '收起目录');
+      tocToggle.setAttribute('title', collapsed ? '展开目录' : '收起目录');
+    }
+    try{ localStorage.setItem(storageKey, collapsed ? '1' : '0'); }catch(_){}
+  }
+  if(articleLayout && sidebar){
+    tocToggle=document.createElement('button');
+    tocToggle.type='button';
+    tocToggle.className='toc-toggle';
+    tocToggle.setAttribute('aria-controls','book-toc-sidebar');
+    sidebar.id=sidebar.id || 'book-toc-sidebar';
+    sidebar.appendChild(tocToggle);
+    let saved=false;
+    try{ saved=localStorage.getItem(storageKey)==='1'; }catch(_){}
+    setTocCollapsed(saved);
+    tocToggle.addEventListener('click',()=>setTocCollapsed(!document.body.classList.contains('toc-collapsed')));
+  }
   function updateProgress(){
     if(!bar)return;
     const max=document.documentElement.scrollHeight-window.innerHeight;
