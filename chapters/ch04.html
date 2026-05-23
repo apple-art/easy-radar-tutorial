@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>第4章 距离测量 | 易懂的雷达信号处理教程</title>
-  <meta name="description" content="站在山谷里喊一声，过一会儿听到回声，就知道前面有山；若再知道声音传播速度，还可以把山壁距离算出来。雷达测距也是同样的道理，只是把声波换成了电磁波，把人耳换成了接收机。">
+  <meta name="description" content="接收机把一发脉冲的回波记录成一串采样点；多发脉冲连续发射时，这些回波又可以排成一个矩阵。距离处理先只看其中一条快时间记录：沿着一发脉冲内部的采样点往后看，回波峰出现得越晚，目标通常越远。">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch04.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
@@ -22,371 +22,277 @@
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.html">← 首页</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch04.html">第4章 距离测量</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch04-s01"><a class="toc-link" href="#ch04-s01">4.1 时间延迟到距离</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-38">时间延迟与目标距离</a><a class="subtoc-link" href="#sub-39">脉宽与距离分辨率</a></div></div><div class="toc-section" data-section="ch04-s02"><a class="toc-link" href="#ch04-s02">4.2 脉冲压缩原理</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-40">带宽决定分辨能力</a><a class="subtoc-link" href="#sub-41">从时间分辨率到距离分辨率</a><a class="subtoc-link" href="#sub-42">能量与分辨率的平衡：时间-带宽积</a></div></div><div class="toc-section" data-section="ch04-s03"><a class="toc-link" href="#ch04-s03">4.3 线性调频信号</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-43">线性调频信号的基本形式</a><a class="subtoc-link" href="#sub-44">下变频与基带表示</a></div></div><div class="toc-section" data-section="ch04-s04"><a class="toc-link" href="#ch04-s04">4.4 匹配滤波</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-45">互相关与时间延迟估计</a><a class="subtoc-link" href="#sub-46">从互相关到匹配滤波</a><a class="subtoc-link" href="#sub-50">匹配滤波对 LFM 的压缩效果</a></div></div><div class="toc-section" data-section="ch04-s05"><a class="toc-link" href="#ch04-s05">4.5 小练习</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-53">练习 1：从单目标回波恢复距离</a><a class="subtoc-link" href="#sub-54">练习 2：改变信噪比</a><a class="subtoc-link" href="#sub-55">练习 3：加入第二个目标</a><a class="subtoc-link" href="#sub-56">练习 4：改变带宽</a><a class="subtoc-link" href="#sub-57">练习 5：加入窗函数</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整处理流程</a></div></nav>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch04.html">第4章 距离测量</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch04-s01"><a class="toc-link" href="#ch04-s01">4.1 雷达测到的时间，如何换算成距离？</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-43">延迟测距公式</a><a class="subtoc-link" href="#sub-44">采样点到距离轴</a></div></div><div class="toc-section" data-section="ch04-s02"><a class="toc-link" href="#ch04-s02">4.2 两个目标离得很近时，为什么会只剩一个峰？</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-45">两个目标什么时候分得开</a><a class="subtoc-link" href="#sub-46">普通脉冲的分辨率</a><a class="subtoc-link" href="#sub-47">能量和分辨率冲突</a></div></div><div class="toc-section" data-section="ch04-s03"><a class="toc-link" href="#ch04-s03">4.3 脉冲压缩为什么能让长脉冲也有高分辨率？</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-48">带宽与距离分辨率</a><a class="subtoc-link" href="#sub-49">线性调频信号</a><a class="subtoc-link" href="#sub-50">基带表示</a></div></div><div class="toc-section" data-section="ch04-s04"><a class="toc-link" href="#ch04-s04">4.4 匹配滤波为什么能把回波压成距离峰？</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-51">用滑动比对找时延</a><a class="subtoc-link" href="#sub-52">从互相关到匹配滤波</a><a class="subtoc-link" href="#sub-53">LFM 的压缩效果、旁瓣与窗函数</a></div></div><div class="toc-section" data-section="ch04-s05"><a class="toc-link" href="#ch04-s05">4.5 第4章学完，到底会不会算距离？</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-54">练习 1：单目标距离恢复</a><a class="subtoc-link" href="#sub-55">练习 2：改变信噪比</a><a class="subtoc-link" href="#sub-56">练习 3：加入第二个目标</a><a class="subtoc-link" href="#sub-57">练习 4：改变带宽</a><a class="subtoc-link" href="#sub-58">练习 5：加入窗函数</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第4章</span><span>距离测量</span></div>
     <article class="prose chapter-prose">
       <h1>第4章 距离测量</h1>
-      <section class="chapter-section" data-section="ch04-s01"><h2 id="ch04-s01" class="section-title">4.1 时间延迟到距离</h2>
-<p>站在山谷里喊一声，过一会儿听到回声，就知道前面有山；若再知道声音传播速度，还可以把山壁距离算出来。雷达测距也是同样的道理，只是把声波换成了电磁波，把人耳换成了接收机。</p>
-<h3 id="sub-38">时间延迟与目标距离</h3>
-<p>第3章已经提到，目标距离为 $R$ 时，回波相对发射信号的延迟满足</p>
+      <section class="chapter-section" data-section="ch04-s01"><h2 id="ch04-s01" class="section-title">4.1 雷达测到的时间，如何换算成距离？</h2>
+<p>接收机把一发脉冲的回波记录成一串采样点；多发脉冲连续发射时，这些回波又可以排成一个矩阵。距离处理先只看其中一条快时间记录：沿着一发脉冲内部的采样点往后看，回波峰出现得越晚，目标通常越远。</p>
+<p>想象接收机记录到一条回波曲线。横轴是采样点，纵轴是回波幅度。某个位置出现一个峰，工程上要回答的第一个问题是：这个峰对应多少米？</p>
+<h3 id="sub-43">延迟测距公式</h3>
+<p>站在山谷里喊一声，过一会儿听到回声。若知道声音传播速度，就可以把山壁距离算出来。雷达测距也是这个思路，只是把声波换成电磁波，把人耳换成接收机。</p>
+<p>电磁波以光速 $c \approx 3\times10^8\,m/s$ 传播。目标距离为 $R$ 时，电磁波先从雷达到目标，再从目标反射回雷达，总路程是 $2R$。如果回波相对发射信号晚到了 $\Delta t$，则</p>
 <div class="math-block">$$
 \Delta t = \frac{2R}{c}
 $$</div>
-<p>这里的 $c$ 是光速，因子 2 表示电磁波走了一个来回。把这个式子改写一下，就得到最基本的测距公式</p>
+<p>改写后得到测距公式：</p>
 <div class="math-block">$$
 R = \frac{c\Delta t}{2}
 $$</div>
-<p>这就是脉冲雷达测距的出发点：只要测出回波晚到了多少时间，就能把时间差换成目标距离。</p>
-<p>例如，若回波延迟是 $1$ ms，那么目标距离为</p>
+<p>分母里的 $2$ 来自往返路径。雷达测到的是从发射到接收的总时间，不是单程时间。</p>
+<p>例如，若回波延迟是 $6.67\,\mu s$，目标距离约为</p>
 <div class="math-block">$$
-R = \frac{3\times10^8 \times 0.001}{2} = 1.5\times10^5\ \text{m} = 150\ \text{km}
+R = \frac{3\times10^8 \times 6.67\times10^{-6}}{2}
+\approx 1000\,m = 1\,km
 $$</div>
-<p>反过来看，若目标距离是 $1$ km，则对应的往返时间差约为</p>
+<p>反过来，若目标距离是 $150\,km$，往返时间差为</p>
 <div class="math-block">$$
-\Delta t = \frac{2\times1000}{3\times10^8} \approx 6.67\ \mu s
+\Delta t = \frac{2\times150\times10^3}{3\times10^8} = 1\,ms
 $$</div>
-<p>因此，测距问题本质上就是测时问题。时间差测得越准，距离估计就越准。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_1_pulse_ranging_v2.png" alt="脉冲雷达测距示意图" loading="lazy"><figcaption>脉冲雷达测距示意图</figcaption></figure>
-<h3 id="sub-39">脉宽与距离分辨率</h3>
-<p>若场景中只有一个目标，计算不复杂。真正麻烦的地方在于：目标往往不止一个，而且它们的回波未必彼此分离。如果两个目标贴在一起，无法分开，相隔远一点就可以分辨。于是自然而然的引出了新的问题：相隔很近的两个目标，回波能不能分开？</p>
-<p>这个问题和脉冲宽度直接相关。设发射脉冲宽度为 $\tau$，那么这个脉冲在空间中对应的长度约为 $c\tau$。若两个目标的距离差太小，它们的回波就会在接收端重叠，看上去像一团更宽的回波，而不是两个彼此分开的峰。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_2_resolution.png" alt="距离分辨率示意图" loading="lazy"><figcaption>距离分辨率示意图</figcaption></figure>
-<p>图左中两个目标相距较远，两个回波在时间上能够分开；图右中两个目标相距过近，两个回波叠在一起，接收机很难判断到底是一个目标还是两个目标。由此得到脉冲雷达最基本的距离分辨率关系：</p>
+<p>测距问题的第一层含义，就是测时问题。回波晚回来多少，决定了目标大致有多远。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_1_excali.png" alt="脉冲雷达测距示意" loading="lazy"><figcaption>脉冲雷达测距示意</figcaption></figure>
+<p>这里还要先区分两个词。测距公式回答的是一个回波峰在什么距离；距离分辨率回答的是两个相近目标能不能分开。单个目标的位置估计可以很细，但两个目标如果回波严重重叠，在按距离排列的回波图上仍可能只剩一个峰。</p>
+<h3 id="sub-44">采样点到距离轴</h3>
+<p>真实接收机按采样率 $f_s$ 把回波变成一串采样点，而不是连续记录所有时刻的值。相邻两个采样点的时间间隔是</p>
+<div class="math-block">$$
+\Delta t_s = \frac{1}{f_s}
+$$</div>
+<p>把这个时间间隔换成距离轴上的间隔，得到</p>
+<div class="math-block">$$
+\Delta R_{\text{sample}} = \frac{c}{2f_s}
+$$</div>
+<p>如果采样率是 $100\,MHz$，相邻采样点对应的距离间隔为</p>
+<div class="math-block">$$
+\Delta R_{\text{sample}} = \frac{3\times10^8}{2\times10^8} = 1.5\,m
+$$</div>
+<p>这说明距离轴可以按每个采样点 $1.5\,m$ 的间隔标出来。若某个回波峰比发射时刻晚了 667 个采样点，对应时间约为</p>
+<div class="math-block">$$
+\Delta t = \frac{667}{100\times10^6} \approx 6.67\,\mu s
+$$</div>
+<p>换算成距离就是约 $1\,km$。实际程序里还要扣除接收窗口起点、滤波器群延迟等偏移，但物理关系仍然是同一个：采样点先换成时间，再由时间换成距离。</p>
+<p>$\Delta R_{\text{sample}}$ 只是相邻采样点对应的距离刻度。把采样率提高，会让距离轴标得更密；两个目标能否分开，还要看接收处理后目标响应有多宽。这个宽度由发射波形和接收处理共同决定。</p></section><section class="chapter-section" data-section="ch04-s02"><h2 id="ch04-s02" class="section-title">4.2 两个目标离得很近时，为什么会只剩一个峰？</h2>
+<h3 id="sub-45">两个目标什么时候分得开</h3>
+<p>一个目标时，只要找到回波峰，距离换算并不复杂。麻烦在于两个目标离得很近。它们各自有一个回波，两个回波如果在时间上分开，按距离排列的输出上就能看到两个峰；如果叠在一起，接收机看到的可能只是一团更宽的响应。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_2_excali.png" alt="距离分辨率示意" loading="lazy"><figcaption>距离分辨率示意</figcaption></figure>
+<p>上图左侧，两个目标相距较远，两个回波在时间上分开。右侧，两个目标相距过近，回波重叠在一起。此时即使距离轴的采样点很多，也不一定能把两个目标拆开。</p>
+<h3 id="sub-46">普通脉冲的分辨率</h3>
+<p>先看最普通的单频矩形脉冲。这样的脉冲内部没有额外结构，接收机主要根据整团回波的到达时间判断距离。设发射脉冲宽度为 $\tau$，这个脉冲在时间上占据 $\tau$ 秒，在空间往返距离上对应 $c\tau$，换成目标单程距离就是</p>
 <div class="math-block">$$
 \Delta R = \frac{c\tau}{2}
 $$</div>
-<p>这个式子说明，单频短脉冲里，脉宽越窄，距离分辨率越高。举例来说，若 $\tau=1\ \mu s$，则</p>
+<p>这给出了普通脉冲雷达的距离分辨率量级。脉冲越短，回波在时间上越窄，两个相近目标越容易分开。</p>
+<p>例如，若 $\tau=1\,\mu s$，则</p>
 <div class="math-block">$$
-\Delta R = \frac{3\times10^8 \times 10^{-6}}{2} = 150\ \text{m}
+\Delta R = \frac{3\times10^8\times10^{-6}}{2}=150\,m
 $$</div>
-<p>也就是说，相距 150 m 以内的两个目标，很可能会在距离向上合成一个响应。</p>
-<p>这里就出现了第4章后面几节要解决的矛盾。若把脉冲做得很短，分辨率会提高，但发射能量随之下降，回波特别微弱；若把脉冲做长，能量会提高，分辨率却会变差。远距离探测希望脉冲长一些，精细测距又希望脉冲短一些，这两件事很难同时满足。</p>
-<p>后面几节讨论的脉冲压缩，正是为了解决这个矛盾。它并不改变测距公式 $R=c\Delta t/2$，改变的是接收机区分相近回波的能力。</p></section><section class="chapter-section" data-section="ch04-s02"><h2 id="ch04-s02" class="section-title">4.2 脉冲压缩原理</h2>
-<p>上一节讲的是一个目标有多远，核心关系是”回波晚回来多少，就对应多远的距离”。但一旦真要把距离测得更细，读者很快会遇到一个新问题：想把距离分得更开，往往需要更短的脉冲；可脉冲一短，带出去的能量又会变少。</p>
-<p>这测距体制里最典型的一组矛盾。脉冲压缩要解决的，正是这组矛盾：能不能在发射时保留长脉冲的能量优势，而在接收时又得到接近短脉冲的分辨能力？</p>
-<h3 id="sub-40">带宽决定分辨能力</h3>
-<p>先从最普通的单频矩形脉冲看起。这样的脉冲没有什么内部结构。接收机看到这样的回波时，除了回波到来和结束时间，可以利用的信息其实很有限。</p>
-<p>于是，当两个目标的回波相隔很近时，接收机判断它们能不能分开，基本上就是在看这两团回波有没有明显分成两份。若两团回波已经严重重叠，就很难说清那里到底是一个目标还是两个目标。对这种普通脉冲，分辨率自然首先和脉宽联系在一起。若脉宽为 $\tau$，距离分辨率常写成</p>
-<div class="math-block">$$
-\Delta R = \frac{c\tau}{2}
-$$</div>
-<p>先不用急着背成结论，只要明白脉冲越短，时间上占得越窄，两个相近回波越容易分开，所以距离分辨率越高。</p>
-<p>短脉冲虽然有利于分辨率，却不利于能量积累。脉冲压缩换了一种思路：发射时故意让脉冲内部带上可识别的结构，例如频率随时间变化，或相位按一定规律变化。这样一来，接收机就不只是问“这一团回波大概什么时候回来”，而会继续问：回波内部的变化规律，在什么延迟位置上和发射信号最对得齐？</p>
-<p>此时，真正决定“能不能分清很小时间错位”的，就不再只是整个脉冲拖了多久，而是脉冲内部到底变化得有多快、有多丰富。这个“变化有多快”的刻画，正对应到带宽 $B$。</p>
-<p>如果一个波形内部变化得很慢，那么两个彼此接近的时延，往往仍会对应十分相似的波形，接收机就不容易把它们区分开。反过来，如果一个波形内部变化得很快，那么很小的时延差也会对应更明显的波形差异，接收机就更容易把它们分开。带宽越大，通常正说明这种内部变化越丰富，因此系统对小时延差也就越敏感。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_3_bandwidth_intuition.png" alt="普通长脉冲与大带宽波形对微小错位的敏感性对比" loading="lazy"><figcaption>普通长脉冲与大带宽波形对微小错位的敏感性对比</figcaption></figure>
-<p>这张图可以配合上面的转折一起看。左边的普通长脉冲，轻微时延主要体现为整体平移，波形差异仍不丰富；右边的大带宽波形，哪怕只错开同样一点，内部结构也会明显失配，微小的变化都会被放大。所以在脉冲压缩体制里，接收机开始主要依赖内部结构去分辨微小延迟差，而这种能力首先和带宽相关。</p>
-<p>区分能力往往取决于对象中包含多少可利用信息。信息过少时，不同对象即使存在差别，也可能显得相互接近；信息更丰富时，原本细微的差别就更容易被识别。比如观察两个相距很近的物体，如果只能看到模糊轮廓，它们容易混在一起；若还能看到边缘、纹理和明暗变化，区分就会容易得多。大带宽波形在这里起到的作用，也正是增加回波中可供利用的结构信息，使小时延差更容易表现出来。</p>
-<h3 id="sub-41">从时间分辨率到距离分辨率</h3>
-<p>这种大带宽的波形，在时间上大约能分多细？</p>
-<p>对普通单频长脉冲，脉冲内部前后基本相同，轻微时延变化主要表现为整体平移或相位变化。这样的变化虽然存在却微小，但不足以稳定地区分两个很近的目标。大带宽波形则不同。由于它在脉冲内部包含更丰富的变化，两个彼此接近的时延会对应更明显的波形差异，因此系统对小时延差更敏感。于是，可分辨的最小时延差会随着带宽增大而减小。在量级上，可定性的记为</p>
+<p>这意味着相距 150 m 以内的两个目标，很可能在距离向上合成一个响应。若希望分辨 15 m 的目标间隔，普通短脉冲的宽度就要降到约 $0.1\,\mu s$。</p>
+<h3 id="sub-47">能量和分辨率冲突</h3>
+<p>短脉冲有利于分辨率，但不利于能量。脉冲越短，发射出去的总能量越少，远距离目标的回波就越弱。长脉冲能把更多能量送出去，作用距离更有保障，但回波拖得更长，距离分辨率又变差。</p>
+<p>远距离探测希望脉冲长，精细测距希望脉冲短。脉冲压缩用来解决这个矛盾：发射时用长脉冲保留能量，接收时把它压成窄峰，获得接近短脉冲的分辨能力。</p></section><section class="chapter-section" data-section="ch04-s03"><h2 id="ch04-s03" class="section-title">4.3 脉冲压缩为什么能让长脉冲也有高分辨率？</h2>
+<h3 id="sub-48">带宽与距离分辨率</h3>
+<p>先从普通单频长脉冲看起。这样的脉冲没有多少内部结构，接收机能利用的信息主要是“这一团回波从哪里开始、在哪里结束”。当两个目标的回波靠得很近时，两团回波会大段重叠，看起来仍像一团拖长的能量，接收机就很难判断那里到底是一个目标还是两个目标。</p>
+<p>脉冲压缩换了一个思路：发射时仍然用长脉冲保留能量，但故意让脉冲内部带上可识别的变化，例如频率随时间扫动，或者相位按一定规律变化。这样，接收机不只看“这团回波大概什么时候回来”，还会继续比较：回波内部的变化规律，在哪一个延迟位置上和发射信号最对得齐？</p>
+<p>于是，接收机能不能分辨很小的时间错位，开始取决于脉冲内部变化得有多快、有多丰富。变化越快，频率成分铺得越宽；用来刻画这个范围的量，就是波形带宽 $B$。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_3_excali.png" alt="普通长脉冲与大带宽波形对微小错位的敏感性对比" loading="lazy"><figcaption>普通长脉冲与大带宽波形对微小错位的敏感性对比</figcaption></figure>
+<p>上图展示了这种差异。左侧的普通长脉冲，轻微错位后仍有大段重叠，波形差异较小；右侧的大带宽波形，内部变化更丰富，同样的错位会让结构对不齐，相关输出下降更快。带宽越大，通常说明波形内部可利用的变化越丰富，系统对小时延差也就越敏感。</p>
+<p>这种关系先按量级理解即可：大带宽脉冲压缩波形经过匹配滤波后，压缩主瓣的时间宽度会随着带宽增大而减小，常写成</p>
 <div class="math-block">$$
 \Delta t_{\text{res}} \propto \frac{1}{B}
 $$</div>
-<p>时间分辨率和带宽成反比。当只关心数量级时，去掉常量，就可以进一步写成</p>
+<p>如果先按压缩主瓣的尺度来估计，可以进一步近似为</p>
 <div class="math-block">$$
 \Delta t_{\text{res}} \approx \frac{1}{B}
 $$</div>
-<p>有了这个时间尺度以后，再把它和第 4.1 节的测距关系接起来就可以捋顺了。距离本来就是由传播时间换算出来的，所以把“可分辨的最小时间差”换回距离，只需要再走一步：</p>
+<p>距离本来就是由传播时间换算出来的，所以把这个时间宽度换成距离尺度，只需要接回前面建立的测距关系：</p>
 <div class="math-block">$$
 \Delta R \approx \frac{c\Delta t_{\text{res}}}{2}
+\approx \frac{c}{2B}
 $$</div>
-<p>再把</p>
-<div class="math-block">$$
-\Delta t_{\text{res}} \approx \frac{1}{B}
-$$</div>
-<p>代进去，才得到脉冲压缩里最常见的结果：</p>
-<div class="math-block">$$
-\Delta R \approx \frac{c}{2B}
-$$</div>
-<p>回头再看本章里出现的两条分辨率公式：</p>
-<div class="math-block">$$
-\Delta R = \frac{c\tau}{2}
-$$</div>
-<p>和</p>
-<div class="math-block">$$
-\Delta R \approx \frac{c}{2B}
-$$</div>
-<p>前一个式子对应普通单频脉冲，接收机主要把回波当成“整团能量”来看，所以分辨率主要由脉宽决定；后一个式子接收机开始利用波形内部结构去做精细对齐，所以分辨率主要由带宽决定。这里先定性，下一小节会定量的精确给大家算一算。</p>
-<h3 id="sub-42">能量与分辨率的平衡：时间-带宽积</h3>
-<p>讲到这里，读者自然会追问：如果长脉冲主要带来能量，大带宽主要带来分辨率，那么是不是可以构造一个参数，衡量雷达这方面的综合能力？这就是时间-带宽积的作用。它写成</p>
+<p>这条公式要和普通脉冲的分辨率公式分开看：</p>
+<div class="table-wrap"><table><thead><tr><th>情况</th><th>距离分辨率公式</th><th>主要受谁影响</th></tr></thead><tbody><tr><td>普通单频矩形脉冲</td><td>$\Delta R = c\tau/2$</td><td>脉冲宽度 $\tau$</td></tr><tr><td>大带宽脉冲压缩波形</td><td>$\Delta R \approx c/(2B)$</td><td>波形带宽 $B$</td></tr></tbody></table></div>
+<p>这里的 $c/(2B)$ 是常用工程近似，反映的是压缩后主瓣的尺度。不同波形、加窗方式和失配情况会改变主瓣形状和旁瓣高度；这里要分清的是：脉冲压缩把分辨率问题从“脉冲要多短”转到了“带宽有多大”。</p>
+<p>经过前面的比较，长脉冲和大带宽就不再是两件分开的事了。长脉冲给的是发射时间和能量，大带宽给的是内部变化和压缩后的窄主瓣。把两者乘在一起，就得到时间-带宽积：</p>
 <div class="math-block">$$
 TB = \tau B
 $$</div>
-<p>一个脉冲持续了多久，同时又在内部装进了多宽的频率变化范围。$\tau$ 大，说明保留了长脉冲的能量优势；$B$ 大，说明内部可供接收机利用的结构丰富。两者同时做大，才是脉冲压缩真正想要的状态。</p>
-<p>对普通单频脉冲雷达，$TB$ 往往只有 1 这个量级；对采用大带宽波形的脉冲压缩雷达，$TB$ 则常常远大于 1。$TB$ 越大，说明波形内部结构越丰富，接收端可利用的信息越多。例如，若发射脉冲宽度是 $100\ \mu s$，带宽是 $10$ MHz，则</p>
+<p>它表示一个脉冲持续了多久，同时在内部装进了多宽的频率变化范围。$\tau$ 大，说明发射时间长、能量足；$B$ 大，说明内部结构丰富、压缩后主瓣窄。</p>
+<p>例如，若脉冲宽度是 $100\,\mu s$，带宽是 $10\,MHz$，则</p>
 <div class="math-block">$$
-TB = 100\times10^{-6}\times10^7 = 1000
+TB=100\times10^{-6}\times10^7=1000
 $$</div>
-<p>先看时间分辨尺度：</p>
+<p>压缩后的时间主瓣尺度约为</p>
 <div class="math-block">$$
-\Delta t_{\text{res}} \approx \frac{1}{B} = 0.1\ \mu s
+\Delta t_{\text{res}}\approx \frac{1}{B}=0.1\,\mu s
 $$</div>
-<p>再把它换成距离分辨率：</p>
+<p>换成距离分辨率：</p>
 <div class="math-block">$$
-\Delta R \approx \frac{c\Delta t_{\text{res}}}{2}
-= \frac{3\times10^8\times0.1\times10^{-6}}{2}
-= 15\ \text{m}
+\Delta R\approx \frac{3\times10^8\times0.1\times10^{-6}}{2}=15\,m
 $$</div>
-<p>这个例子体现了本章的核心：脉冲压缩让长脉冲内部带上可利用的结构，发射时保留能量，接收时再把这些结构重新对齐，于是获得接近短脉冲的分辨能力。</p>
-<p>下一节就顺着这条线往前走，看工程上最常见的一类大带宽波形——LFM——到底长什么样。</p></section><section class="chapter-section" data-section="ch04-s03"><h2 id="ch04-s03" class="section-title">4.3 线性调频信号</h2>
-<p>前一节已经把脉冲压缩的主线讲清楚了：若想在保持较长脉冲能量的同时提高分辨率，发射波形内部就必须带有足够丰富的结构。工程上最常见的选择，是线性调频信号，也就是 LFM。</p>
-<h3 id="sub-43">线性调频信号的基本形式</h3>
-<p>所谓<strong>线性调频</strong>，意思是脉冲内部的瞬时频率随着时间按线性规律上升或下降。在理解这个概念之前，先看一个更简单的例子。</p>
-<p>假设有一个信号，它的频率每秒增加 1 Hz：第 1 秒是 1 Hz，第 2 秒是 2 Hz，第 3 秒是 3 Hz，依此类推，直到第 5 秒达到 5 Hz。这个信号的频率在变化，但变化是阶梯式的，每秒跳一次。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_4_stepwise_frequency.png" alt="阶梯式频率变化示意图" loading="lazy"><figcaption>阶梯式频率变化示意图</figcaption></figure>
-<p>上图显示了这种阶梯式变化的信号波形，下图则是它的频率随时间的关系：一条阶梯状的曲线。用公式表示，频率为 $f(t) = \lfloor t \rfloor + 1$ Hz，信号则是 $s(t) = \sin(2\pi f(t) \cdot t)$。</p>
-<p>现在把这个想法推进一步：如果频率连续平滑地变化呢？从 1 Hz 开始，在 4 秒内连续上升到 5 Hz，中间没有任何跳跃。这就是线性调频的核心思想。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_5_continuous_frequency.png" alt="连续频率变化示意图" loading="lazy"><figcaption>连续频率变化示意图</figcaption></figure>
-<p>上图显示了连续变化的信号波形，可以看到振荡逐渐变密；下图是它的频率随时间的关系：一条平滑的直线，$f(t) = 1 + t$ Hz。对应的信号表达式是 $s(t) = \sin(2\pi f(t) \cdot t) = \sin(2\pi (1+t) \cdot t)$。这种频率随时间线性变化的信号，就是 LFM（线性调频）信号。</p>
-<p>若把它变成声音来听，会像一个持续时间有限、音调不断升高或降低的扫频声。LFM 的每一小段时间，都带着与前后略有不同的频率特征。</p>
-<p>现在把这个想法推广到一般情况。假设频率不是从 1 Hz 开始，而是从某个起始频率 $f_0$ 开始；调频率也不一定是 1 Hz/s，而是用 $\mu$ 来表示。那么频率随时间的关系就变成：</p>
+<p>发射端仍然用了 $100\,\mu s$ 的长脉冲，接收端却得到约 $15\,m$ 的距离分辨率。</p>
+<h3 id="sub-49">线性调频信号</h3>
+<p>工程上最常见的脉冲压缩波形之一，是<strong>线性调频信号</strong>（Linear Frequency Modulated signal, LFM），也常叫 chirp。它的瞬时频率随时间线性上升或下降。</p>
+<p>先看一个低速例子。假设有一个信号，第 1 秒是 1 Hz，第 2 秒是 2 Hz，第 3 秒是 3 Hz，一直到第 5 秒达到 5 Hz。频率在变，但变化是阶梯式的。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_4_excali.png" alt="阶梯式频率变化示意图" loading="lazy"><figcaption>阶梯式频率变化示意图</figcaption></figure>
+<p>再把阶梯变化改成连续变化：频率从 1 Hz 开始，在 4 秒内平滑上升到 5 Hz。波形会逐渐变密，频率-时间图是一条斜直线。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_5_excali.png" alt="连续频率变化示意图" loading="lazy"><figcaption>连续频率变化示意图</figcaption></figure>
+<p>线性调频的特征就在这里：频率按一条近似直线变化。若把它变成声音来听，会像一个持续时间有限、音调不断升高的扫频声。LFM 的每一小段时间，都带着和前后略有不同的频率特征。</p>
+<p>现在把这个低速例子推广到雷达里的写法。起始频率不一定是 1 Hz，频率变化速度也不一定是每秒 1 Hz。设瞬时频率为</p>
 <div class="math-block">$$
-f(t) = f_0 + \mu t
+f_i(t)=f_0+\mu t
 $$</div>
-<p>这里 $\mu$ 的单位是 Hz/s，表示频率每秒变化多少。如果 $\mu &gt; 0$，频率上升；如果 $\mu &lt; 0$，频率下降。</p>
-<p>接下来需要把这个频率关系转换成信号表达式。回忆一下，正弦信号 $\cos(2\pi f t)$ 中的 $2\pi f t$ 是相位。当频率随时间变化时，相位不再是简单的 $2\pi f t$，而是频率对时间的积分：</p>
+<p>其中 $f_0$ 是起始频率，$\mu$ 是调频斜率，单位是 Hz/s。$\mu&gt;0$ 表示频率上升，$\mu&lt;0$ 表示频率下降。</p>
+<p>相位由瞬时频率积分得到。若相位记为 $\phi(t)$，则</p>
 <div class="math-block">$$
-\phi(t) = 2\pi \int_0^t f(\tau) \, d\tau = 2\pi \int_0^t (f_0 + \mu\tau) \, d\tau = 2\pi f_0 t + \pi \mu t^2
+\phi(t)=2\pi\int_0^t(f_0+\mu u)\,du
+=2\pi f_0t+\pi\mu t^2
 $$</div>
-<p>因此，LFM 信号可以写成：</p>
+<p>因此复指数形式的 LFM 可写成</p>
 <div class="math-block">$$
-s(t) = \cos(2\pi f_0 t + \pi \mu t^2)
+s(t)=e^{j(2\pi f_0 t+\pi\mu t^2)}
 $$</div>
-<p>这就是线性调频信号的核心表达式。其中 $2\pi f_0 t$ 是起始频率对应的相位项，$\pi \mu t^2$ 是频率变化带来的额外相位。</p>
-<p>在信号处理中，常用复指数形式来表示：</p>
+<p>如果这个信号只在长度为 $\tau$ 的脉冲内发射，可以写成</p>
 <div class="math-block">$$
-s(t) = e^{j(2\pi f_0 t + \pi \mu t^2)}
+s(t)=\operatorname{rect}\!\left(\frac{t}{\tau}\right)e^{j(2\pi f_0 t+\pi\mu t^2)}
 $$</div>
-<p>这里 $j$ 是虚数单位。复指数形式在数学推导和频域分析时更方便，实际发射的信号取其实部即可。两种写法本质相同，只是表达习惯不同。</p>
-<p>在实际雷达中，正如3.1小节所说的，脉冲雷达发射的是持续一段时间的脉冲，LFM 脉冲有一个持续时间 $\tau$，超出这个时间就不再发射。为了表示这个有限长度，引入矩形窗函数 $\operatorname{rect}(t/\tau)$：</p>
+<p>这里的 $\operatorname{rect}(t/\tau)$ 只是把信号限制在脉冲宽度 $\tau$ 内。若这个 LFM 脉冲在 $\tau$ 时间内扫过总带宽 $B$，就是把频率从起点扫到终点，扫过的总范围为 $B$。把“总变化量 = 变化速度 × 持续时间”写出来，就有</p>
 <div class="math-block">$$
-\operatorname{rect}\!\left(\frac{t}{\tau}\right) = 
-\begin{cases}
-1, &amp; |t| \leq \tau/2 \\
-0, &amp; |t| &gt; \tau/2
-\end{cases}
+B=\mu\tau
 $$</div>
-<p>别看这个数学符号复杂，实际含义非常简单，它的作用是把信号限制在 $[-\tau/2, \tau/2]$ 这个时间窗内。因此，完整的 LFM 信号表达式为：</p>
+<p>因此</p>
 <div class="math-block">$$
-s(t) = \operatorname{rect}\!\left(\frac{t}{\tau}\right) e^{j(2\pi f_0 t + \pi \mu t^2)}
+\mu=\frac{B}{\tau}
 $$</div>
-<p>如果用带宽 $B$ 来描述频率总共变化了多少，那么在 $\tau$ 时间内，频率从 $f_0$ 变化到 $f_0 + B$，因此：</p>
+<p>这个式子只是说：在 $\tau$ 这么长的时间里，频率一共扫过了 $B$。$B$ 越大，LFM 在脉冲内部的频率变化越大，可供接收机利用的结构也越丰富，匹配滤波后的相关峰更窄。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_6_excali.png" alt="LFM 信号的时域和频域" loading="lazy"><figcaption>LFM 信号的时域和频域</figcaption></figure>
+<p>上图的上半部分是时域波形，随着时间推进，波形振荡逐渐变密；下半部分是频域能量分布，说明这个脉冲占据了宽度为 $B$ 的频带。</p>
+<h3 id="sub-50">基带表示</h3>
+<p>实际雷达的载频常在 GHz 量级。接收机会先经过下变频，把高频射频信号搬到较低的中频或基带，再进行采样和 I/Q 处理。</p>
+<p>对 LFM 信号来说，下变频后可以把载频项 $2\pi f_0t$ 去掉，留下调频项：</p>
 <div class="math-block">$$
-\mu = \frac{B}{\tau}
+s_{\text{bb}}(t)=\operatorname{rect}\!\left(\frac{t}{\tau}\right)e^{j\pi\mu t^2}
 $$</div>
-<p>这个式子只是把"在 $\tau$ 这么长的时间里，频率一共扫过了 $B$"写成数学形式。真正需要抓住的是：$B$ 越大，LFM 在脉冲内部的变化越明显，可供接收机利用的结构也越丰富。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_6_lfm_signal.png" alt="LFM信号的时域和频域" loading="lazy"><figcaption>LFM信号的时域和频域</figcaption></figure>
-<p>图中上半部分是时域波形。随着时间推进，波形振荡逐渐变密，表示瞬时频率在变化；下半部分是频域能量分布，说明这个脉冲不再集中在一个很窄的频率点上，而是占据了宽度为 $B$ 的频带。</p>
-<h3 id="sub-44">下变频与基带表示</h3>
-<p>实际雷达系统中，发射的 LFM 信号载频 $f_0$ 通常在几 GHz 量级，直接处理这么高的频率对硬件要求很高。因此接收端常先做下变频，把信号搬移到零中频附近，得到基带信号。</p>
-<p>下变频的过程是将接收信号与本振信号 $e^{-j2\pi f_0 t}$ 相乘：</p>
+<p>这里的下标 bb 表示 baseband。基带信号仍然保留 LFM 的带宽和调频结构，只是中心频率搬到了零频附近。这样处理更适合数字采样，也和第2章中的复数 I/Q 数据接上了。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_7_excali.png" alt="零中频 LFM 信号" loading="lazy"><figcaption>零中频 LFM 信号</figcaption></figure>
+<p>有些 FMCW 雷达也使用 LFM 或 chirp，但那类体制通常通过差拍频率提取距离；这里讨论的是脉冲体制下的 LFM 匹配滤波。</p></section><section class="chapter-section" data-section="ch04-s04"><h2 id="ch04-s04" class="section-title">4.4 匹配滤波为什么能把回波压成距离峰？</h2>
+<h3 id="sub-51">用滑动比对找时延</h3>
+<p>到这里，发射端已经有了可识别的内部结构。但结构本身不会自动变成距离峰，接收端还要把回波和已知的发射信号做比对：在哪一个延迟位置上，两者的内部变化最对得齐？</p>
+<p>这里有个问题：接收机怎么知道该拿哪一个信号去和回波比对？</p>
+<p>参考信号来自发射端。雷达发射什么脉冲，本来就由系统自己设定：脉宽、带宽、调频斜率、采样率和发射时刻都在发射机与接收机的控制之内。处理回波时，接收机可以调用保存好的基带发射序列，也可以用这些参数重新生成一份本地参考信号。若一组脉冲采用不同编码或不同调频参数，处理链会按当前脉冲编号选择对应的参考。匹配滤波匹配的就是这份本地参考，不是临时从回波里猜一个模板。</p>
+<p>先用一个离散例子。假设发射信号是 10 个采样点，第 3 到第 5 个点是 $1,2,1$，其余为 0：</p>
 <div class="math-block">$$
-s_{\text{基带}}(t) = s(t) \cdot e^{-j2\pi f_0 t} = \operatorname{rect}\!\left(\frac{t}{\tau}\right) e^{j\pi \mu t^2}
+s[n]=[0,0,1,2,1,0,0,0,0,0]
 $$</div>
-<p>可以看到，下变频后载频项 $2\pi f_0 t$ 被消除，只剩下调频项 $\pi \mu t^2$。这样得到的基带信号频谱以零频为中心对称分布，带宽仍为 $B$，但处理起来更方便，采样率也可以大幅降低。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_7_lfm_baseband.png" alt="零中频LFM信号" loading="lazy"><figcaption>零中频LFM信号</figcaption></figure>
-<p>上图展示了基带表示下的 LFM 信号：第一行是时域实部，第二行是时域虚部，第三行是幅频特性。可以看到频谱完全对称，以零频为中心，带宽为 30 MHz。这种基带表示在信号处理中很常见，既降低了采样率要求，又能得到对称美观的频谱图。</p>
-<p>有了 LFM 这种大带宽波形，发射端的问题就解决了。但接收端还有一个关键问题：回波仍然是一个拖得很长的脉冲，怎样才能把它压成窄峰？这就是下一节要讲的匹配滤波。</p></section><section class="chapter-section" data-section="ch04-s04"><h2 id="ch04-s04" class="section-title">4.4 匹配滤波</h2>
-<p>现在脉冲内部有了丰富的信息，稍微错位就可以表现出很大的差异，那么如何让这个差异显现出来，表征成方便测量的参数呢？</p>
-<h3 id="sub-45">互相关与时间延迟估计</h3>
-<p>假设雷达发射了信号 $s(t)$,目标在距离 $R$ 处反射回来,回波就是 $s(t - \tau)$,其中 $\tau = 2R/c$ 是往返延迟。接收机的任务是:从回波中找出这个延迟 $\tau$。</p>
-<p>最直接的想法是:把回波和发射信号做比对,看它们在哪个时间偏移下最相似。这个过程实际上是互相关计算，一个非常常见的求延迟的方法。</p>
-<p>假设发射信号是10个采样点,大部分是0,只有中间3个点形成三角形:</p>
+<p>回波是同样的三角形，但整体延迟了 3 个点：</p>
 <div class="math-block">$$
-s[n] = [0, 0, 1, 2, 1, 0, 0, 0, 0, 0]
+r[n]=[0,0,0,0,0,1,2,1,0,0]
 $$</div>
-<p>回波也是同样的三角形,但整体延迟了3个点:</p>
-<div class="math-block">$$
-r[n] = [0, 0, 0, 0, 0, 1, 2, 1, 0, 0]
-$$</div>
-<p>现在要找这个延迟。把两个序列逐点相乘再求和,尝试不同的偏移量 $d$:</p>
+<p>现在把参考信号滑过去，对每个偏移量 $d$ 做逐点相乘再求和：</p>
 <div class="math-block">$$
 \begin{aligned}
-d=0: \quad &amp; 0 \cdot 0 + 0 \cdot 0 + 1 \cdot 0 + 2 \cdot 0 + 1 \cdot 0 + 0 \cdot 1 + \cdots = 0 \\
-d=1: \quad &amp; 0 \cdot 0 + 0 \cdot 0 + 1 \cdot 0 + 2 \cdot 0 + 1 \cdot 0 + 0 \cdot 1 + \cdots = 0 \\
-d=2: \quad &amp; 0 \cdot 0 + 0 \cdot 0 + 1 \cdot 0 + 2 \cdot 0 + 1 \cdot 1 + 0 \cdot 2 + \cdots = 1 \\
-d=3: \quad &amp; 0 \cdot 0 + 0 \cdot 0 + 1 \cdot 1 + 2 \cdot 2 + 1 \cdot 1 + 0 \cdot 0 + \cdots = 6 \\
-d=4: \quad &amp; 0 \cdot 0 + 0 \cdot 1 + 1 \cdot 2 + 2 \cdot 1 + 1 \cdot 0 + 0 \cdot 0 + \cdots = 4 \\
-d=5: \quad &amp; 0 \cdot 1 + 0 \cdot 2 + 1 \cdot 1 + 2 \cdot 0 + 1 \cdot 0 + 0 \cdot 0 + \cdots = 1
+d=0:\quad &amp;0 \\
+d=1:\quad &amp;0 \\
+d=2:\quad &amp;1 \\
+d=3:\quad &amp;1\cdot1+2\cdot2+1\cdot1=6 \\
+d=4:\quad &amp;1\cdot2+2\cdot1=4 \\
+d=5:\quad &amp;1
 \end{aligned}
 $$</div>
-<p>可以看到,延迟3个点时,乘积和达到最大值6。这就找到了真实的延迟。通过不断的左右移动信号，当对齐的时候，就是值最大的时候。没有太多高深的理论，思想朴素直接。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_8_correlation_intuition.png" alt="互相关寻找时延的直观示意" loading="lazy"><figcaption>互相关寻找时延的直观示意</figcaption></figure>
-<p>用求和符号重新表达一下:</p>
+<p>偏移量 $d=3$ 时乘积和最大，说明两个序列在这个位置对得最齐。真实延迟就是 3 个采样点。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_8_excali.png" alt="互相关寻找时延的直观示意" loading="lazy"><figcaption>互相关寻找时延的直观示意</figcaption></figure>
+<p>把每个偏移量的结果画出来，就得到一个相关曲线。峰值位置对应延迟。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_9_excali.png" alt="离散互相关结果" loading="lazy"><figcaption>离散互相关结果</figcaption></figure>
+<p>用公式写，离散互相关可以表示为</p>
 <div class="math-block">$$
-\begin{aligned}
-d=0: \quad &amp; \sum_{n=0}^{9} s[n] \cdot r[n+0] = s[0] \cdot r[0] + s[1] \cdot r[1] + s[2] \cdot r[2] + s[3] \cdot r[3] + \cdots = 0 \\
-d=1: \quad &amp; \sum_{n=0}^{9} s[n] \cdot r[n+1] = s[0] \cdot r[1] + s[1] \cdot r[2] + s[2] \cdot r[3] + s[3] \cdot r[4] + \cdots = 0 \\
-d=2: \quad &amp; \sum_{n=0}^{9} s[n] \cdot r[n+2] = s[0] \cdot r[2] + s[1] \cdot r[3] + s[2] \cdot r[4] + s[3] \cdot r[5] + \cdots = 1 \\
-d=3: \quad &amp; \sum_{n=0}^{9} s[n] \cdot r[n+3] = s[0] \cdot r[3] + s[1] \cdot r[4] + s[2] \cdot r[5] + s[3] \cdot r[6] + \cdots = 6 \\
-d=4: \quad &amp; \sum_{n=0}^{9} s[n] \cdot r[n+4] = s[0] \cdot r[4] + s[1] \cdot r[5] + s[2] \cdot r[6] + s[3] \cdot r[7] + \cdots = 4 \\
-d=5: \quad &amp; \sum_{n=0}^{9} s[n] \cdot r[n+5] = s[0] \cdot r[5] + s[1] \cdot r[6] + s[2] \cdot r[7] + s[3] \cdot r[8] + \cdots = 1
-\end{aligned}
+R_{sr}[d]=\sum_n s^*[n]r[n+d]
 $$</div>
-<p>把这些结果画出来，可以清楚地看到峰值位置：</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_9_correlation_result.png" alt="离散互相关结果" loading="lazy"><figcaption>离散互相关结果</figcaption></figure>
-<p>推广到任意偏移量 $d$,离散信号的互相关定义为:</p>
+<p>连续信号中，把求和换成积分，可以写成</p>
 <div class="math-block">$$
-R_{sr}[d] = \sum_{n=0}^{N-1} s[n] \cdot r[n+d]
+R_{sr}(\tau)=\int_{-\infty}^{\infty}s^*(t)r(t+\tau)\,dt
 $$</div>
-<p>其中 $d$ 是偏移量,$N$ 是信号长度。当 $R_{sr}[d]$ 达到最大值时,对应的 $d$ 就是真实的延迟。</p>
-<p>推广到连续信号,就是把"逐点相乘求和"换成"逐时刻相乘积分"。数学上用互相关来算这个相似度:</p>
+<p>星号表示复共轭。这里把 $\tau$ 写成正偏移量：当回波 $r(t)$ 相对参考信号晚到 $\tau$ 时，$r(t+\tau)$ 与 $s(t)$ 对齐。不同教材可能采用相反的正负号约定，峰值位置对应延迟这一点不变。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_10_excali.png" alt="连续信号互相关示意" loading="lazy"><figcaption>连续信号互相关示意</figcaption></figure>
+<p>把所有延迟对应的互相关值连起来，就得到互相关函数曲线。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_11_excali.png" alt="互相关函数曲线" loading="lazy"><figcaption>互相关函数曲线</figcaption></figure>
+<p>因此，延迟估计可以写成</p>
 <div class="math-block">$$
-R_{sr}(\tau) = \int_{-\infty}^{\infty} s(t) \cdot r^*(t - \tau) \, dt
+\tau_{\text{peak}}=\arg\max_{\tau}R_{sr}(\tau)
 $$</div>
-<p>这里 $s(t)$ 是参考信号，$r(t)$ 是待匹配的信号。公式中的星号 $*$ 表示复共轭(对于实信号可以忽略)。互相关函数 $R_{sr}(\tau)$ 的含义是：当 $r(t)$ 相对 $s(t)$ 偏移 $\tau$ 时，两者的重叠程度有多大。</p>
-<p>同样的道理，连续信号也是通过滑动匹配找到峰值位置：</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_10_continuous_correlation.png" alt="连续信号互相关示意" loading="lazy"><figcaption>连续信号互相关示意</figcaption></figure>
-<p>把所有延迟对应的互相关值连起来，就得到互相关函数曲线：</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_11_correlation_curve.png" alt="互相关函数曲线" loading="lazy"><figcaption>互相关函数曲线</figcaption></figure>
-<p>当 $\tau$ 正好等于真实延迟时，两个信号完全对齐，互相关值达到最大；当 $\tau$ 偏离真实延迟时，两者错位，互相关值迅速下降。即使信号有衰减或噪声，峰值位置仍然对应真实延迟（只是峰值幅度会降低）。</p>
-<p>因此，互相关峰值的位置就是两个信号之间的延迟：</p>
+<p>不同波形的相关峰形状并不一样。普通矩形脉冲内部结构少，稍微错位后仍有较大重叠，相关峰宽而平；LFM 的频率随时间变化，只有对齐时内部结构才同时匹配，相关峰更尖。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_12_excali.png" alt="波形结构对互相关峰值的影响" loading="lazy"><figcaption>波形结构对互相关峰值的影响</figcaption></figure>
+<p>相关峰越尖，峰值位置越容易定位，两个相近目标也更容易分开。LFM 因此适合做脉冲压缩。</p>
+<h3 id="sub-52">从互相关到匹配滤波</h3>
+<p>逐一计算每一个可能延迟的互相关，计算量很大。雷达接收机通常把互相关改写成滤波器形式，让回波通过一个专门的滤波器，输出就是相关结果。</p>
+<p>这个滤波器的冲激响应取为发射信号的时间反转和复共轭：</p>
 <div class="math-block">$$
-\tau_{\text{peak}} = \arg\max_{\tau} R_{sr}(\tau)
+h(t)=s^*(-t)
 $$</div>
-<p>这个方法对任何波形都适用。只要参考信号有足够的结构特征，互相关就能找到延迟位置。</p>
-<p>但"结构特征"这个说法有点抽象。什么样的波形算是"结构特征丰富"？为什么 LFM 比普通矩形脉冲更适合做匹配滤波？来看一个对比。</p>
-<p>假设用两种不同的波形做参考信号：</p>
-<ol><li><strong>矩形脉冲</strong>：幅度恒定，没有频率变化</li><li><strong>LFM chirp</strong>：频率随时间线性变化，内部结构复杂</li></ol>
-<p>分别计算它们的互相关曲线：</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_12_waveform_comparison.png" alt="波形结构对互相关峰值的影响" loading="lazy"><figcaption>波形结构对互相关峰值的影响</figcaption></figure>
-<p>上下两组对比可以看到：</p>
-<ul><li>矩形脉冲的互相关峰值宽而平：因为脉冲内部是平的，稍微错位一点，重叠区域仍然很大，互相关值下降缓慢。这导致峰值区域很宽，延迟位置不够精确。</li></ul>
-<ul><li><strong>LFM chirp 的互相关峰值尖锐突出</strong>：因为频率随时间变化，只有完全对齐时，所有频率成分才同时匹配；稍微错位，频率就对不上，互相关值迅速下降。这导致峰值非常尖锐，延迟位置精确。</li></ul>
-<p>这就是为什么雷达要用 LFM 而不是简单的矩形脉冲：<strong>波形的结构特征越复杂，互相关峰值越尖锐，测距精度越高</strong>。</p>
-<p>看完后面 LFM 的压缩效果，再回头看这张图，就能理解为什么 LFM 能把长脉冲压成窄峰，而矩形脉冲做不到——LFM 的频率结构提供了足够的"指纹"，互相关峰值才足够尖锐。</p>
-<h3 id="sub-46">从互相关到匹配滤波</h3>
-<p>前面看到，互相关能找到信号的延迟。但在雷达接收机的实际工作中，直接计算互相关有个问题：</p>
-<p>假设雷达的探测范围是 150 km，对应的最大往返延迟是 1 ms。如果采样率是 10 MHz（每 0.1 μs 采样一次），那么 1 ms 内有 10000 个采样点。要找到回波的延迟位置，就需要对这 10000 个可能的延迟位置，每个都算一遍互相关（10000 次求和），总共需要 1 亿次乘法运算。</p>
-<p>如果雷达每秒发射 1000 个脉冲（脉冲重复频率 1 kHz），接收机每秒要做 1000 亿次乘法。即使用现代 DSP 芯片，这个计算量也很难实时完成。</p>
-<p>有没有更高效的方法？可以把互相关改写成<strong>卷积</strong>形式，用<strong>滤波器</strong>来实现。这样做有两个好处：</p>
-<ol><li><strong>硬件实现简单</strong>：滤波器可以用模拟电路或 FPGA 实现，不需要逐个延迟去试</li><li><strong>FFT 加速</strong>：在数字系统中，卷积可以用 FFT 快速计算，计算量从 $O(N^2)$ 降到 $O(N \log N)$</li></ol>
-<h4 id="sub-47">数学上的等价变换</h4>
-<p>先看离散情况。前面的互相关公式是：</p>
+<p>回波 $r(t)$ 通过这个滤波器，输出为</p>
 <div class="math-block">$$
-R_{sr}[d] = \sum_{n=0}^{N-1} s[n] \cdot r[n+d]
+y(t)=r(t)*h(t)
 $$</div>
-<p>做一个变量替换，令 $m = n + d$，则 $n = m - d$，求和变成：</p>
+<p>其中 $*$ 表示卷积。这个输出和互相关结果等价，峰值位置仍然对应目标延迟。因为滤波器的形状由发射信号决定，所以它叫<strong>匹配滤波器</strong>。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_13_excali.png" alt="匹配滤波器的实现" loading="lazy"><figcaption>匹配滤波器的实现</figcaption></figure>
+<p>在数字雷达中，匹配滤波常用 FFT 实现。根据卷积定理，时域卷积可以变成频域相乘：</p>
 <div class="math-block">$$
-R_{sr}[d] = \sum_{m=d}^{N-1+d} s[m-d] \cdot r[m]
+y(t)=r(t)*h(t)
+\quad\Longleftrightarrow\quad
+Y(f)=R(f)H(f)
 $$</div>
-<p>现在定义一个新序列 $h[n] = s[-n]$（把发射信号做时间反转），那么 $s[m-d] = h[d-m]$，于是：</p>
+<p>程序里通常先对回波做 FFT，乘以预先计算好的匹配滤波器频谱，再做 IFFT 回到时间域。这样得到的序列就是距离向上的匹配滤波输出，也常称为距离像。峰值所在的采样点扣除接收窗口起点和滤波器固定延迟后，再按前面的延迟测距公式换算成距离。</p>
+<h3 id="sub-53">LFM 的压缩效果、旁瓣与窗函数</h3>
+<p>LFM 经过匹配滤波后，原本拖得很长的回波会被压成窄峰。以基带上扫频为例，发射信号的相位含有 $\pi\mu t^2$；匹配滤波器采用时间反转和复共轭，相当于补上相反的二次相位。在正确延迟处，这些相位项互相抵消，不同时间位置的能量同相叠加，形成高峰。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_14_excali.png" alt="LFM 匹配滤波的压缩效果" loading="lazy"><figcaption>LFM 匹配滤波的压缩效果</figcaption></figure>
+<p>上图中，第一行是接收到的 LFM 回波，第二行是匹配滤波器的冲激响应，第三行是压缩后的输出。原本宽度为几十微秒的回波，被压成了一个窄得多的主峰。</p>
+<p>压缩后的主瓣宽度约由 $1/B$ 决定。若 $B=10\,MHz$，时间主瓣尺度约为 $0.1\,\mu s$，对应距离尺度约为 $15\,m$。这和前面得到的 $\Delta R\approx c/(2B)$ 是同一件事。</p>
+<p>匹配滤波输出通常由一个主瓣和两侧旁瓣构成，并不等同于理想冲激。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_15_excali.png" alt="压缩后的脉冲形状" loading="lazy"><figcaption>压缩后的脉冲形状</figcaption></figure>
+<p>中间最高的一部分叫<strong>主瓣</strong>，它决定目标峰的主要位置和两个目标能否分开。主瓣两侧的起伏叫<strong>旁瓣</strong>。旁瓣是处理输出中由波形和滤波带来的副峰，不代表新的目标。</p>
+<p>旁瓣会影响强弱目标共存时的可见性。一个强目标的旁瓣，可能高过附近弱目标的主瓣，使弱目标在距离像里不容易被看出来。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_16_excali.png" alt="强目标旁瓣遮蔽弱目标" loading="lazy"><figcaption>强目标旁瓣遮蔽弱目标</figcaption></figure>
+<p>上图中，蓝色曲线是强目标单独造成的响应，橙色虚线是弱目标单独响应，黑色曲线是两者叠加后的输出。弱目标离强目标较近时，可能落在强目标旁瓣附近，峰值不容易分辨。</p>
+<p>压低旁瓣的常用办法是加窗。加窗可以理解为给频域或参考信号加一个平滑权重，让突兀的边缘变缓，从而降低旁瓣。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_17_excali.png" alt="加窗对主瓣和旁瓣的影响" loading="lazy"><figcaption>加窗对主瓣和旁瓣的影响</figcaption></figure>
+<p>加窗也有代价。旁瓣降低后，主瓣通常会变宽，距离分辨率会有所牺牲。工程上要在两件事之间折中：旁瓣低一些，有利于发现强目标附近的弱目标；主瓣窄一些，有利于分开相邻目标。</p></section><section class="chapter-section" data-section="ch04-s05"><h2 id="ch04-s05" class="section-title">4.5 第4章学完，到底会不会算距离？</h2>
+<p>下面几道题把第4章的几个动作放到一起：由延迟换距离、观察信噪比、区分双目标、改变带宽，以及比较窗函数带来的主瓣和旁瓣变化。</p>
+<h3 id="sub-54">练习 1：单目标距离恢复</h3>
+<p>设一部脉冲雷达使用基带 LFM 信号，参数如下：</p>
+<div class="table-wrap"><table><thead><tr><th>参数</th><th>数值</th></tr></thead><tbody><tr><td>脉冲宽度</td><td>$\tau=10\,\mu s$</td></tr><tr><td>带宽</td><td>$B=20\,MHz$</td></tr><tr><td>采样率</td><td>$f_s=100\,MHz$</td></tr><tr><td>目标距离</td><td>$R=15\,km$</td></tr></tbody></table></div>
+<p>请说明：如何生成发射信号、构造延迟回波、进行匹配滤波，并由主峰位置恢复目标距离？</p>
+<p>解析：由带宽和脉宽得到调频斜率</p>
 <div class="math-block">$$
-R_{sr}[d] = \sum_{m} r[m] \cdot h[d-m]
+\mu=\frac{B}{\tau}
 $$</div>
-<p>这正是<strong>卷积</strong>的定义！记作 $R_{sr}[d] = (r \ast h)[d]$。</p>
-<h4 id="sub-48">雷达接收机的实现</h4>
-<p>在雷达接收机中，这个变换意味着：</p>
-<ul><li>互相关的思路：存储发射信号 $s[n]$，让回波 $r[n]$ 在时间轴上滑动，每个位置都算一次相似度</li><li>匹配滤波的思路：把发射信号时间反转得到 $h[n] = s[-n]$，做成一个滤波器，让回波直接通过这个滤波器</li></ul>
-<p>两种方法在数学上完全等价，但后者可以用滤波器硬件实现。回波信号进来后，直接通过滤波器，输出就是互相关函数，峰值位置就是目标距离。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_13_matched_filter.png" alt="匹配滤波器的实现" loading="lazy"><figcaption>匹配滤波器的实现</figcaption></figure>
-<p>上图展示了匹配滤波的实现方式。回波 $r(t)$ 进入滤波器，滤波器的冲激响应是发射信号的时间反转 $h(t) = s(-t)$，输出就是互相关函数。峰值位置对应目标距离。</p>
-<h4 id="sub-49">匹配滤波的 FFT 实现</h4>
-<p>在现代数字雷达中，匹配滤波通常用 FFT 实现。根据卷积定理，时域卷积等于频域相乘：</p>
+<p>再由目标距离得到往返时延</p>
 <div class="math-block">$$
-y(t) = r(t) \ast h(t) \quad \Longleftrightarrow \quad Y(f) = R(f) \cdot H(f)
+\Delta t=\frac{2R}{c}
 $$</div>
-<p>因此，只需要三步：</p>
-<ol><li>对回波 $r(t)$ 做 FFT，得到 $R(f)$</li><li>乘以预先计算好的 $H(f)$（发射信号的频谱共轭）</li><li>做 IFFT，得到 $y(t)$</li></ol>
-<p>对于 10000 点的信号，直接计算卷积需要 1 亿次乘法，FFT 方法只需要 13 万次（包括两次 FFT 和一次频域相乘），快了近 1000 倍。这就是为什么现代雷达都用 FFT 实现匹配滤波。</p>
-<p>因此，只要设计一个滤波器，它的冲激响应是：</p>
+<p>将发射信号延迟 $\Delta t$ 得到回波 $r(t)$，构造匹配滤波器 $h(t)=s^*(-t)$，计算</p>
 <div class="math-block">$$
-h(t) = s^*(-t)
+y(t)=r(t)*h(t)
 $$</div>
-<p>（连续情况下，$s^*(t)$ 表示复共轭，对于实信号可以省略星号）</p>
-<p>让回波通过这个滤波器，输出就是互相关结果。这就是<strong>匹配滤波器</strong>的由来。</p>
-<p>匹配滤波器的概念最早由诺斯(North)在1943年提出，用于雷达信号检测。它的核心思想是：要从噪声中提取信号，最优的滤波器应该"匹配"信号的形状。这个理论后来被证明，在高斯白噪声环境下，匹配滤波器能使信噪比达到最大，因此成为雷达信号处理的基础工具。</p>
-<p>从这个角度看，匹配滤波器本质上是互相关的高效实现，是把"寻找最相似位置"这个想法，换成了滤波器的实现方式。</p>
-<h3 id="sub-50">匹配滤波对 LFM 的压缩效果</h3>
-<p>前面讲的互相关和匹配滤波,对任何波形都适用。但 LFM 有个特殊之处:它的匹配滤波输出不仅能找到延迟,还能把长脉冲压成窄峰。</p>
-<h4 id="sub-51">LFM 压缩机制</h4>
-<p>为什么 LFM 能被压缩?关键在于它内部的频率结构。LFM 信号的频率随时间线性变化,前半段是低频,后半段是高频。从频域角度看,LFM 包含了从 $f_0$ 到 $f_0 + B$ 的所有频率成分,但这些频率成分的相位不同:低频部分的相位变化慢,高频部分的相位变化快。具体来说,LFM 的相位是 $\phi(t) = \pi \mu t^2$,其中 $\mu = B/\tau$ 是调频斜率。</p>
-<p>匹配滤波器 $h(t) = s^*(-t)$ 的相位是 $-\pi \mu t^2$,正好与 LFM 的相位相反。当回波通过匹配滤波器时,两者相乘,相位相加:$\pi \mu t^2 + (-\pi \mu t^2) = 0$。这意味着,原本相位各不相同的频率成分,经过匹配滤波后都变成了同相(相位为0)。</p>
-<p>同相的频率成分叠加时,不会相互抵消,而是建设性干涉(振幅相加),形成一个高峰。这就像合唱团,大家唱同一个音时声音最响。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_14_matched_filter.png" alt="LFM匹配滤波的压缩效果" loading="lazy"><figcaption>LFM匹配滤波的压缩效果</figcaption></figure>
-<p>图中从上到下三行分别是：第一行是接收到的 LFM 回波（脉冲宽度 50 μs），第二行是匹配滤波器的冲激响应（频率"反着扫回来"），第三行是压缩后的输出（主瓣宽度约 0.1 μs）。可以看到，原本拖得很长的脉冲，被压成了一个窄峰。</p>
-<p>这就是脉冲压缩的本质:利用 LFM 内部的频率结构,通过匹配滤波器把分散的能量重新聚集到一个时刻。压缩比等于时宽带宽积 $TB$:如果脉冲宽度是 100 μs,带宽是 10 MHz,那么 $TB = 1000$,意味着能量被压缩了 1000 倍,峰值功率提高了 1000 倍。</p>
-<h4 id="sub-52">主瓣与旁瓣</h4>
-<blockquote>原理推导比较抽象，需要一定的数字信号处理基础，看不懂的话，没关系，记住下面的结论也行。最好还是能看懂，搞算法的数字信号处理基础薄弱不是什么好事。</blockquote>
-<p>压缩后的输出并不是理想的单个针尖,而更接近一个带旁瓣的主峰。那么,压缩后的脉冲到底长什么样?</p>
-<p>要理解压缩后的形状,需要从频域角度看。LFM 信号包含了从 $f_0$ 到 $f_0 + B$ 的所有频率成分,在频域上是一个宽度为 $B$ 的矩形频谱（假设脉冲足够长,频率扫得足够均匀）。匹配滤波器的作用是把这些频率成分的相位都调整为 0,使它们同相叠加。</p>
-<p>从频域看,匹配滤波的输出是:</p>
+<p>在输出 $y(t)$ 中寻找主峰位置。程序实现中，主峰索引通常还包含接收窗口起点和匹配滤波器长度造成的固定偏移；扣除这些偏移后得到回波延迟 $\Delta t_{\text{peak}}$，再换算距离：</p>
 <div class="math-block">$$
-Y(f) = S(f) \cdot H^*(f)
+R=\frac{c\Delta t_{\text{peak}}}{2}
 $$</div>
-<p>其中 $S(f)$ 是 LFM 的频谱（宽度为 $B$ 的矩形），$H^*(f)$ 是匹配滤波器的频谱（也是宽度为 $B$ 的矩形）。两者相乘,得到的仍然是宽度为 $B$ 的矩形频谱,但相位被"拉平"了（都变成 0）。</p>
-<p>现在问题变成：一个宽度为 $B$ 的矩形频谱，对应的时域波形是什么？</p>
-<p>这是傅里叶变换的经典结果:矩形频谱的逆变换是 sinc 函数。具体来说,如果频域是宽度为 $B$ 的矩形,时域就是:</p>
+<p>这个练习对应完整的距离处理动作：从波形到回波，从匹配滤波输出到距离轴。</p>
+<h3 id="sub-55">练习 2：改变信噪比</h3>
+<p>把信噪比从 $-10\,dB$ 降到 $-20\,dB$，匹配滤波输出中的主峰会发生什么变化？</p>
+<p>解析：信噪比下降时，噪声底会抬高，主峰和背景之间的对比度变差。只要主峰仍明显高于周围噪声，就仍有机会被检测出来；若噪声起伏已经接近主峰，距离估计和后续检测都会变得不稳定。</p>
+<h3 id="sub-56">练习 3：加入第二个目标</h3>
+<p>在原来的单目标场景中，再加入一个距离为 $20\,km$ 的目标。距离像会出现什么变化？如果两个目标逐渐靠近，什么时候会合并成一个峰？</p>
+<p>解析：增加第二个目标后，匹配滤波输出中会出现第二个主峰。若两个目标的距离差大于系统距离分辨率，它们通常表现为两个可分离的峰；若距离差小于分辨率，两个主瓣会重叠，距离像上可能只剩一个宽峰或一个畸变峰。</p>
+<h3 id="sub-57">练习 4：改变带宽</h3>
+<p>把带宽从 $20\,MHz$ 改成 $5\,MHz$，主峰宽度会怎样变化？</p>
+<p>解析：脉冲压缩后的距离分辨率近似满足</p>
 <div class="math-block">$$
-y(t) \propto \operatorname{sinc}(B t) = \frac{\sin(\pi B t)}{\pi B t}
+\Delta R\approx\frac{c}{2B}
 $$</div>
-<p>这就是为什么压缩后的脉冲是 sinc 形状:因为 LFM 的频谱是矩形,匹配滤波后仍然是矩形,而矩形频谱对应的时域波形就是 sinc 函数。</p>
-<p>sinc 函数是信号处理中的标准函数,定义为:</p>
-<div class="math-block">$$
-y(t) \propto \operatorname{sinc}(B t) = \frac{\sin(\pi B t)}{\pi B t}
-$$</div>
-<p>sinc 函数的第一个零点在 $t = \pm 1/B$,因此主瓣宽度约为 $2/B$。这对应的距离分辨率是</p>
-<div class="math-block">$$
-\Delta R \approx \frac{c}{2B}
-$$</div>
-<p>这就把 4.2 节的结论落到了具体实现上。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_15_compressed_pulse.png" alt="压缩后的脉冲形状" loading="lazy"><figcaption>压缩后的脉冲形状</figcaption></figure>
-<p>图中间最高的一部分叫<strong>主瓣</strong>，两侧逐渐衰减的起伏叫<strong>旁瓣</strong>。主瓣宽度决定两个相近目标能否分开，旁瓣则会带来另一个实际问题：若一个强目标旁边挨着一个弱目标，强目标的旁瓣可能会把弱目标淹没。因此工程上常会再配合加窗处理，在压低旁瓣和保持主瓣宽度之间做折中。</p>
-<p>参数怎么选：带宽 $B$ 越大，主瓣越窄，距离分辨率越高，但对硬件的采样率要求也越高。脉冲宽度 $\tau$ 越长，能量越大，探测距离越远，但时宽带宽积 $TB$ 也要相应增大，否则压缩比不够。实际雷达中，$TB$ 通常在 100 到 10000 之间，取决于具体应用场景。</p>
-<p>什么时候不管用：匹配滤波假设回波与发射信号完全匹配。如果目标有径向速度，回波会产生多普勒频移，导致频率失配，压缩效果变差（这个问题在第5章会详细讨论）。如果有多个目标，互相关函数会出现多个峰值，需要用检测算法来区分（这个问题在第7章会讨论）。</p>
-<p>第4章的主线到这里已经闭合。4.1 节给出"时间延迟对应距离",4.2 节解释"为什么压缩后开始看带宽",4.3 节介绍了最常用的 LFM 波形,这一节则从互相关出发,自然引出匹配滤波器,并展示了它对 LFM 的压缩效果。</p></section><section class="chapter-section" data-section="ch04-s05"><h2 id="ch04-s05" class="section-title">4.5 小练习</h2>
-<p>这些练习围绕本章的主线展开：距离由时延决定，分辨率由带宽决定，脉冲压缩依靠匹配滤波实现。建议先自己判断，再结合结果图验证。</p>
-<h3 id="sub-53">练习 1：从单目标回波恢复距离</h3>
-<p><strong>问题：</strong> 设一部脉冲雷达的参数如下：</p>
-<ul><li>载频：$f_0 = 10$ GHz</li><li>脉冲宽度：$\tau = 10$ μs</li><li>带宽：$B = 20$ MHz</li><li>采样率：$f_s = 100$ MHz</li><li>目标距离：$R = 15$ km</li></ul>
-<p>请说明：在这个场景下，如何通过生成 LFM 发射信号、构造延迟回波、进行匹配滤波，再由主峰位置恢复目标距离？</p>
-<p>如果你想先把完整流程跑一遍，可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_pulse_compression_demo.m"><code>ch04_pulse_compression_demo.m</code></a>。</p>
-<p><strong>解析：</strong> 这道题的主线只有四步。</p>
-<p>第一步，由带宽和脉宽确定调频斜率</p>
-<div class="math-block">$$
-k = \frac{B}{\tau}
-$$</div>
-<p>并生成基带 LFM 发射信号。第二步，由目标距离得到往返时延</p>
-<div class="math-block">$$
-\Delta t = \frac{2R}{c}
-$$</div>
-<p>再把发射信号整体延迟，得到回波。第三步，构造匹配滤波器</p>
-<div class="math-block">$$
-h(t) = s^*(-t)
-$$</div>
-<p>并对回波做匹配滤波，得到输出</p>
-<div class="math-block">$$
-y(t) = r(t) * h(t)
-$$</div>
-<p>第四步，在输出中寻找主峰位置，再把对应时间换回距离：</p>
-<div class="math-block">$$
-R = \frac{c\,t_{\text{peak}}}{2}
-$$</div>
-<p>这就是从回波恢复目标距离的完整处理链。</p>
-<h3 id="sub-54">练习 2：改变信噪比</h3>
-<p><strong>问题：</strong> 把信噪比从 <code>-10 dB</code> 改成 <code>-20 dB</code>，主峰会发生什么变化？目标是否还能被辨认出来？</p>
-<p>可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 1 的部分，比较不同 SNR 下的距离像。</p>
-<p><strong>解析：</strong> 当 SNR 下降时，噪声底会抬高，主峰与背景的对比度变差，因此目标会更难被直接看出来。但只要匹配滤波后的主峰仍明显高于周围噪声，就仍有机会完成检测。这个练习的重点不是算出一个固定数值，而是建立直觉：信噪比越低，峰值越不稳定，检测难度越大。</p>
-<h3 id="sub-55">练习 3：加入第二个目标</h3>
-<p><strong>问题：</strong> 在原来的单目标场景中，再加入一个距离为 20 km 的目标。匹配滤波输出会出现什么变化？什么时候两个目标会合并成一个峰？</p>
-<p>可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 2 的部分，观察双目标距离像。</p>
-<p><strong>解析：</strong> 增加第二个目标后，距离像上会出现第二个主峰。若两个目标的距离差大于系统距离分辨率，它们会显示为两个可分离的峰；若距离差小于距离分辨率，两个峰会重叠甚至合并。这个练习的关键，是把“距离分辨率由带宽决定”这句话和图上的双峰分离效果对应起来。</p>
-<h3 id="sub-56">练习 4：改变带宽</h3>
-<p><strong>问题：</strong> 把带宽 $B$ 从 20 MHz 改成 5 MHz，主峰宽度会怎样变化？这说明了什么？</p>
-<p>可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 3 的部分，对比不同带宽下的距离像。</p>
-<p><strong>解析：</strong> 距离分辨率满足</p>
-<div class="math-block">$$
-\Delta R \approx \frac{c}{2B}
-$$</div>
-<p>因此带宽减小后，距离分辨率会变差，主峰会变宽，两个相近目标也更难分开。这个练习的意义，是把公式里的 $B$ 和图形里的主瓣宽度直接对应起来。</p>
-<h3 id="sub-57">练习 5：加入窗函数</h3>
-<p><strong>问题：</strong> 在匹配滤波前加入汉明窗，会对主瓣宽度和旁瓣高度造成什么影响？</p>
-<p>可直接运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0/ch04_exercise_pulse_compression.m"><code>ch04_exercise_pulse_compression.m</code></a> 中练习 4 的部分，比较无窗和加窗后的压缩结果。</p>
-<p><strong>解析：</strong> 加窗的主要作用是压低旁瓣，因此图上会看到旁瓣下降；但代价是主瓣通常会变宽，也就是分辨率会有所牺牲。这个练习体现的不是“窗越强越好”，而是工程上常见的折中：要更低的旁瓣，往往就要接受更宽的主瓣。</p></section>
+<p>带宽从 $20\,MHz$ 降到 $5\,MHz$，分辨率变差，主峰变宽。两个相近目标更容易重叠。这个现象把公式里的 $B$ 和距离像上的主瓣宽度联系起来。</p>
+<h3 id="sub-58">练习 5：加入窗函数</h3>
+<p>在匹配滤波处理中加入汉明窗，会对主瓣宽度和旁瓣高度造成什么影响？</p>
+<p>解析：加窗会压低旁瓣，强目标附近的副峰会下降；但主瓣通常变宽，距离分辨率有所牺牲。窗函数不是越强越好，它反映的是旁瓣抑制和主瓣宽度之间的折中。</p></section>
     </article>
     <div class="article-actions"><a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E8%B7%9D%E7%A6%BB%E6%B5%8B%E9%87%8F.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E5%9B%9B%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a></div>
   </main>

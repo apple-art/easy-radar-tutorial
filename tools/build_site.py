@@ -43,12 +43,16 @@ INTRO = "一本从直觉出发的雷达信号处理入门教程。"
 GITHUB_URL = "https://github.com/apple-art/easy-radar-tutorial"
 SITE_URL = "https://apple-art.github.io/easy-radar-tutorial/"
 ASSET_VERSION = "20260506-code-font-fix"
-DEFAULT_SOURCE_DIR = Path(r"D:\Obsidian\唐承乾的笔记本\雷达教材\知乎版\系列文章")
+DEFAULT_SOURCE_DIR = Path(r"D:\Obsidian\唐承乾的笔记本\雷达教材\第二版\知乎版\系列文章")
+DEFAULT_MANUSCRIPT_DIR = Path(r"D:\Obsidian\唐承乾的笔记本\雷达教材\第二版\正文")
 PROMO_CUTOFF_MARKERS = (
     "相关资料放在了公众号",
     "后台回复：**雷达**",
     "即可获取：",
     "欢迎关注我的**“知乎专栏”**与**“公众号”**",
+    "这里是四臂西瓜",
+    "完整教程与资料在",
+    "易懂的雷达信号处理专栏",
 )
 
 
@@ -106,7 +110,7 @@ def section_sort_key(path: Path) -> tuple[int, int, str]:
 
 def clean_title(title: str) -> str:
     title = title.strip()
-    title = re.sub(r"^易懂的雷达信号处理书\s*\|\s*第\d+章\s*", "", title)
+    title = re.sub(r"^易懂的雷达信号处理书?2?\s*\|\s*第\d+章\s*", "", title)
     return title.strip()
 
 
@@ -180,8 +184,8 @@ class MarkdownRenderer:
         def image_repl(match: re.Match[str]) -> str:
             alt = match.group(1).strip()
             src = match.group(2).strip()
-            if not is_remote_url(src):
-                raise ValueError(f"Image must use an online URL: {src}")
+            if not (is_remote_url(src) or src.startswith("../figures/")):
+                raise ValueError(f"Image must use an online URL or generated figure path: {src}")
             rendered = f'<img src="{html_attr(url_path(src))}" alt="{html_attr(alt)}" loading="lazy">'
             image_tokens.append(rendered)
             return f"@@IMG{len(image_tokens) - 1}@@"
@@ -399,8 +403,8 @@ class MarkdownRenderer:
                 flush_paragraph()
                 alt = image.group(1).strip()
                 src = image.group(2).strip()
-                if not is_remote_url(src):
-                    raise ValueError(f"Image must use an online URL: {src}")
+                if not (is_remote_url(src) or src.startswith("../figures/")):
+                    raise ValueError(f"Image must use an online URL or generated figure path: {src}")
                 out.append(
                     f'<figure><img src="{html_attr(url_path(src))}" alt="{html_attr(alt)}" loading="lazy">'
                     f"<figcaption>{html.escape(alt)}</figcaption></figure>"
@@ -437,7 +441,7 @@ class SiteBuilder:
         self.write_pages()
         self.write_gitignore_guard()
         print(f"Generated {len(self.chapters)} chapter pages")
-        print("Images: online links from Zhihu Markdown; no local figure copies")
+        print("Images: online Zhihu links plus copied local manuscript figures when needed")
 
     def validate_source_dir(self) -> None:
         if self.source_dir.resolve() != DEFAULT_SOURCE_DIR.resolve():
@@ -450,7 +454,7 @@ class SiteBuilder:
         for child in self.output_root.iterdir():
             if child.is_dir() and child.name in blocked_dirs:
                 raise RuntimeError(f"Refusing to build with private source directory in public repo: {child}")
-        leaked_markdown = [p for p in self.output_root.rglob("*.md") if p.name != "README.md" and ".git" not in p.parts]
+        leaked_markdown = [p for p in self.output_root.rglob("*.md") if p.name != "README.md" and ".git" not in p.parts and ".lazyweb" not in p.parts]
         if leaked_markdown:
             listed = "\n".join(str(p) for p in leaked_markdown[:10])
             raise RuntimeError(f"Private Markdown files found in public repo:\n{listed}")
@@ -472,11 +476,14 @@ class SiteBuilder:
 
     def discover_chapters(self) -> None:
         for chapter_slug, chapter_cn, chapter_label, chapter_title in CHAPTERS:
-            files = sorted(self.source_dir.glob(f"{chapter_cn}_*.md"), key=section_sort_key)
+            files = sorted(self.source_dir.rglob(f"{chapter_cn}_*.md"), key=section_sort_key)
+            if chapter_slug == "ch08" and not files:
+                files = [DEFAULT_MANUSCRIPT_DIR / "第8章_完整MATLAB处理流程.md"]
             sections = []
             for section_index, path in enumerate(files, start=1):
                 text = path.read_text(encoding="utf-8")
                 text = clean_markdown(text)
+                text = self.materialize_local_images(text, path, chapter_slug)
                 fallback = path.stem.split("_", 1)[-1].replace("_", " ")
                 section_id = f"{chapter_slug}-s{section_index:02d}"
                 sections.append(
@@ -500,6 +507,28 @@ class SiteBuilder:
                     "matlab": self.matlab_by_chapter.get(chapter_cn),
                 }
             )
+
+
+    def materialize_local_images(self, markdown_text: str, markdown_path: Path, chapter_slug: str) -> str:
+        def repl(match: re.Match[str]) -> str:
+            alt = match.group(1)
+            src = match.group(2).strip()
+            if is_remote_url(src):
+                return match.group(0)
+            src_path = Path(src.replace("/", os.sep))
+            candidates = [markdown_path.parent / src_path, DEFAULT_MANUSCRIPT_DIR / src_path]
+            source = next((candidate for candidate in candidates if candidate.exists()), None)
+            if source is None:
+                raise FileNotFoundError(f"Local image not found for {markdown_path}: {src}")
+            target_dir = self.figure_out / chapter_slug
+            target_dir.mkdir(parents=True, exist_ok=True)
+            target = target_dir / source.name
+            if not target.exists() or source.read_bytes() != target.read_bytes():
+                shutil.copy2(source, target)
+            public_src = f"../figures/{chapter_slug}/{target.name}"
+            return f"![{alt}]({public_src})"
+
+        return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", repl, markdown_text)
 
     def write_pages(self) -> None:
         (self.output_root / "index.html").write_text(self.render_index(), encoding="utf-8")
