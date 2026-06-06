@@ -79,3 +79,16 @@
 - 纸质出版、电子出版及其他商业授权均由作者保留。
 
 详细条款见根目录 `LICENSE`。
+
+## 参考文献
+
+本教程在编写过程中参考了以下教材与文献，供读者进一步深入学习：
+
+1. Skolnik, M. I. *Introduction to Radar Systems* (3rd ed.). McGraw-Hill, 2001.
+2. Richards, M. A., Scheer, J. A., & Holm, W. A. *Principles of Modern Radar: Basic Principles*. SciTech Publishing, 2010.
+3. Levanon, N., & Mozeson, E. *Radar Signals*. Wiley-IEEE Press, 2004.
+4. Mahafza, B. R. *Radar Systems Analysis and Design Using MATLAB* (3rd ed.). CRC Press, 2013.
+5. Cumming, I. G., & Wong, F. H. *Digital Processing of Synthetic Aperture Radar Data*. Artech House, 2005.
+6. 保铮, 邢孟道, 王彤. 《雷达成像技术》. 电子工业出版社, 2005.
+7. 丁鹭飞, 耿富录, 陈建春. 《雷达原理》（第五版）. 电子工业出版社, 2014.
+8. 陈伯孝. 《现代雷达系统分析与设计》. 西安电子科技大学出版社, 2012.
