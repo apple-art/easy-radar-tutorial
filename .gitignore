@@ -1,6 +1,7 @@
 # Keep private manuscript sources out of the public repository.
 *.md
 !README.md
+!README.zh-CN.md
 
 # Common private draft/source folders.
 source/

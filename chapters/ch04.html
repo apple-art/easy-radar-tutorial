@@ -1,203 +1,251 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>第4章 距离测量 | 易懂的雷达信号处理教程</title>
-  <meta name="description" content="接收机把一发脉冲的回波记录成一串采样点；多发脉冲连续发射时，这些回波又可以排成一个矩阵。距离处理先只看其中一条快时间记录：沿着一发脉冲内部的采样点往后看，回波峰出现得越晚，目标通常越远。">
+  <title>Chapter 4: Range Measurement | Easy Radar Signal Processing Tutorial</title>
+  <meta name="description" content="The receiver records the echo from a single transmitted pulse as a sequence of samples; when multiple pulses are transmitted consecutively, these echoes can be arranged into a matrix. Range processing first examines only one fast-time record: looking along the samples within a single pulse, the later an echo peak appears, the farther the target typically is.">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch04.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <script defer src="../assets/site.js?v=20260506-code-font-fix"></script>
+
+  <style>
+    .home-topbar .nav-terminal {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-self: end;
+    }
+    .home-topbar .github-link {
+      justify-content: center;
+      width: 40px;
+      padding: 9px;
+    }
+    .home-topbar .nav-divider {
+      display: block;
+      flex: 0 0 1px;
+      width: 1px;
+      min-width: 1px;
+      height: 24px;
+      background: rgba(13, 71, 70, 0.18);
+    }
+    .language-switcher {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #0d4746;
+      text-decoration: none;
+      flex: 0 0 auto;
+    }
+    .language-switcher:hover { color: var(--teal); background: rgba(13, 71, 70, 0.07); }
+    .language-switcher .language-icon,
+    .language-switcher .language-icon svg { width: 21px; height: 21px; }
+    .language-switcher svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
 </head>
 <body><div class="read-progress" aria-hidden="true"><span></span></div>
 <header class="article-top">
-  <nav class="topbar home-topbar" aria-label="站点导航">
-    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="教程图标"><span>Easy Radar Tutorial</span></a>
+  <nav class="topbar home-topbar" aria-label="Site Navigation">
+    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="Tutorial Icon"><span>Easy Radar Tutorial</span></a>
     <div class="toplinks nav-primary">
-      <a class="nav-link" href="../index.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5"></path><path d="M6.5 9.5V20h4v-5.5h3V20h4V9.5"></path></svg></span><span>首页</span></a>
-      <a class="nav-link" href="../index.html#chapters"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6.5h14"></path><path d="M5 12h14"></path><path d="M5 17.5h10"></path><path d="M3 6.5h.01"></path><path d="M3 12h.01"></path><path d="M3 17.5h.01"></path></svg></span><span>章节导航</span></a>
-      <a class="nav-link active" href="ch04.html" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5A3.5 3.5 0 0 1 8 2h11.5v18H8a3.5 3.5 0 0 0-3.5 2z"></path><path d="M8 2v18"></path><path d="M11 7h5"></path><path d="M11 11h4"></path></svg></span><span>开始阅读</span></a>
-      <a class="nav-link" href="https://github.com/apple-art/easy-radar-tutorial/releases/latest"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 9 5 5 5-5"></path><path d="M5 19h14"></path></svg></span><span>配套资源</span></a>
+      <a class="nav-link" href="../index.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5"></path><path d="M6.5 9.5V20h4v-5.5h3V20h4V9.5"></path></svg></span><span>Home</span></a>
+      <a class="nav-link" href="../index.html#chapters"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6.5h14"></path><path d="M5 12h14"></path><path d="M5 17.5h10"></path><path d="M3 6.5h.01"></path><path d="M3 12h.01"></path><path d="M3 17.5h.01"></path></svg></span><span>Chapters</span></a>
+      <a class="nav-link active" href="ch04.html" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5A3.5 3.5 0 0 1 8 2h11.5v18H8a3.5 3.5 0 0 0-3.5 2z"></path><path d="M8 2v18"></path><path d="M11 7h5"></path><path d="M11 11h4"></path></svg></span><span>Start Reading</span></a>
+      <a class="nav-link" href="https://github.com/apple-art/easy-radar-tutorial/releases/latest"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 9 5 5 5-5"></path><path d="M5 19h14"></path></svg></span><span>Resources</span></a>
+      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>More</span></a>
     </div>
     <div class="nav-terminal">
-      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>查看更多</span></a>
-      <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span><span>GitHub</span></a>
+      <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span></a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <a class="language-switcher" href="ch04.zh-CN.html" aria-label="Switch to Chinese" title="中文"><span class="nav-icon language-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg></span></a>
     </div>
   </nav>
 </header>
 </header>
 <div class="article-layout">
   <aside class="sidebar">
-    <a class="back-home" href="../index.html">← 首页</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的收发</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch04.html">第4章 距离测量</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch04-s01"><a class="toc-link" href="#ch04-s01">4.1 时间延迟到距离</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-43">延迟测距公式</a><a class="subtoc-link" href="#sub-44">采样点到距离轴</a></div></div><div class="toc-section" data-section="ch04-s02"><a class="toc-link" href="#ch04-s02">4.2 距离分辨率与脉冲宽度</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-45">两个目标什么时候分得开</a><a class="subtoc-link" href="#sub-46">普通脉冲的分辨率</a><a class="subtoc-link" href="#sub-47">能量和分辨率冲突</a></div></div><div class="toc-section" data-section="ch04-s03"><a class="toc-link" href="#ch04-s03">4.3 脉冲压缩与 LFM 信号</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-48">带宽与距离分辨率</a><a class="subtoc-link" href="#sub-49">线性调频信号</a><a class="subtoc-link" href="#sub-50">基带表示</a></div></div><div class="toc-section" data-section="ch04-s04"><a class="toc-link" href="#ch04-s04">4.4 匹配滤波与距离像</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-51">用滑动比对找时延</a><a class="subtoc-link" href="#sub-52">从互相关到匹配滤波</a><a class="subtoc-link" href="#sub-53">LFM 的压缩效果、旁瓣与窗函数</a></div></div><div class="toc-section" data-section="ch04-s05"><a class="toc-link" href="#ch04-s05">4.5 小练习</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-54">练习 1：单目标距离恢复</a><a class="subtoc-link" href="#sub-55">练习 2：改变信噪比</a><a class="subtoc-link" href="#sub-56">练习 3：加入第二个目标</a><a class="subtoc-link" href="#sub-57">练习 4：改变带宽</a><a class="subtoc-link" href="#sub-58">练习 5：加入窗函数</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 角度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整 MATLAB 处理流程</a></div></nav>
+    <a class="back-home" href="../index.html">← Home</a>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">Chapter 1: What is Radar</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">Chapter 2: Signal Fundamentals</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">Chapter 3: Radar Signal Transmission and Reception</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch04.html">Chapter 4: Range Measurement</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch04-s01"><a class="toc-link" href="#ch04-s01">4.1 Time Delay to Range</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-43">Delay-Range Formula</a><a class="subtoc-link" href="#sub-44">Sample Points to Range Axis</a></div></div><div class="toc-section" data-section="ch04-s02"><a class="toc-link" href="#ch04-s02">4.2 Range Resolution and Pulse Width</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-45">When Can Two Targets Be Resolved</a><a class="subtoc-link" href="#sub-46">Resolution of Standard Pulses</a><a class="subtoc-link" href="#sub-47">Energy-Resolution Trade-off</a></div></div><div class="toc-section" data-section="ch04-s03"><a class="toc-link" href="#ch04-s03">4.3 Pulse Compression and LFM Signals</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-48">Bandwidth and Range Resolution</a><a class="subtoc-link" href="#sub-49">Linear Frequency Modulation Signal</a><a class="subtoc-link" href="#sub-50">Baseband Representation</a></div></div><div class="toc-section" data-section="ch04-s04"><a class="toc-link" href="#ch04-s04">4.4 Matched Filtering and Range Profile</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-51">Finding Time Delay with Sliding Correlation</a><a class="subtoc-link" href="#sub-52">From Cross-Correlation to Matched Filtering</a><a class="subtoc-link" href="#sub-53">LFM Compression Effect, Sidelobes, and Window Functions</a></div></div><div class="toc-section" data-section="ch04-s05"><a class="toc-link" href="#ch04-s05">4.5 Exercises</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-54">Exercise 1: Single-Target Range Recovery</a><a class="subtoc-link" href="#sub-55">Exercise 2: Varying SNR</a><a class="subtoc-link" href="#sub-56">Exercise 3: Adding a Second Target</a><a class="subtoc-link" href="#sub-57">Exercise 4: Varying Bandwidth</a><a class="subtoc-link" href="#sub-58">Exercise 5: Applying Window Functions</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">Chapter 5: Velocity Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">Chapter 6: Target Detection</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">Chapter 7: Angle Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">Chapter 8: Complete MATLAB Processing Pipeline</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <article class="prose chapter-prose">
-      <h1>第4章 距离测量</h1>
-      <section class="chapter-section" data-section="ch04-s01"><h2 id="ch04-s01" class="section-title">4.1 时间延迟到距离</h2>
-<p>接收机把一发脉冲的回波记录成一串采样点；多发脉冲连续发射时，这些回波又可以排成一个矩阵。距离处理先只看其中一条快时间记录：沿着一发脉冲内部的采样点往后看，回波峰出现得越晚，目标通常越远。</p>
-<p>想象接收机记录到一条回波曲线。横轴是采样点，纵轴是回波幅度。某个位置出现一个峰，工程上要回答的第一个问题是：这个峰对应多少米？</p>
-<h3 id="sub-43">延迟测距公式</h3>
-<p>站在山谷里喊一声，过一会儿听到回声。若知道声音传播速度，就可以把山壁距离算出来。雷达测距也是这个思路，只是把声波换成电磁波，把人耳换成接收机。</p>
-<p>电磁波以光速 $c \approx 3\times10^8\,m/s$ 传播。目标距离为 $R$ 时，电磁波先从雷达到目标，再从目标反射回雷达，总路程是 $2R$。如果回波相对发射信号晚到了 $\Delta t$，则</p>
+      <h1>Chapter 4: Range Measurement</h1>
+      <section class="chapter-section" data-section="ch04-s01"><h2 id="ch04-s01" class="section-title">4.1 Time Delay to Range</h2>
+<p>The receiver records the echo from a single transmitted pulse as a sequence of samples; when multiple pulses are transmitted consecutively, these echoes can be arranged into a matrix. Range processing first examines only one fast-time record: looking along the samples within a single pulse, the later an echo peak appears, the farther the target typically is.</p>
+<p>Imagine the receiver records an echo waveform. The horizontal axis represents sample points, and the vertical axis represents echo amplitude. When a peak appears at some position, the first engineering question to answer is: how many meters does this peak correspond to?</p>
+<h3 id="sub-43">Delay-Range Formula</h3>
+<p>Standing in a valley and shouting, you hear an echo after a while. If you know the speed of sound propagation, you can calculate the distance to the valley wall. Radar ranging follows the same principle, except it replaces sound waves with electromagnetic waves and human ears with receivers.</p>
+<p>Electromagnetic waves propagate at the speed of light $c \approx 3\times10^8\,m/s$. When the target distance is $R$, the electromagnetic wave travels first from the radar to the target, then reflects back from the target to the radar, for a total path of $2R$. If the echo arrives $\Delta t$ later than the transmitted signal, then</p>
 <div class="math-block">$$
 \Delta t = \frac{2R}{c}
 $$</div>
-<p>改写后得到测距公式：</p>
+<p>Rewriting yields the range equation:</p>
 <div class="math-block">$$
 R = \frac{c\Delta t}{2}
 $$</div>
-<p>分母里的 $2$ 来自往返路径。雷达测到的是从发射到接收的总时间，不是单程时间。</p>
-<p>例如，若回波延迟是 $6.67\,\mu s$，目标距离约为</p>
+<p>The factor of $2$ in the denominator comes from the round-trip path. The radar measures the total time from transmission to reception, not the one-way time.</p>
+<p>For example, if the echo delay is $6.67\,\mu s$, the target range is approximately</p>
 <div class="math-block">$$
 R = \frac{3\times10^8 \times 6.67\times10^{-6}}{2}
 \approx 1000\,m = 1\,km
 $$</div>
-<p>反过来，若目标距离是 $150\,km$，往返时间差为</p>
+<p>Conversely, if the target range is $150\,km$, the round-trip time difference is</p>
 <div class="math-block">$$
 \Delta t = \frac{2\times150\times10^3}{3\times10^8} = 1\,ms
 $$</div>
-<p>测距问题的第一层含义，就是测时问题。回波晚回来多少，决定了目标大致有多远。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_1_excali.png" alt="图4.1 脉冲雷达测距示意" loading="lazy"><figcaption>图4.1 脉冲雷达测距示意</figcaption></figure>
-<p>这里还要先区分两个词。测距公式回答的是一个回波峰在什么距离；距离分辨率回答的是两个相近目标能不能分开。单个目标的位置估计可以很细，但两个目标如果回波严重重叠，在按距离排列的回波图上仍可能只剩一个峰。</p>
-<h3 id="sub-44">采样点到距离轴</h3>
-<p>真实接收机按采样率 $f_s$ 把回波变成一串采样点，而不是连续记录所有时刻的值。相邻两个采样点的时间间隔是</p>
+<p>The first layer of meaning in the ranging problem is the time measurement problem. How late the echo returns determines roughly how far away the target is.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_1_excali.png" alt="Figure 4.1 Pulse radar ranging schematic" loading="lazy"><figcaption>Figure 4.1 Pulse radar ranging schematic</figcaption></figure>
+<p>Here we need to distinguish between two terms. The range equation tells us at what distance a single echo peak is located; range resolution tells us whether two nearby targets can be separated. The position estimate of a single target can be very fine, but if two targets have severely overlapping echoes, they may still appear as only one peak on the range-ordered echo plot.</p>
+<h3 id="sub-44">Sample Points to Range Axis</h3>
+<p>A real receiver converts the echo into a series of samples at sampling rate $f_s$, rather than continuously recording values at all times. The time interval between adjacent samples is</p>
 <div class="math-block">$$
 \Delta t_s = \frac{1}{f_s}
 $$</div>
-<p>把这个时间间隔换成距离轴上的间隔，得到</p>
+<p>Converting this time interval to a distance axis interval gives</p>
 <div class="math-block">$$
 \Delta R_{\text{sample}} = \frac{c}{2f_s}
 $$</div>
-<p>如果采样率是 $100\,MHz$，相邻采样点对应的距离间隔为</p>
+<p>If the sampling rate is $100\,MHz$, the distance interval corresponding to adjacent samples is</p>
 <div class="math-block">$$
 \Delta R_{\text{sample}} = \frac{3\times10^8}{2\times10^8} = 1.5\,m
 $$</div>
-<p>这说明距离轴可以按每个采样点 $1.5\,m$ 的间隔标出来。若某个回波峰比发射时刻晚了 667 个采样点，对应时间约为</p>
+<p>This means the distance axis can be marked at intervals of $1.5\,m$ per sample. If an echo peak arrives667 samples later than the transmit time, the corresponding time is approximately</p>
 <div class="math-block">$$
 \Delta t = \frac{667}{100\times10^6} \approx 6.67\,\mu s
 $$</div>
-<p>换算成距离就是约 $1\,km$。实际程序里还要扣除接收窗口起点、滤波器群延迟等偏移，但物理关系仍然是同一个：采样点先换成时间，再由时间换成距离。</p>
-<p>$\Delta R_{\text{sample}}$ 只是相邻采样点对应的距离刻度。把采样率提高，会让距离轴标得更密；两个目标能否分开，还要看接收处理后目标响应有多宽。这个宽度由发射波形和接收处理共同决定。</p></section><section class="chapter-section" data-section="ch04-s02"><h2 id="ch04-s02" class="section-title">4.2 距离分辨率与脉冲宽度</h2>
-<h3 id="sub-45">两个目标什么时候分得开</h3>
-<p>一个目标时，只要找到回波峰，距离换算并不复杂。麻烦在于两个目标离得很近。它们各自有一个回波，两个回波如果在时间上分开，按距离排列的输出上就能看到两个峰；如果叠在一起，接收机看到的可能只是一团更宽的响应。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_2_excali.png" alt="图4.2 距离分辨率示意" loading="lazy"><figcaption>图4.2 距离分辨率示意</figcaption></figure>
-<p>图4.2 左侧，两个目标相距较远，两个回波在时间上分开。右侧，两个目标相距过近，回波重叠在一起。此时即使距离轴的采样点很多，也不一定能把两个目标拆开。</p>
-<h3 id="sub-46">普通脉冲的分辨率</h3>
-<p>先看最普通的单频矩形脉冲。这样的脉冲内部没有额外结构，接收机主要根据整团回波的到达时间判断距离。设发射脉冲宽度为 $\tau$，这个脉冲在时间上占据 $\tau$ 秒，在空间往返距离上对应 $c\tau$，换成目标单程距离就是</p>
+<p>Converting to distance gives approximately $1\,km$. In actual code, offsets such as the receive window start and filter group delay must also be subtracted, but the physical relationship remains the same: samples are first converted to time, then time is converted to distance.</p>
+<p>$\Delta R_{\text{sample}}$ is only the distance scale corresponding to adjacent samples. Increasing the sampling rate makes the distance axis more finely marked; whether two targets can be separated also depends on how wide the target response is after receive processing. This width is determined jointly by the transmit waveform and receive processing.</p></section><section class="chapter-section" data-section="ch04-s02"><h2 id="ch04-s02" class="section-title">4.2 Range Resolution and Pulse Width</h2>
+<h3 id="sub-45">When Can Two Targets Be Resolved</h3>
+<p>With a single target, once the echo peak is found, the distance conversion is straightforward. The complication arises when two targets are very close together. They each have an echo, and if the two echoes are separated in time, two peaks will be visible on the range-ordered output; if they overlap, the receiver may only see a wider response blob.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_2_excali.png" alt="Figure 4.2 Range resolution schematic" loading="lazy"><figcaption>Figure 4.2 Range resolution schematic</figcaption></figure>
+<p>In Figure 4.2 on the left, two targets are farther apart, and the two echoes are separated in time. On the right, two targets are too close together, and the echoes overlap. In this case, even if there are many samples on the distance axis, the two targets may not be separable.</p>
+<h3 id="sub-46">Resolution of Standard Pulses</h3>
+<p>Consider first the most common single-frequency rectangular pulse. Such a pulse has no additional internal structure, and the receiver primarily judges distance based on the arrival time of the entire echo blob. Let the transmit pulse width be $\tau$; this pulse occupies $\tau$ seconds in time, corresponds to $c\tau$ in round-trip spatial distance, which converts to one-way target distance as</p>
 <div class="math-block">$$
 \Delta R = \frac{c\tau}{2}
 $$</div>
-<p>这给出了普通脉冲雷达的距离分辨率量级。脉冲越短，回波在时间上越窄，两个相近目标越容易分开。</p>
-<p>例如，若 $\tau=1\,\mu s$，则</p>
+<p>This gives the order of magnitude for range resolution of an ordinary pulse radar. The shorter the pulse, the narrower the echo in time, and the easier it is to separate two nearby targets.</p>
+<p>For example, if $\tau=1\,\mu s$, then</p>
 <div class="math-block">$$
 \Delta R = \frac{3\times10^8\times10^{-6}}{2}=150\,m
 $$</div>
-<p>这意味着相距 150 m 以内的两个目标，很可能在距离向上合成一个响应。若希望分辨 15 m 的目标间隔，普通短脉冲的宽度就要降到约 $0.1\,\mu s$。</p>
-<h3 id="sub-47">能量和分辨率冲突</h3>
-<p>短脉冲有利于分辨率，但不利于能量。脉冲越短，发射出去的总能量越少，远距离目标的回波就越弱。长脉冲能把更多能量送出去，作用距离更有保障，但回波拖得更长，距离分辨率又变差。</p>
-<p>远距离探测希望脉冲长，精细测距希望脉冲短。脉冲压缩用来解决这个矛盾：发射时用长脉冲保留能量，接收时把它压成窄峰，获得接近短脉冲的分辨能力。</p></section><section class="chapter-section" data-section="ch04-s03"><h2 id="ch04-s03" class="section-title">4.3 脉冲压缩与 LFM 信号</h2>
-<h3 id="sub-48">带宽与距离分辨率</h3>
-<p>先从普通单频长脉冲看起。这样的脉冲没有多少内部结构，接收机能利用的信息主要是“这一团回波从哪里开始、在哪里结束”。当两个目标的回波靠得很近时，两团回波会大段重叠，看起来仍像一团拖长的能量，接收机就很难判断那里到底是一个目标还是两个目标。</p>
-<p>脉冲压缩换了一个思路：发射时仍然用长脉冲保留能量，但故意让脉冲内部带上可识别的变化，例如频率随时间扫动，或者相位按一定规律变化。这样，接收机不只看“这团回波大概什么时候回来”，还会继续比较：回波内部的变化规律，在哪一个延迟位置上和发射信号最对得齐？</p>
-<p>于是，接收机能不能分辨很小的时间错位，开始取决于脉冲内部变化得有多快、有多丰富。变化越快，频率成分铺得越宽；用来刻画这个范围的量，就是波形带宽 $B$。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_3_excali.png" alt="图4.3 普通长脉冲与大带宽波形对微小错位的敏感性对比" loading="lazy"><figcaption>图4.3 普通长脉冲与大带宽波形对微小错位的敏感性对比</figcaption></figure>
-<p>图4.3 展示了这种差异。左侧的普通长脉冲，轻微错位后仍有大段重叠，波形差异较小；右侧的大带宽波形，内部变化更丰富，同样的错位会让结构对不齐，相关输出下降更快。带宽越大，通常说明波形内部可利用的变化越丰富，系统对小时延差也就越敏感。</p>
-<p>这种关系先按量级理解即可：大带宽脉冲压缩波形经过匹配滤波后，压缩主瓣的时间宽度会随着带宽增大而减小，常写成</p>
+<p>This means two targets within 150 m will likely merge into a single response in range. To resolve target separations of 15 m, the ordinary short pulse width would need to be reduced to approximately $0.1\,\mu s$.</p>
+<h3 id="sub-47">Energy-Resolution Trade-off</h3>
+<p>Short pulses favor resolution but compromise energy. The shorter the pulse, the less total energy transmitted, and the weaker the echo from distant targets. Long pulses deliver more energy with better range coverage, but the echo stretches longer, degrading range resolution.</p>
+<p>Long-range detection requires long pulses; precise ranging requires short pulses. Pulse compression resolves this contradiction: transmit with long pulses to preserve energy, then compress the return into a narrow peak to achieve resolution capability close to that of short pulses.</p></section><section class="chapter-section" data-section="ch04-s03"><h2 id="ch04-s03" class="section-title">4.3 Pulse Compression and LFM Signals</h2>
+<h3 id="sub-48">Bandwidth and Range Resolution</h3>
+<p>Start with an ordinary single-frequency long pulse. Such a pulse has little internal structure; the main information available to the receiver is "where this energy blob begins and where it ends." When echoes from two targets are close together, the two blobs overlap substantially and still look like one stretched energy blob, making it difficult for the receiver to determine whether there is one target or two.</p>
+<p>Pulse compression takes a different approach: still transmit with long pulses to preserve energy, but deliberately introduce identifiable variation inside the pulse—for example, frequency sweeping over time, or phase changing according to a specific pattern. This way, the receiver not only observes "roughly when this echo blob returns," but also compares: at which delay position does the internal variation pattern of the echo best align with the transmitted signal?</p>
+<p>Thus, whether the receiver can resolve very small time misalignments depends on how rapidly and richly the pulse varies internally. The faster the variation, the wider the frequency components spread; the quantity used to characterize this range is the waveform bandwidth $B$.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_3_excali.png" alt="Figure 4.3 Sensitivity comparison between ordinary long pulse and wide-bandwidth waveform to small misalignments" loading="lazy"><figcaption>Figure 4.3 Sensitivity comparison between ordinary long pulse and wide-bandwidth waveform to small misalignments</figcaption></figure>
+<p>Figure 4.3 illustrates this difference. On the left, the ordinary long pulse still has substantial overlap after slight misalignment, with small waveform difference; on the right, the wide-bandwidth waveform has richer internal variation—the same misalignment causes structural misalignment, and correlation output drops more rapidly. Greater bandwidth generally indicates richer exploitable variation inside the waveform, making the system more sensitive to small time-delay differences.</p>
+<p>This relationship can be understood at the order-of-magnitude level: after matched filtering, the temporal width of the compressed mainlobe for a wide-bandwidth pulse compression waveform decreases as bandwidth increases, commonly written as</p>
 <div class="math-block">$$
 \Delta t_{\text{res}} \propto \frac{1}{B}
 $$</div>
-<p>如果先按压缩主瓣的尺度来估计，可以进一步近似为</p>
+<p>If we estimate based on the scale of the compressed mainlobe, it can be further approximated as</p>
 <div class="math-block">$$
 \Delta t_{\text{res}} \approx \frac{1}{B}
 $$</div>
-<p>距离本来就是由传播时间换算出来的，所以把这个时间宽度换成距离尺度，只需要接回前面建立的测距关系：</p>
+<p>Range is fundamentally derived from propagation time, so converting this temporal width to a range scale simply requires connecting back to the ranging relationship established earlier:</p>
 <div class="math-block">$$
 \Delta R \approx \frac{c\Delta t_{\text{res}}}{2}
 \approx \frac{c}{2B}
 $$</div>
-<p>这条公式要和普通脉冲的分辨率公式分开看：</p>
-<div class="table-wrap"><table><thead><tr><th>情况</th><th>距离分辨率公式</th><th>主要受谁影响</th></tr></thead><tbody><tr><td>普通单频矩形脉冲</td><td>$\Delta R = c\tau/2$</td><td>脉冲宽度 $\tau$</td></tr><tr><td>大带宽脉冲压缩波形</td><td>$\Delta R \approx c/(2B)$</td><td>波形带宽 $B$</td></tr></tbody></table></div>
-<p>这里的 $c/(2B)$ 是常用工程近似，反映的是压缩后主瓣的尺度。不同波形、加窗方式和失配情况会改变主瓣形状和旁瓣高度；这里要分清的是：脉冲压缩把分辨率问题从“脉冲要多短”转到了“带宽有多大”。</p>
-<p>经过前面的比较，长脉冲和大带宽就不再是两件分开的事了。长脉冲给的是发射时间和能量，大带宽给的是内部变化和压缩后的窄主瓣。把两者乘在一起，就得到时间-带宽积：</p>
+<p>This formula should be distinguished from the resolution formula for ordinary pulses:</p>
+<div class="table-wrap"><table><thead><tr><th>Case</th><th>Range Resolution Formula</th><th>Primarily Influenced By</th></tr></thead><tbody><tr><td>Ordinary single-frequency rectangular pulse</td><td>$\Delta R = c\tau/2$</td><td>Pulse width $\tau$</td></tr><tr><td>Wide-bandwidth pulse compression waveform</td><td>$\Delta R \approx c/(2B)$</td><td>Waveform bandwidth $B$</td></tr></tbody></table></div>
+<p>The $c/(2B)$ here is a common engineering approximation reflecting the scale of the compressed mainlobe. Different waveforms, windowing methods, and mismatch conditions will alter mainlobe shape and sidelobe height; the key distinction here is: pulse compression shifts the resolution problem from "how short must the pulse be" to "how large is the bandwidth."</p>
+<p>After the preceding comparison, long pulse and wide bandwidth are no longer separate matters. Long pulse provides transmission time and energy; wide bandwidth provides internal variation and the narrow mainlobe after compression. Multiplying the two together yields the time-bandwidth product:</p>
 <div class="math-block">$$
 TB = \tau B
 $$</div>
-<p>它表示一个脉冲持续了多久，同时在内部装进了多宽的频率变化范围。$\tau$ 大，说明发射时间长、能量足；$B$ 大，说明内部结构丰富、压缩后主瓣窄。</p>
-<p>例如，若脉冲宽度是 $100\,\mu s$，带宽是 $10\,MHz$，则</p>
+<p>It indicates how long a pulse lasts and how wide the frequency variation range is packed inside. A large $\tau$ means long transmission time and sufficient energy; a large $B$ means rich internal structure and a narrow mainlobe after compression.</p>
+<p>For example, if the pulse width is $100\,\mu s$ and the bandwidth is $10\,MHz$, then</p>
 <div class="math-block">$$
 TB=100\times10^{-6}\times10^7=1000
 $$</div>
-<p>压缩后的时间主瓣尺度约为</p>
+<p>the time mainlobe width after compression is approximately</p>
 <div class="math-block">$$
 \Delta t_{\text{res}}\approx \frac{1}{B}=0.1\,\mu s
 $$</div>
-<p>换成距离分辨率：</p>
+<p>Converting to range resolution:</p>
 <div class="math-block">$$
 \Delta R\approx \frac{3\times10^8\times0.1\times10^{-6}}{2}=15\,m
 $$</div>
-<p>发射端仍然用了 $100\,\mu s$ 的长脉冲，接收端却得到约 $15\,m$ 的距离分辨率。</p>
-<h3 id="sub-49">线性调频信号</h3>
-<p>工程上最常见的脉冲压缩波形之一，是<strong>线性调频信号</strong>（Linear Frequency Modulated signal, LFM），也常叫 chirp。它的瞬时频率随时间线性上升或下降。</p>
-<p>先看一个低速例子。假设有一个信号，第 1 秒是 1 Hz，第 2 秒是 2 Hz，第 3 秒是 3 Hz，一直到第 5 秒达到 5 Hz。频率在变，但变化是阶梯式的。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_4_excali.png" alt="图4.4 阶梯式频率变化示意图" loading="lazy"><figcaption>图4.4 阶梯式频率变化示意图</figcaption></figure>
-<p>再把阶梯变化改成连续变化：频率从 1 Hz 开始，在 4 秒内平滑上升到 5 Hz。波形会逐渐变密，频率-时间图是一条斜直线。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_5_excali.png" alt="图4.5 连续频率变化示意图" loading="lazy"><figcaption>图4.5 连续频率变化示意图</figcaption></figure>
-<p>线性调频的特征就在这里：频率按一条近似直线变化。若把它变成声音来听，会像一个持续时间有限、音调不断升高的扫频声。LFM 的每一小段时间，都带着和前后略有不同的频率特征。</p>
-<p>现在把这个低速例子推广到雷达里的写法。起始频率不一定是 1 Hz，频率变化速度也不一定是每秒 1 Hz。设瞬时频率为</p>
+<p>The transmitter still uses a $100\,\mu s$ long pulse, but the receiver achieves a range resolution of about $15\,m$.</p>
+<h3 id="sub-49">Linear Frequency Modulation Signal</h3>
+<p>One of the most common pulse compression waveforms in engineering is the<strong>Linear Frequency Modulation Signal</strong>(Linear Frequency Modulated signal, LFM), also commonly called chirp. Its instantaneous frequency rises or falls linearly with time.</p>
+<p>Let's first look at a slow example. Suppose there is a signal with 1 Hz in the 1st second, 2 Hz in the 2nd second, 3 Hz in the 3rd second, up to 5 Hz in the 5th second. The frequency changes, but the change is stepwise.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_4_excali.png" alt="Figure 4.4 Stepwise frequency variation diagram" loading="lazy"><figcaption>Figure 4.4 Stepwise frequency variation diagram</figcaption></figure>
+<p>Now change the stepwise variation to continuous variation: the frequency starts at 1 Hz and smoothly rises to 5 Hz over 4 seconds. The waveform gradually becomes denser, and the frequency-time plot is a straight line with a slope.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_5_excali.png" alt="Figure 4.5 Continuous frequency variation diagram" loading="lazy"><figcaption>Figure 4.5 Continuous frequency variation diagram</figcaption></figure>
+<p>The characteristic of linear frequency modulation lies here: the frequency varies along an approximately straight line. If converted to sound, it would sound like a frequency sweep with limited duration and continuously rising pitch. Each small time segment of the LFM carries a frequency characteristic slightly different from the preceding and following segments.</p>
+<p>Now generalize this slow example to the notation used in radar. The starting frequency is not necessarily 1 Hz, and the rate of frequency change is not necessarily 1 Hz per second. Let the instantaneous frequency be</p>
 <div class="math-block">$$
 f_i(t)=f_0+\mu t
 $$</div>
-<p>其中 $f_0$ 是起始频率，$\mu$ 是调频斜率，单位是 Hz/s。$\mu&gt;0$ 表示频率上升，$\mu&lt;0$ 表示频率下降。</p>
-<p>相位由瞬时频率积分得到。若相位记为 $\phi(t)$，则</p>
+<p>where $f_0$ is the starting frequency and $\mu$ is the frequency modulation rate with units of Hz/s. $\mu&gt;0$ indicates rising frequency, and $\mu&lt;0$ indicates falling frequency.</p>
+<p>The phase is obtained by integrating the instantaneous frequency. If the phase is denoted as $\phi(t)$, then</p>
 <div class="math-block">$$
 \phi(t)=2\pi\int_0^t(f_0+\mu u)\,du
 =2\pi f_0t+\pi\mu t^2
 $$</div>
-<p>因此复指数形式的 LFM 可写成</p>
+<p>Therefore, the complex exponential form of the LFM can be written as</p>
 <div class="math-block">$$
 s(t)=e^{j(2\pi f_0 t+\pi\mu t^2)}
 $$</div>
-<p>如果这个信号只在长度为 $\tau$ 的脉冲内发射，可以写成</p>
+<p>If this signal is transmitted only within a pulse of length $\tau$, it can be written as</p>
 <div class="math-block">$$
 s(t)=\operatorname{rect}\!\left(\frac{t}{\tau}\right)e^{j(2\pi f_0 t+\pi\mu t^2)}
 $$</div>
-<p>这里的 $\operatorname{rect}(t/\tau)$ 只是把信号限制在脉冲宽度 $\tau$ 内。若这个 LFM 脉冲在 $\tau$ 时间内扫过总带宽 $B$，就是把频率从起点扫到终点，扫过的总范围为 $B$。把“总变化量 = 变化速度 × 持续时间”写出来，就有</p>
+<p>Here $\operatorname{rect}(t/\tau)$ simply restricts the signal to within the pulse width $\tau$. If this LFM pulse sweeps a total bandwidth $B$ over time $\tau$, it means sweeping the frequency from the starting point to the endpoint, with a total range of $B$. Writing out "total change = rate of change × duration" gives</p>
 <div class="math-block">$$
 B=\mu\tau
 $$</div>
-<p>因此</p>
+<p>Therefore</p>
 <div class="math-block">$$
 \mu=\frac{B}{\tau}
 $$</div>
-<p>这个式子只是说：在 $\tau$ 这么长的时间里，频率一共扫过了 $B$。$B$ 越大，LFM 在脉冲内部的频率变化越大，可供接收机利用的结构也越丰富，匹配滤波后的相关峰更窄。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_6_excali.png" alt="图4.6 LFM 信号的时域和频域" loading="lazy"><figcaption>图4.6 LFM 信号的时域和频域</figcaption></figure>
-<p>图4.6 的上半部分是时域波形，随着时间推进，波形振荡逐渐变密；下半部分是频域能量分布，说明这个脉冲占据了宽度为 $B$ 的频带。</p>
-<h3 id="sub-50">基带表示</h3>
-<p>实际雷达的载频常在 GHz 量级。接收机会先经过下变频，把高频射频信号搬到较低的中频或基带，再进行采样和 I/Q 处理。</p>
-<p>对 LFM 信号来说，下变频后可以把载频项 $2\pi f_0t$ 去掉，留下调频项：</p>
+<p>This expression simply says: over a duration of $\tau$, the frequency sweeps a total of $B$. The larger $B$ is, the greater the frequency variation within the LFM pulse, the richer the structure available for the receiver to exploit, and the narrower the correlation peak after matched filtering.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_6_excali.png" alt="Figure 4.6 Time-domain and frequency-domain of LFM signal" loading="lazy"><figcaption>Figure 4.6 Time-domain and frequency-domain of LFM signal</figcaption></figure>
+<p>The upper part of Figure 4.6 shows the time-domain waveform, where oscillations become denser as time progresses; the lower part shows the frequency-domain energy distribution, indicating this pulse occupies a bandwidth of $B$.</p>
+<h3 id="sub-50">Baseband Representation</h3>
+<p>Actual radar carrier frequencies are typically on the order of GHz. The receiver first performs downconversion to shift the high-frequency RF signal to a lower IF or baseband, then performs sampling and I/Q processing.</p>
+<p>For LFM signals, after downconversion the carrier frequency term $2\pi f_0t$ can be removed, leaving the frequency modulation term:</p>
 <div class="math-block">$$
 s_{\text{bb}}(t)=\operatorname{rect}\!\left(\frac{t}{\tau}\right)e^{j\pi\mu t^2}
 $$</div>
-<p>这里的下标 bb 表示 baseband。基带信号仍然保留 LFM 的带宽和调频结构，只是中心频率搬到了零频附近。这样处理更适合数字采样，也和第2章中的复数 I/Q 数据接上了。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_7_excali.png" alt="图4.7 零中频 LFM 信号" loading="lazy"><figcaption>图4.7 零中频 LFM 信号</figcaption></figure>
-<p>有些 FMCW 雷达也使用 LFM 或 chirp，但那类体制通常通过差拍频率提取距离；这里讨论的是脉冲体制下的 LFM 匹配滤波。</p></section><section class="chapter-section" data-section="ch04-s04"><h2 id="ch04-s04" class="section-title">4.4 匹配滤波与距离像</h2>
-<h3 id="sub-51">用滑动比对找时延</h3>
-<p>到这里，发射端已经有了可识别的内部结构。但结构本身不会自动变成距离峰，接收端还要把回波和已知的发射信号做比对：在哪一个延迟位置上，两者的内部变化最对得齐？</p>
-<p>这里有个问题：接收机怎么知道该拿哪一个信号去和回波比对？</p>
-<p>参考信号来自发射端。雷达发射什么脉冲，本来就由系统自己设定：脉宽、带宽、调频斜率、采样率和发射时刻都在发射机与接收机的控制之内。处理回波时，接收机可以调用保存好的基带发射序列，也可以用这些参数重新生成一份本地参考信号。若一组脉冲采用不同编码或不同调频参数，处理链会按当前脉冲编号选择对应的参考。匹配滤波匹配的就是这份本地参考，不是临时从回波里猜一个模板。</p>
-<p>先用一个离散例子。假设发射信号是 10 个采样点，第 3 到第 5 个点是 $1,2,1$，其余为 0：</p>
+<p>The subscript bb stands for baseband. The baseband signal still retains the bandwidth and frequency modulation structure of the LFM, but the center frequency is shifted to near zero frequency. This processing is better suited for digital sampling and connects with the complex I/Q data from Chapter 2.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_7_excali.png" alt="Figure 4.7 Zero-IF LFM signal" loading="lazy"><figcaption>Figure 4.7 Zero-IF LFM signal</figcaption></figure>
+<p>Some FMCW radars also use LFM or chirp, but those systems typically extract range through beat frequency; here we discuss LFM matched filtering in pulsed radar systems.</p></section><section class="chapter-section" data-section="ch04-s04"><h2 id="ch04-s04" class="section-title">4.4 Matched Filtering and Range Profile</h2>
+<h3 id="sub-51">Finding Time Delay with Sliding Correlation</h3>
+<p>At this point, the transmit side already has identifiable internal structure. But the structure itself does not automatically become range peaks; the receiver must compare the echo with the known transmit signal: at which delay position do their internal variations align best?</p>
+<p>Here's a question: how does the receiver know which signal to use for comparison with the echo?</p>
+<p>The reference signal comes from the transmitter. The pulse transmitted by the radar is determined by the system itself: pulse width, bandwidth, chirp rate, sampling rate, and transmit time are all under the control of the transmitter and receiver. When processing echoes, the receiver can either call up the stored baseband transmit sequence or regenerate a local reference signal using these parameters. If a pulse train uses different coding or chirp parameters, the processing chain selects the corresponding reference based on the current pulse number. Matched filtering matches against this local reference, not a template guessed from the echo.</p>
+<p>Start with a discrete example. Suppose the transmit signal has 10 sample points, with points 3 through 5 being $1,2,1$ and the rest being 0:</p>
 <div class="math-block">$$
 s[n]=[0,0,1,2,1,0,0,0,0,0]
 $$</div>
-<p>回波是同样的三角形，但整体延迟了 3 个点：</p>
+<p>The echo is the same triangle shape, but delayed by 3 points overall:</p>
 <div class="math-block">$$
 r[n]=[0,0,0,0,0,1,2,1,0,0]
 $$</div>
-<p>现在把参考信号滑过去，对每个偏移量 $d$ 做逐点相乘再求和：</p>
+<p>Now slide the reference signal across, and for each offset $d$ perform pointwise multiplication and sum:</p>
 <div class="math-block">$$
 \begin{aligned}
 d=0:\quad &amp;0 \\
@@ -208,100 +256,100 @@ d=4:\quad &amp;1\cdot2+2\cdot1=4 \\
 d=5:\quad &amp;1
 \end{aligned}
 $$</div>
-<p>偏移量 $d=3$ 时乘积和最大，说明两个序列在这个位置对得最齐。真实延迟就是 3 个采样点。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_8_excali.png" alt="图4.8 互相关寻找时延的直观示意" loading="lazy"><figcaption>图4.8 互相关寻找时延的直观示意</figcaption></figure>
-<p>把每个偏移量的结果画出来，就得到一个相关曲线。峰值位置对应延迟。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_9_excali.png" alt="图4.9 离散互相关结果" loading="lazy"><figcaption>图4.9 离散互相关结果</figcaption></figure>
-<p>用公式写，离散互相关可以表示为</p>
+<p>When the offset $d=3$, the product sum is maximum, indicating the two sequences align best at this position. The true delay is 3 sample points.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_8_excali.png" alt="Figure 4.8 Intuitive illustration of finding time delay through cross-correlation" loading="lazy"><figcaption>Figure 4.8 Intuitive illustration of finding time delay through cross-correlation</figcaption></figure>
+<p>Plotting the result for each offset yields a correlation curve. The peak position corresponds to the delay.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_9_excali.png" alt="Figure 4.9 Discrete cross-correlation result" loading="lazy"><figcaption>Figure 4.9 Discrete cross-correlation result</figcaption></figure>
+<p>Written as a formula, discrete cross-correlation can be expressed as</p>
 <div class="math-block">$$
 R_{sr}[d]=\sum_n s^*[n]r[n+d]
 $$</div>
-<p>连续信号中，把求和换成积分，可以写成</p>
+<p>For continuous signals, replacing the sum with an integral, it can be written as</p>
 <div class="math-block">$$
 R_{sr}(\tau)=\int_{-\infty}^{\infty}s^*(t)r(t+\tau)\,dt
 $$</div>
-<p>星号表示复共轭。这里把 $\tau$ 写成正偏移量：当回波 $r(t)$ 相对参考信号晚到 $\tau$ 时，$r(t+\tau)$ 与 $s(t)$ 对齐。不同教材可能采用相反的正负号约定，峰值位置对应延迟这一点不变。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_10_excali.png" alt="图4.10 连续信号互相关示意" loading="lazy"><figcaption>图4.10 连续信号互相关示意</figcaption></figure>
-<p>把所有延迟对应的互相关值连起来，就得到互相关函数曲线。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_11_excali.png" alt="图4.11 互相关函数曲线" loading="lazy"><figcaption>图4.11 互相关函数曲线</figcaption></figure>
-<p>因此，延迟估计可以写成</p>
+<p>The asterisk denotes complex conjugate. Here $\tau$ is written as a positive offset: when the echo $r(t)$ arrives $\tau$ later relative to the reference signal, $r(t+\tau)$ aligns with $s(t)$. Different textbooks may adopt opposite sign conventions, but the fact that the peak position corresponds to delay remains unchanged.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_10_excali.png" alt="Figure 4.10 Continuous signal cross-correlation illustration" loading="lazy"><figcaption>Figure 4.10 Continuous signal cross-correlation illustration</figcaption></figure>
+<p>Connecting all cross-correlation values corresponding to different delays yields the cross-correlation function curve.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_11_excali.png" alt="Figure 4.11 Cross-correlation function curve" loading="lazy"><figcaption>Figure 4.11 Cross-correlation function curve</figcaption></figure>
+<p>Therefore, delay estimation can be written as</p>
 <div class="math-block">$$
 \tau_{\text{peak}}=\arg\max_{\tau}R_{sr}(\tau)
 $$</div>
-<p>不同波形的相关峰形状并不一样。普通矩形脉冲内部结构少，稍微错位后仍有较大重叠，相关峰宽而平；LFM 的频率随时间变化，只有对齐时内部结构才同时匹配，相关峰更尖。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_12_excali.png" alt="图4.12 波形结构对互相关峰值的影响" loading="lazy"><figcaption>图4.12 波形结构对互相关峰值的影响</figcaption></figure>
-<p>相关峰越尖，峰值位置越容易定位，两个相近目标也更容易分开。LFM 因此适合做脉冲压缩。</p>
-<h3 id="sub-52">从互相关到匹配滤波</h3>
-<p>逐一计算每一个可能延迟的互相关，计算量很大。雷达接收机通常把互相关改写成滤波器形式，让回波通过一个专门的滤波器，输出就是相关结果。</p>
-<p>这个滤波器的冲激响应取为发射信号的时间反转和复共轭：</p>
+<p>The correlation peak shape varies with different waveforms. Ordinary rectangular pulses have little internal structure, so they still overlap significantly when slightly misaligned, resulting in a wide, flat correlation peak. LFM's frequency varies with time, so internal structures match simultaneously only when aligned, producing a sharper correlation peak.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_12_excali.png" alt="Figure 4.12 Effect of waveform structure on cross-correlation peaks" loading="lazy"><figcaption>Figure 4.12 Effect of waveform structure on cross-correlation peaks</figcaption></figure>
+<p>A sharper correlation peak makes the peak position easier to locate and allows two closely spaced targets to be separated more easily. This is why LFM is suitable for pulse compression.</p>
+<h3 id="sub-52">From Cross-Correlation to Matched Filtering</h3>
+<p>Computing cross-correlation for every possible delay is computationally intensive. Radar receivers typically reformulate cross-correlation as a filter operation, passing the echo through a specialized filter whose output is the correlation result.</p>
+<p>The impulse response of this filter is the time-reversed complex conjugate of the transmitted signal:</p>
 <div class="math-block">$$
 h(t)=s^*(-t)
 $$</div>
-<p>回波 $r(t)$ 通过这个滤波器，输出为</p>
+<p>When the echo $r(t)$ passes through this filter, the output is</p>
 <div class="math-block">$$
 y(t)=r(t)*h(t)
 $$</div>
-<p>其中 $*$ 表示卷积。这个输出和互相关结果等价，峰值位置仍然对应目标延迟。因为滤波器的形状由发射信号决定，所以它叫<strong>匹配滤波器</strong>。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_13_excali.png" alt="图4.13 匹配滤波器的实现" loading="lazy"><figcaption>图4.13 匹配滤波器的实现</figcaption></figure>
-<p>在数字雷达中，匹配滤波常用 FFT 实现。根据卷积定理，时域卷积可以变成频域相乘：</p>
+<p>where $*$ denotes convolution. This output is equivalent to the cross-correlation result, with the peak position still corresponding to the target delay. Because the filter shape is determined by the transmitted signal, it is called a<strong>matched filter</strong>。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_13_excali.png" alt="Figure 4.13 Implementation of matched filter" loading="lazy"><figcaption>Figure 4.13 Implementation of matched filter</figcaption></figure>
+<p>In digital radar, matched filtering is commonly implemented using FFT. According to the convolution theorem, time-domain convolution becomes frequency-domain multiplication:</p>
 <div class="math-block">$$
 y(t)=r(t)*h(t)
 \quad\Longleftrightarrow\quad
 Y(f)=R(f)H(f)
 $$</div>
-<p>程序里通常先对回波做 FFT，乘以预先计算好的匹配滤波器频谱，再做 IFFT 回到时间域。这样得到的序列就是距离向上的匹配滤波输出，也常称为距离像。峰值所在的采样点扣除接收窗口起点和滤波器固定延迟后，再按前面的延迟测距公式换算成距离。</p>
-<h3 id="sub-53">LFM 的压缩效果、旁瓣与窗函数</h3>
-<p>LFM 经过匹配滤波后，原本拖得很长的回波会被压成窄峰。以基带上扫频为例，发射信号的相位含有 $\pi\mu t^2$；匹配滤波器采用时间反转和复共轭，相当于补上相反的二次相位。在正确延迟处，这些相位项互相抵消，不同时间位置的能量同相叠加，形成高峰。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_14_excali.png" alt="图4.14 LFM 匹配滤波的压缩效果" loading="lazy"><figcaption>图4.14 LFM 匹配滤波的压缩效果</figcaption></figure>
-<p>图4.14 中，第一行是接收到的 LFM 回波，第二行是匹配滤波器的冲激响应，第三行是压缩后的输出。原本宽度为几十微秒的回波，被压成了一个窄得多的主峰。</p>
-<p>压缩后的主瓣宽度约由 $1/B$ 决定。若 $B=10\,MHz$，时间主瓣尺度约为 $0.1\,\mu s$，对应距离尺度约为 $15\,m$。这和前面得到的 $\Delta R\approx c/(2B)$ 是同一件事。</p>
-<p>匹配滤波输出通常由一个主瓣和两侧旁瓣构成，并不等同于理想冲激。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_15_excali.png" alt="图4.15 压缩后的脉冲形状" loading="lazy"><figcaption>图4.15 压缩后的脉冲形状</figcaption></figure>
-<p>中间最高的一部分叫<strong>主瓣</strong>，它决定目标峰的主要位置和两个目标能否分开。主瓣两侧的起伏叫<strong>旁瓣</strong>。旁瓣是处理输出中由波形和滤波带来的副峰，不代表新的目标。</p>
-<p>旁瓣会影响强弱目标共存时的可见性。一个强目标的旁瓣，可能高过附近弱目标的主瓣，使弱目标在距离像里不容易被看出来。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_16_excali.png" alt="图4.16 强目标旁瓣遮蔽弱目标" loading="lazy"><figcaption>图4.16 强目标旁瓣遮蔽弱目标</figcaption></figure>
-<p>图4.16 中，蓝色曲线是强目标单独造成的响应，橙色虚线是弱目标单独响应，黑色曲线是两者叠加后的输出。弱目标离强目标较近时，可能落在强目标旁瓣附近，峰值不容易分辨。</p>
-<p>压低旁瓣的常用办法是加窗。加窗可以理解为给频域或参考信号加一个平滑权重，让突兀的边缘变缓，从而降低旁瓣。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_17_excali.png" alt="图4.17 加窗对主瓣和旁瓣的影响" loading="lazy"><figcaption>图4.17 加窗对主瓣和旁瓣的影响</figcaption></figure>
-<p>加窗也有代价。旁瓣降低后，主瓣通常会变宽，距离分辨率会有所牺牲。工程上要在两件事之间折中：旁瓣低一些，有利于发现强目标附近的弱目标；主瓣窄一些，有利于分开相邻目标。</p></section><section class="chapter-section" data-section="ch04-s05"><h2 id="ch04-s05" class="section-title">4.5 小练习</h2>
-<p>下面几道题把第4章的几个动作放到一起：由延迟换距离、观察信噪比、区分双目标、改变带宽，以及比较窗函数带来的主瓣和旁瓣变化。</p>
-<h3 id="sub-54">练习 1：单目标距离恢复</h3>
-<p>设一部脉冲雷达使用基带 LFM 信号，参数如下：</p>
-<div class="table-wrap"><table><thead><tr><th>参数</th><th>数值</th></tr></thead><tbody><tr><td>脉冲宽度</td><td>$\tau=10\,\mu s$</td></tr><tr><td>带宽</td><td>$B=20\,MHz$</td></tr><tr><td>采样率</td><td>$f_s=100\,MHz$</td></tr><tr><td>目标距离</td><td>$R=15\,km$</td></tr></tbody></table></div>
-<p>请说明：如何生成发射信号、构造延迟回波、进行匹配滤波，并由主峰位置恢复目标距离？</p>
-<p>解析：由带宽和脉宽得到调频斜率</p>
+<p>Programs typically perform FFT on the echo first, multiply by the pre-computed matched filter spectrum, then perform IFFT to return to the time domain. The resulting sequence is the matched filtering output in the range dimension, also commonly called the range profile. After subtracting the receive window start time and the filter's fixed delay from the sample index where the peak occurs, the result is converted to range using the delay-to-range formula.</p>
+<h3 id="sub-53">LFM Compression Effect, Sidelobes, and Window Functions</h3>
+<p>After matched filtering, LFM compresses a long echo into a narrow peak. Taking baseband up-chirp as an example, the transmitted signal phase contains $\pi\mu t^2$; the matched filter uses time reversal and complex conjugation, effectively adding the opposite quadratic phase. At the correct delay, these phase terms cancel each other, and energy at different time positions adds coherently, forming a high peak.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_14_excali.png" alt="Figure 4.14 Compression effect of LFM matched filtering" loading="lazy"><figcaption>Figure 4.14 Compression effect of LFM matched filtering</figcaption></figure>
+<p>In Figure 4.14, the first row shows the received LFM echo, the second row shows the impulse response of the matched filter, and the third row shows the compressed output. The echo, originally tens of microseconds wide, is compressed into a much narrower mainlobe.</p>
+<p>The compressed mainlobe width is approximately determined by $1/B$. If $B=10\,MHz$, the time mainlobe scale is about $0.1\,\mu s$, corresponding to a range scale of about $15\,m$. This is the same as the previously derived $\Delta R\approx c/(2B)$.</p>
+<p>The matched filter output typically consists of a mainlobe and sidelobes on both sides, and is not equivalent to an ideal impulse.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_15_excali.png" alt="Figure 4.15 Compressed pulse shape" loading="lazy"><figcaption>Figure 4.15 Compressed pulse shape</figcaption></figure>
+<p>The highest part in the middle is called the<strong>main lobe</strong>, which determines the main position of the target peak and whether two targets can be separated. The fluctuations on both sides of the main lobe are called<strong>sidelobes</strong>. Sidelobes are secondary peaks in the processing output caused by the waveform and filtering, and do not represent new targets.</p>
+<p>Sidelobes affect visibility when strong and weak targets coexist. The sidelobes of a strong target may exceed the main lobe of a nearby weak target, making the weak target difficult to discern in the range profile.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_16_excali.png" alt="Figure 4.16 Strong target sidelobes masking weak target" loading="lazy"><figcaption>Figure 4.16 Strong target sidelobes masking weak target</figcaption></figure>
+<p>In Figure 4.16, the blue curve is the response from the strong target alone, the orange dashed line is the response from the weak target alone, and the black curve is the output after superposition. When the weak target is close to the strong target, it may fall near the sidelobes of the strong target, making the peak difficult to distinguish.</p>
+<p>A common method to suppress sidelobes is windowing. Windowing can be understood as applying a smooth weight to the frequency domain or reference signal, softening abrupt edges to reduce sidelobes.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_17_excali.png" alt="Figure 4.17 Effect of windowing on main lobe and sidelobes" loading="lazy"><figcaption>Figure 4.17 Effect of windowing on main lobe and sidelobes</figcaption></figure>
+<p>Windowing also has a cost. After reducing sidelobes, the main lobe typically widens, sacrificing range resolution. Engineering requires a tradeoff between two considerations: lower sidelobes favor detecting weak targets near strong ones; narrower main lobes favor separating adjacent targets.</p></section><section class="chapter-section" data-section="ch04-s05"><h2 id="ch04-s05" class="section-title">4.5 Exercises</h2>
+<p>The following exercises combine several operations from Chapter 4: converting delay to range, observing SNR, distinguishing dual targets, changing bandwidth, and comparing main lobe and sidelobe changes caused by window functions.</p>
+<h3 id="sub-54">Exercise 1: Single-Target Range Recovery</h3>
+<p>Consider a pulse radar using baseband LFM signal with the following parameters:</p>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody><tr><td>Pulse width</td><td>$\tau=10\,\mu s$</td></tr><tr><td>Bandwidth</td><td>$B=20\,MHz$</td></tr><tr><td>Sampling rate</td><td>$f_s=100\,MHz$</td></tr><tr><td>Target range</td><td>$R=15\,km$</td></tr></tbody></table></div>
+<p>Explain: How to generate the transmit signal, construct the delayed echo, perform matched filtering, and recover the target range from the peak position?</p>
+<p>Solution: Derive the chirp rate from bandwidth and pulse width</p>
 <div class="math-block">$$
 \mu=\frac{B}{\tau}
 $$</div>
-<p>再由目标距离得到往返时延</p>
+<p>Then obtain the round-trip delay from the target range</p>
 <div class="math-block">$$
 \Delta t=\frac{2R}{c}
 $$</div>
-<p>将发射信号延迟 $\Delta t$ 得到回波 $r(t)$，构造匹配滤波器 $h(t)=s^*(-t)$，计算</p>
+<p>Delay the transmit signal by $\Delta t$ to get the echo $r(t)$, construct the matched filter $h(t)=s^*(-t)$, and compute</p>
 <div class="math-block">$$
 y(t)=r(t)*h(t)
 $$</div>
-<p>在输出 $y(t)$ 中寻找主峰位置。程序实现中，主峰索引通常还包含接收窗口起点和匹配滤波器长度造成的固定偏移；扣除这些偏移后得到回波延迟 $\Delta t_{\text{peak}}$，再换算距离：</p>
+<p>Find the peak position in the output $y(t)$. In implementation, the peak index typically includes fixed offsets from the receive window start and matched filter length; after removing these offsets, the echo delay $\Delta t_{\text{peak}}$ is obtained, then converted to range:</p>
 <div class="math-block">$$
 R=\frac{c\Delta t_{\text{peak}}}{2}
 $$</div>
-<p>这个练习对应完整的距离处理动作：从波形到回波，从匹配滤波输出到距离轴。</p>
-<h3 id="sub-55">练习 2：改变信噪比</h3>
-<p>把信噪比从 $-10\,dB$ 降到 $-20\,dB$，匹配滤波输出中的主峰会发生什么变化？</p>
-<p>解析：信噪比下降时，噪声底会抬高，主峰和背景之间的对比度变差。只要主峰仍明显高于周围噪声，就仍有机会被检测出来；若噪声起伏已经接近主峰，距离估计和后续检测都会变得不稳定。</p>
-<h3 id="sub-56">练习 3：加入第二个目标</h3>
-<p>在原来的单目标场景中，再加入一个距离为 $20\,km$ 的目标。距离像会出现什么变化？如果两个目标逐渐靠近，什么时候会合并成一个峰？</p>
-<p>解析：增加第二个目标后，匹配滤波输出中会出现第二个主峰。若两个目标的距离差大于系统距离分辨率，它们通常表现为两个可分离的峰；若距离差小于分辨率，两个主瓣会重叠，距离像上可能只剩一个宽峰或一个畸变峰。</p>
-<h3 id="sub-57">练习 4：改变带宽</h3>
-<p>把带宽从 $20\,MHz$ 改成 $5\,MHz$，主峰宽度会怎样变化？</p>
-<p>解析：脉冲压缩后的距离分辨率近似满足</p>
+<p>This exercise covers the complete range processing chain: from waveform to echo, from matched filter output to range axis.</p>
+<h3 id="sub-55">Exercise 2: Varying SNR</h3>
+<p>If the SNR drops from $-10\,dB$ to $-20\,dB$, what happens to the peak in the matched filter output?</p>
+<p>Solution: As SNR decreases, the noise floor rises and the contrast between the peak and background degrades. As long as the peak remains significantly above surrounding noise, it can still be detected; if noise fluctuations approach the peak level, range estimation and subsequent detection become unstable.</p>
+<h3 id="sub-56">Exercise 3: Adding a Second Target</h3>
+<p>Add a second target at range $20\,km$ to the original single-target scenario. What changes occur in the range profile? If the two targets gradually move closer, when will they merge into a single peak?</p>
+<p>Solution: Adding a second target produces a second peak in the matched filter output. If the range separation exceeds the system range resolution, they typically appear as two separable peaks; if the separation is less than the resolution, the two mainlobes overlap and the range profile may show only a single broadened or distorted peak.</p>
+<h3 id="sub-57">Exercise 4: Varying Bandwidth</h3>
+<p>If bandwidth changes from $20\,MHz$ to $5\,MHz$, how does the peak width change?</p>
+<p>Solution: The range resolution after pulse compression approximately satisfies</p>
 <div class="math-block">$$
 \Delta R\approx\frac{c}{2B}
 $$</div>
-<p>带宽从 $20\,MHz$ 降到 $5\,MHz$，分辨率变差，主峰变宽。两个相近目标更容易重叠。这个现象把公式里的 $B$ 和距离像上的主瓣宽度联系起来。</p>
-<h3 id="sub-58">练习 5：加入窗函数</h3>
-<p>在匹配滤波处理中加入汉明窗，会对主瓣宽度和旁瓣高度造成什么影响？</p>
-<p>解析：加窗会压低旁瓣，强目标附近的副峰会下降；但主瓣通常变宽，距离分辨率有所牺牲。窗函数不是越强越好，它反映的是旁瓣抑制和主瓣宽度之间的折中。</p></section>
+<p>As bandwidth drops from $20\,MHz$ to $5\,MHz$, resolution degrades and the peak broadens. Two nearby targets merge more easily. This phenomenon connects the $B$ in the formula to the mainlobe width in the range profile.</p>
+<h3 id="sub-58">Exercise 5: Applying Window Functions</h3>
+<p>What effects does applying a Hamming window in matched filtering have on mainlobe width and sidelobe level?</p>
+<p>Solution: Windowing suppresses sidelobes, reducing secondary peaks near strong targets; however, the mainlobe typically broadens, sacrificing range resolution. Stronger windows are not always better—they reflect the tradeoff between sidelobe suppression and mainlobe width.</p></section>
     </article>
   </main>
 </div>

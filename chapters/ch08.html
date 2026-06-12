@@ -1,54 +1,106 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>第8章 完整 MATLAB 处理流程 | 易懂的雷达信号处理教程</title>
-  <meta name="description" content="前面几章已经把雷达处理链拆开讲过：第 3 章把多发脉冲的 I/Q 样本排成 rx_matrix，第 4 章在快时间上做距离处理，第 5 章在慢时间上做 Doppler 处理，第 6 章把距离-速度图上的响应筛成检测结果，第 7 章说明方向信...">
+  <title>Chapter 8 Complete MATLAB Processing Pipeline | Easy Radar Tutorial</title>
+  <meta name="description" content="Previous chapters have broken down the radar processing chain: Chapter 3 arranges I/Q samples from multiple pulses into rx_matrix; Chapter 4 performs range processing in fast time; Chapter 5 performs Doppler processing in slow time; Chapter 6 filters responses on the range-velocity map into detection results; Chapter 7 explains directional information...">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch08.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <script defer src="../assets/site.js?v=20260506-code-font-fix"></script>
+
+  <style>
+    .home-topbar .nav-terminal {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-self: end;
+    }
+    .home-topbar .github-link {
+      justify-content: center;
+      width: 40px;
+      padding: 9px;
+    }
+    .home-topbar .nav-divider {
+      display: block;
+      flex: 0 0 1px;
+      width: 1px;
+      min-width: 1px;
+      height: 24px;
+      background: rgba(13, 71, 70, 0.18);
+    }
+    .language-switcher {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #0d4746;
+      text-decoration: none;
+      flex: 0 0 auto;
+    }
+    .language-switcher:hover { color: var(--teal); background: rgba(13, 71, 70, 0.07); }
+    .language-switcher .language-icon,
+    .language-switcher .language-icon svg { width: 21px; height: 21px; }
+    .language-switcher svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
 </head>
 <body><div class="read-progress" aria-hidden="true"><span></span></div>
 <header class="article-top">
   <nav class="topbar home-topbar">
-    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="教程图标"><span>Easy Radar Tutorial</span></a>
-    <div class="toplinks"><a href="../index.html">首页</a><a href="ch01.html">章节</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a><a href="https://tangcq.com/">查看更多</a><a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a></div>
+    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="Tutorial icon"><span>Easy Radar Tutorial</span></a>
+    <div class="toplinks nav-primary"><a href="../index.html">Home</a><a href="ch01.html">Chapters</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
+      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>More</span></a></div>
+      <div class="nav-terminal">
+      <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span></a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <a class="language-switcher" href="ch08.zh-CN.html" aria-label="Switch to Chinese" title="中文"><span class="nav-icon language-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg></span></a>
+    </div>
   </nav>
 </header>
 <div class="article-layout">
   <aside class="sidebar">
-    <a class="back-home" href="../index.html">← 首页</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的收发</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 角度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch08.html">第8章 完整 MATLAB 处理流程</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch08-s01"><a class="toc-link" href="#ch08-s01">第8章 完整 MATLAB 处理流程</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-124">8.1 仿真条件</a><a class="subtoc-link" href="#sub-125">8.2 从回波矩阵到目标表</a><a class="subtoc-link" href="#sub-126">8.3 回波矩阵的生成</a><a class="subtoc-link" href="#sub-129">8.4 距离压缩得到 `range_data`</a><a class="subtoc-link" href="#sub-132">8.5 Doppler 处理得到 `rd_map`</a><a class="subtoc-link" href="#sub-135">8.6 从 `rd_map` 到 `det_mask`</a><a class="subtoc-link" href="#sub-138">8.7 从检测掩码到目标表</a><a class="subtoc-link" href="#sub-141">8.8 参数变化练习</a></div></div></div></div></nav>
+    <a class="back-home" href="../index.html">← Home</a>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">Chapter 1 What is Radar</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">Chapter 2 Signal Fundamentals</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">Chapter 3 Radar Signal Transmission and Reception</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">Chapter 4 Range Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">Chapter 5 Velocity Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">Chapter 6 Target Detection</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">Chapter 7 Angle Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch08.html">Chapter 8 Complete MATLAB Processing Pipeline</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch08-s01"><a class="toc-link" href="#ch08-s01">Chapter 8 Complete MATLAB Processing Pipeline</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-124">8.1 Simulation Parameters</a><a class="subtoc-link" href="#sub-125">8.2 From Echo Matrix to Target List</a><a class="subtoc-link" href="#sub-126">8.3 Echo Matrix Formation</a><a class="subtoc-link" href="#sub-129">8.4 Range Compression to Obtain `range_data`</a><a class="subtoc-link" href="#sub-132">8.5 Doppler Processing to Obtain `rd_map`</a><a class="subtoc-link" href="#sub-135">8.6 From `rd_map` to `det_mask`</a><a class="subtoc-link" href="#sub-138">8.7 From Detection Mask to Target List</a><a class="subtoc-link" href="#sub-141">8.8 Parameter Variation Exercises</a></div></div></div></div></nav>
   </aside>
   <main class="article-main reveal">
     <article class="prose chapter-prose">
-      <h1>第8章 完整 MATLAB 处理流程</h1>
-      <section class="chapter-section" data-section="ch08-s01"><h2 id="ch08-s01" class="section-title">第8章 完整 MATLAB 处理流程</h2>
-<p>前面几章已经把雷达处理链拆开讲过：第 3 章把多发脉冲的 I/Q 样本排成 <code>rx_matrix</code>，第 4 章在快时间上做距离处理，第 5 章在慢时间上做 Doppler 处理，第 6 章把距离-速度图上的响应筛成检测结果，第 7 章说明方向信息怎样进入目标参数。</p>
-<p>本章把这些步骤放到同一个 MATLAB 程序。程序里每个变量都要回答三个问题：它的维度是什么，下一步沿哪一维处理，处理后对应哪个物理量。</p>
-<p>本章采用简化 pulse-Doppler 场景：两个点目标，32 发脉冲，基带 LFM 信号。完整脚本在配套 MATLAB 附件，正文只保留主要片段和检查方法。</p>
-<h3 id="sub-124">8.1 仿真条件</h3>
-<p>本章用两个点目标作为例子。雷达参数延续前面几章的简化设定：使用基带 LFM 脉冲，接收端得到复数 I/Q 样本，多发脉冲按发射顺序组成 <code>rx_matrix</code>。</p>
-<div class="table-wrap"><table><thead><tr><th>参数</th><th>MATLAB 变量</th><th>取值</th><th>含义</th></tr></thead><tbody><tr><td>光速</td><td><code>c</code></td><td>$3\times10^8\,m/s$</td><td>距离与时延换算</td></tr><tr><td>载频</td><td><code>fc</code></td><td>$10\,GHz$</td><td>决定波长</td></tr><tr><td>波长</td><td><code>lambda</code></td><td>$0.03\,m$</td><td>Doppler 到速度的换算</td></tr><tr><td>LFM 带宽</td><td><code>B</code></td><td>$10\,MHz$</td><td>影响距离分辨率</td></tr><tr><td>脉冲宽度</td><td><code>Tp</code></td><td>$20\,\mu s$</td><td>发射脉冲持续时间</td></tr><tr><td>采样率</td><td><code>fs</code></td><td>$20\,MHz$</td><td>快时间采样间隔</td></tr><tr><td>PRF</td><td><code>PRF</code></td><td>$5\,kHz$</td><td>慢时间采样率</td></tr><tr><td>脉冲数</td><td><code>Npulse</code></td><td>$32$</td><td>决定 CPI 和速度分辨率</td></tr><tr><td>快时间采样点数</td><td><code>Nfast</code></td><td>$2048$</td><td>决定接收窗口长度</td></tr></tbody></table></div>
-<p>两个目标的真值设定如下：</p>
-<div class="table-wrap"><table><thead><tr><th>目标</th><th>距离</th><th>径向速度</th><th>幅度</th></tr></thead><tbody><tr><td>A</td><td>$6\,km$</td><td>$+30\,m/s$</td><td>$1.0$</td></tr><tr><td>B</td><td>$9\,km$</td><td>$-20\,m/s$</td><td>$0.75$</td></tr></tbody></table></div>
-<p>这里的速度都落在本例的不模糊速度范围内。因为</p>
+      <h1>Chapter 8 Complete MATLAB Processing Pipeline</h1>
+      <section class="chapter-section" data-section="ch08-s01"><h2 id="ch08-s01" class="section-title">Chapter 8 Complete MATLAB Processing Pipeline</h2>
+<p>Previous chapters have broken down the radar processing chain: Chapter 3 arranged the I/Q samples from multiple transmitted pulses into <code>rx_matrix</code>, Chapter 4 performed range processing in fast time, Chapter 5 performed Doppler processing in slow time, Chapter 6 filtered responses in the range-velocity map into detection results, and Chapter 7 explained how direction information enters target parameters.</p>
+<p>This chapter integrates these steps into a single MATLAB program. Each variable in the program must answer three questions: what are its dimensions, which dimension will be processed next, and which physical quantity does it correspond to after processing.</p>
+<p>This chapter adopts a simplified pulse-Doppler scenario: two point targets, 32 transmitted pulses, baseband LFM signal. The complete script is provided in the accompanying MATLAB files; the main text retains only key fragments and verification methods.</p>
+<h3 id="sub-124">8.1 Simulation Parameters</h3>
+<p>This chapter uses two point targets as examples. The radar parameters continue the simplified settings from previous chapters: using baseband LFM pulses, the receiver obtains complex I/Q samples, and multiple transmitted pulses are organized by transmission order into <code>rx_matrix</code>。</p>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th><th>MATLAB Variable</th><th>Value</th><th>Meaning</th></tr></thead><tbody><tr><td>Speed of light</td><td><code>c</code></td><td>$3\times10^8\,m/s$</td><td>Range-delay conversion</td></tr><tr><td>Carrier frequency</td><td><code>fc</code></td><td>$10\,GHz$</td><td>Determines wavelength</td></tr><tr><td>Wavelength</td><td><code>lambda</code></td><td>$0.03\,m$</td><td>Doppler-to-velocity conversion</td></tr><tr><td>LFM bandwidth</td><td><code>B</code></td><td>$10\,MHz$</td><td>Affects range resolution</td></tr><tr><td>Pulse width</td><td><code>Tp</code></td><td>$20\,\mu s$</td><td>Transmit pulse duration</td></tr><tr><td>Sampling rate</td><td><code>fs</code></td><td>$20\,MHz$</td><td>Fast-time sampling interval</td></tr><tr><td>PRF</td><td><code>PRF</code></td><td>$5\,kHz$</td><td>Slow-time sampling rate</td></tr><tr><td>Number of pulses</td><td><code>Npulse</code></td><td>$32$</td><td>Determines CPI and velocity resolution</td></tr><tr><td>Fast-time sample count</td><td><code>Nfast</code></td><td>$2048$</td><td>Determines the receive window length</td></tr></tbody></table></div>
+<p>The ground truth for the two targets is set as follows:</p>
+<div class="table-wrap"><table><thead><tr><th>Target</th><th>Range</th><th>Radial velocity</th><th>Amplitude</th></tr></thead><tbody><tr><td>A</td><td>$6\,km$</td><td>$+30\,m/s$</td><td>$1.0$</td></tr><tr><td>B</td><td>$9\,km$</td><td>$-20\,m/s$</td><td>$0.75$</td></tr></tbody></table></div>
+<p>The velocities here all fall within the unambiguous velocity range of this example. Because</p>
 <div class="math-block">$$
 v_{\max}=\frac{\lambda\,\text{PRF}}{4}
 =\frac{0.03\times5000}{4}=37.5\,m/s
 $$</div>
-<p>所以 $+30\,m/s$ 和 $-20\,m/s$ 都能在双边速度轴上显示出来。若把 PRF 降低到 $2\,kHz$，$v_{\max}$ 会变成 $15\,m/s$，目标 A 就会发生速度模糊。</p>
-<p>这里的目标表述有两层。<code>scene</code> 里的距离和速度是真值，用来生成仿真回波；<code>target_list</code> 是处理链从回波中估计出来的结果。真实雷达只有后者，没有前者。</p>
-<h3 id="sub-125">8.2 从回波矩阵到目标表</h3>
-<p>处理链写成一行数据流：</p>
+<p>Therefore, both $+30\,m/s$ and $-20\,m/s$ can be displayed on the two-sided velocity axis. If the PRF is reduced to $2\,kHz$, $v_{\max}$ would become $15\,m/s$, and target A would experience velocity ambiguity.</p>
+<p>There are two levels to the target representation here.<code>scene</code> The range and velocity in the table above are ground truth values, used to generate simulated echoes;<code>target_list</code> are the results estimated by the processing chain from the echoes. Real radar only has the latter, not the former.</p>
+<h3 id="sub-125">8.2 From Echo Matrix to Target List</h3>
+<p>The processing chain written as a single-line data flow:</p>
 <pre><code class="language-text">scene -&gt; tx -&gt; rx_matrix -&gt; range_data -&gt; rd_map -&gt; det_mask -&gt; target_list</code></pre>
-<p>各变量的作用和维度如下：</p>
-<div class="table-wrap"><table><thead><tr><th>变量</th><th>典型维度</th><th>轴含义</th><th>物理含义</th></tr></thead><tbody><tr><td><code>scene</code></td><td>结构体</td><td>不适用</td><td>目标真值和雷达参数</td></tr><tr><td><code>tx</code></td><td><code>1 x Nt</code></td><td>快时间</td><td>发射基带 LFM 脉冲</td></tr><tr><td><code>rx_matrix</code></td><td><code>Npulse x Nfast</code></td><td>行：脉冲序号；列：快时间采样点</td><td>原始复数回波矩阵</td></tr><tr><td><code>range_data</code></td><td><code>Npulse x Nfast</code></td><td>行：脉冲序号；列：距离相关采样点</td><td>距离压缩结果</td></tr><tr><td><code>rd_map</code></td><td><code>Ndoppler x Nrange</code></td><td>行：Doppler / 速度 bin；列：range bin</td><td>距离-速度图</td></tr><tr><td><code>det_mask</code></td><td>与 <code>rd_map</code> 相同</td><td>行列与 <code>rd_map</code> 对齐</td><td>检测掩码</td></tr><tr><td><code>target_list</code></td><td><code>Ntarget x 字段数</code></td><td>每行一个目标</td><td>距离、速度、响应强度等估计结果</td></tr></tbody></table></div>
-<p>顶层程序组织成下面的形式：</p>
+<p>The role and dimensions of each variable are as follows:</p>
+<div class="table-wrap"><table><thead><tr><th>Variable</th><th>Typical Dimensions</th><th>Axis Meaning</th><th>Physical Meaning</th></tr></thead><tbody><tr><td><code>scene</code></td><td>Struct</td><td>N/A</td><td>Target Ground Truth and Radar Parameters</td></tr><tr><td><code>tx</code></td><td><code>1 x Nt</code></td><td>Fast time</td><td>Transmitted baseband LFM pulse</td></tr><tr><td><code>rx_matrix</code></td><td><code>Npulse x Nfast</code></td><td>Row: pulse index; Column: fast-time samples</td><td>Raw complex echo matrix</td></tr><tr><td><code>range_data</code></td><td><code>Npulse x Nfast</code></td><td>Row: pulse index; Column: range-correlated samples</td><td>Range compression result</td></tr><tr><td><code>rd_map</code></td><td><code>Ndoppler x Nrange</code></td><td>Row: Doppler/velocity bin; Column: range bin</td><td>Range-Doppler Map</td></tr><tr><td><code>det_mask</code></td><td>and <code>rd_map</code> same</td><td>rows, columns, and <code>rd_map</code> alignment</td><td>detection mask</td></tr><tr><td><code>target_list</code></td><td><code>Ntarget × number of fields</code></td><td>one target per row</td><td>estimation results including range, velocity, response magnitude, etc.</td></tr></tbody></table></div>
+<p>The top-level program is organized as follows:</p>
 <pre><code class="language-matlab">scene = ch08_default_scene();
 [tx, mf, k] = ch08_make_lfm_pulse(scene.B, scene.Tp, scene.fs);
 rx_matrix = ch08_simulate_echo(scene, k);
@@ -56,142 +108,142 @@ rx_matrix = ch08_simulate_echo(scene, k);
 [rd_map, rd_power, vel_axis] = ch08_doppler_process(range_data, scene);
 [det_mask, row_idx, col_idx] = ch08_detect_targets(rd_power, 0.35);
 target_list = ch08_make_target_list(row_idx, col_idx, rd_power, range_axis, vel_axis);</code></pre>
-<p>这段代码只看函数接口，不看函数内部。第一个输出 <code>rx_matrix</code> 还只是接收样本矩阵；最后的 <code>target_list</code> 才是可以汇报的目标结果。中间每一步都在改变数据的组织方式。</p>
-<p>我们再检查尺寸：</p>
+<p>This code only examines function interfaces, not their internals. The first output <code>rx_matrix</code> is still just the received sample matrix; the final <code>target_list</code> is the reportable target results. Each intermediate step transforms the data organization.</p>
+<p>Let's verify the dimensions:</p>
 <pre><code class="language-matlab">size(rx_matrix)
 size(range_data)
 size(rd_map)
 size(det_mask)
 height(target_list)</code></pre>
-<p>如果 <code>rx_matrix</code> 和 <code>range_data</code> 的行列方向已经弄反，后面的 Doppler FFT、速度轴和检测点都会跟着错。</p>
-<p>图8.1 展示了完整处理链的四个阶段。从原始回波矩阵开始，经过距离压缩得到单脉冲距离像，再经过 Doppler 处理得到距离-速度图，最后通过阈值检测筛选出目标。</p>
-<figure><img src="../figures/ch08/fig8_1_processing_chain.png" alt="图8.1 完整处理链的四个阶段" loading="lazy"><figcaption>图8.1 完整处理链的四个阶段</figcaption></figure>
-<h3 id="sub-126">8.3 回波矩阵的生成</h3>
-<h4 id="sub-127">场景参数怎样进入回波</h4>
-<p><code>scene</code> 里每个目标至少有三个参数：距离 $R_i$、径向速度 $v_i$ 和幅度 $A_i$。距离决定回波晚到多少，速度决定相邻脉冲之间多转多少相位。</p>
-<p>距离到时延的关系仍然是第 4 章的公式：</p>
+<p>If <code>rx_matrix</code> and <code>range_data</code> have their row and column directions reversed, the subsequent Doppler FFT, velocity axis, and detection points will all be incorrect.</p>
+<p>Figure 8.1 shows the four stages of the complete processing chain. Starting from the raw echo matrix, range compression yields single-pulse range profiles, then Doppler processing produces the range-velocity map, and finally threshold detection filters out targets.</p>
+<figure><img src="../figures/ch08/fig8_1_processing_chain.png" alt="Figure 8.1 Four stages of the complete processing chain" loading="lazy"><figcaption>Figure 8.1 Four stages of the complete processing chain</figcaption></figure>
+<h3 id="sub-126">8.3 Echo Matrix Formation</h3>
+<h4 id="sub-127">How scene parameters enter the echo</h4>
+<p><code>scene</code> Each target has at least three parameters: range $R_i$, radial velocity $v_i$, and amplitude $A_i$. Range determines how late the echo arrives; velocity determines how much phase advances between adjacent pulses.</p>
+<p>The relationship from range to time delay is still the formula from Chapter 4:</p>
 <div class="math-block">$$
 \tau_i=\frac{2R_i}{c}
 $$</div>
-<p>速度到 Doppler 频率的关系仍然是第 5 章的公式：</p>
+<p>The relationship from velocity to Doppler frequency is still the formula from Chapter 5:</p>
 <div class="math-block">$$
 f_{d,i}=\frac{2v_i}{\lambda}
 $$</div>
-<p>第 <code>pulse_idx</code> 发脉冲中，目标 $i$ 的慢时间相位写成</p>
+<p>In the <code>pulse_idx</code> transmitted pulse, the slow-time phase of target $i$ is written as</p>
 <div class="math-block">$$
 \exp\left(j2\pi f_{d,i}(\text{pulse\_idx}-1)T_r\right)
 $$</div>
-<p>其中 $T_r=1/\text{PRF}$。程序里只需要把这两个关系放进回波生成函数：</p>
+<p>where $T_r=1/\text{PRF}$. In the program, simply put these two relationships into the echo generation function:</p>
 <pre><code class="language-matlab">tau = 2 * R / scene.c;
 fd = 2 * v / scene.lambda;
 delayed_t = fast_time - tau;
 valid = delayed_t &gt;= 0 &amp; delayed_t &lt; scene.Tp;
 echo(valid) = amp * exp(1j * pi * k * delayed_t(valid).^2) ...
     .* exp(1j * 2*pi * fd * (pulse_idx - 1) * scene.Tr);</code></pre>
-<p>前半部分 <code>exp(1j*pi*k*delayed_t.^2)</code> 是延迟后的基带 LFM 回波，后半部分是目标运动带来的脉冲间相位变化。第 4 章处理的是前半部分怎样形成距离峰，第 5 章处理的是后半部分怎样形成速度峰。</p>
-<h4 id="sub-128"><code>rx_matrix</code> 的行和列</h4>
-<p>回波生成函数最终输出 <code>rx_matrix</code>。本章程序采用下面的约定：</p>
+<p>The first half <code>exp(1j*pi*k*delayed_t.^2)</code> is the delayed baseband LFM echo; the second half is the inter-pulse phase variation caused by target motion. Chapter 4 addressed how the first half forms range peaks; Chapter 5 addressed how the second half forms velocity peaks.</p>
+<h4 id="sub-128"><code>rx_matrix</code> Rows and columns of</h4>
+<p>The echo generation function ultimately outputs <code>rx_matrix</code>. This chapter's program adopts the following convention:</p>
 <pre><code class="language-text">rx_matrix: Npulse x Nfast</code></pre>
-<p>也就是每一行是一发脉冲的快时间采样，每一列是同一个快时间位置在不同脉冲之间的慢时间序列。</p>
-<div class="table-wrap"><table><thead><tr><th>方向</th><th>索引</th><th>对应物理量</th><th>后续处理</th></tr></thead><tbody><tr><td>行方向</td><td><code>pulse_idx</code></td><td>慢时间 / 脉冲序号</td><td>Doppler FFT 沿这个方向做</td></tr><tr><td>列方向</td><td><code>fast_idx</code></td><td>快时间采样点</td><td>距离压缩沿这个方向做</td></tr></tbody></table></div>
-<p>这个约定和第 3 章的 <code>rx_matrix</code> 保持一致。若程序采用相反约定也能工作，但每一个 <code>fft(..., dim)</code>、<code>conv</code> 循环和 <code>imagesc</code> 坐标都要同步改变。教材里不混用两套约定。</p>
-<p>图8.3 展示了数据在处理链中的维度变化（图中只显示部分采样点作为示意）。<code>rx_matrix</code> 和 <code>range_data</code> 的尺寸相同，但列的物理含义已经从"采样点"变成"距离单元"。<code>rd_map</code> 的行方向则从"脉冲序号"变成"速度单元"。</p>
-<figure><img src="../figures/ch08/fig8_3_dimension_flow.png" alt="图8.3 数据维度在处理链中的变化" loading="lazy"><figcaption>图8.3 数据维度在处理链中的变化</figcaption></figure>
-<h3 id="sub-129">8.4 距离压缩得到 <code>range_data</code></h3>
-<h4 id="sub-130">沿快时间做匹配滤波</h4>
-<p><code>rx_matrix</code> 的每一行是一发脉冲的回波。距离压缩要在这一行内部做匹配滤波，把延迟后的 LFM 回波压成距离峰。</p>
-<p>第 4 章中匹配滤波写成</p>
+<p>That is, each row contains the fast-time samples of one transmitted pulse, and each column contains the slow-time sequence at the same fast-time index across different pulses.</p>
+<div class="table-wrap"><table><thead><tr><th>Direction</th><th>Index</th><th>Corresponding Physical Quantity</th><th>Subsequent Processing</th></tr></thead><tbody><tr><td>Row direction</td><td><code>pulse_idx</code></td><td>Slow time / Pulse index</td><td>Doppler FFT is performed along this direction</td></tr><tr><td>Column direction</td><td><code>fast_idx</code></td><td>Fast-time samples</td><td>Range compression is performed along this direction</td></tr></tbody></table></div>
+<p>This convention aligns with Chapter 3's <code>rx_matrix</code> remains consistent. If the program uses the opposite convention it will still work, but every <code>fft(..., dim)</code>、<code>conv</code> loop and <code>imagesc</code> coordinate must be changed accordingly. This textbook does not mix the two conventions.</p>
+<p>Figure 8.3 shows the dimensional transformations of data in the processing chain (only partial samples are shown in the figure for illustration).<code>rx_matrix</code> and <code>range_data</code> has the same dimensions, but the physical meaning of columns has changed from "sample points" to "range bins".<code>rd_map</code> The row direction changes from "pulse index" to "velocity bins".</p>
+<figure><img src="../figures/ch08/fig8_3_dimension_flow.png" alt="Figure 8.3 Changes in Data Dimensions Through the Processing Chain" loading="lazy"><figcaption>Figure 8.3 Changes in Data Dimensions Through the Processing Chain</figcaption></figure>
+<h3 id="sub-129">8.4 Range Compression Yields <code>range_data</code></h3>
+<h4 id="sub-130">Matched filtering along fast time</h4>
+<p><code>rx_matrix</code> Each row is the echo from one transmitted pulse. Range compression performs matched filtering within this row, compressing the delayed LFM echo into range peaks.</p>
+<p>In Chapter 4, matched filtering was written as</p>
 <div class="math-block">$$
 h(t)=s^*(-t),\qquad y(t)=r(t)*h(t)
 $$</div>
-<p>程序里的主要片段是：</p>
+<p>The main code fragment is:</p>
 <pre><code class="language-matlab">range_data = zeros(size(rx_matrix));
 for pulse_idx = 1:size(rx_matrix, 1)
     range_data(pulse_idx, :) = conv(rx_matrix(pulse_idx, :), mf, &#x27;same&#x27;);
 end</code></pre>
-<p>这里的 <code>pulse_idx</code> 固定一发脉冲，<code>:</code> 取出这一发脉冲内的全部快时间采样点。<code>conv(..., &#x27;same&#x27;)</code> 保持输出长度和输入长度相同，所以 <code>range_data</code> 的尺寸仍然是 <code>Npulse x Nfast</code>。</p>
-<p>处理前后最容易混淆的是列方向含义。<code>rx_matrix</code> 的列只是快时间采样点；<code>range_data</code> 的列已经可以配上距离轴。它仍然不是最终目标，只是每发脉冲上的距离压缩结果。</p>
-<h4 id="sub-131">距离轴和群延迟修正</h4>
-<p>匹配滤波器有长度。使用 <code>conv(..., &#x27;same&#x27;)</code> 时，输出保留中心段，距离轴要扣除匹配滤波器的中心偏移：</p>
+<p>Here, <code>pulse_idx</code> fixes one transmitted pulse,<code>:</code> extracts all fast-time samples within that pulse.<code>conv(..., &#x27;same&#x27;)</code> keeps the output length equal to the input length, so <code>range_data</code> the dimensions remain <code>Npulse x Nfast</code>。</p>
+<p>The most easily confused aspect before and after processing is the meaning of the column direction.<code>rx_matrix</code> The columns are simply fast-time sample points;<code>range_data</code> columns can now be aligned with the range axis. This is still not the final goal, just the range compression result for each transmitted pulse.</p>
+<h4 id="sub-131">Range Axis and Group Delay Correction</h4>
+<p>The matched filter has a length. When using <code>conv(..., &#x27;same&#x27;)</code> , the output retains the center segment, and the range axis must subtract the center offset of the matched filter:</p>
 <pre><code class="language-matlab">group_delay = floor(length(mf) / 2);
 Nfast = size(rx_matrix, 2);
 range_axis = ((0:Nfast-1) - group_delay) * scene.c / (2 * scene.fs);</code></pre>
-<p>这行距离轴来自第 4 章的测距公式：采样点先换成时间，再由时间换成距离。</p>
+<p>This range axis comes from the ranging formula in Chapter 4: sample points are first converted to time, then from time to range.</p>
 <div class="math-block">$$
 R=\frac{c\Delta t}{2}=\frac{c(n-n_0)}{2f_s}
 $$</div>
-<p>其中 $n_0$ 就是 <code>group_delay</code>。若不扣除这个偏移，距离估计会系统性偏大。</p>
-<h3 id="sub-132">8.5 Doppler 处理得到 <code>rd_map</code></h3>
-<h4 id="sub-133">沿慢时间做 FFT</h4>
-<p>距离压缩完成后，<code>range_data</code> 的每一列是同一个距离单元在不同脉冲之间的慢时间序列。第 5 章已经讲过，这个序列的频谱就是 Doppler 谱。</p>
-<p>程序里写成：</p>
+<p>where $n_0$ is <code>group_delay</code>. If this offset is not subtracted, the range estimate will be systematically overestimated.</p>
+<h3 id="sub-132">8.5 Doppler Processing to Obtain <code>rd_map</code></h3>
+<h4 id="sub-133">FFT Along Slow Time</h4>
+<p>After range compression is complete,<code>range_data</code> each column represents the slow-time sequence of the same range cell across different pulses. As explained in Chapter 5, the spectrum of this sequence is the Doppler spectrum.</p>
+<p>In the code, this is written as:</p>
 <pre><code class="language-matlab">rd_map = fftshift(fft(range_data, [], 1), 1);
 rd_power = abs(rd_map);
 rd_power = rd_power / max(rd_power(:));</code></pre>
-<p>这里 <code>fft(..., [], 1)</code> 的最后一个参数 <code>1</code> 表示沿第一维处理。因为本书约定 <code>range_data</code> 的行是脉冲序号，所以 Doppler FFT 沿第 1 维做。</p>
-<p>做完这一步后，行方向的含义变了：原来是第几发脉冲，现在是 Doppler bin 或速度 bin。列方向仍然对应距离。</p>
-<div class="table-wrap"><table><thead><tr><th>变量</th><th>行方向</th><th>列方向</th></tr></thead><tbody><tr><td><code>range_data</code></td><td>脉冲序号</td><td>距离相关采样点</td></tr><tr><td><code>rd_map</code></td><td>Doppler / 速度 bin</td><td>range bin</td></tr></tbody></table></div>
-<p>这一步容易出错。<code>rd_map</code> 看起来仍然是二维矩阵，但它已经不再是一张脉冲-快时间表。</p>
-<h4 id="sub-134">速度轴和 <code>fftshift</code></h4>
-<p>双边复 I/Q 序列的 Doppler 频率范围写成</p>
+<p>Here <code>fft(..., [], 1)</code> the last parameter of <code>1</code> indicates processing along the first dimension. Because this book adopts the convention <code>range_data</code> rows are pulse indices, so the Doppler FFT is performed along dimension 1.</p>
+<p>After this step, the meaning of the row dimension changes: previously it represented pulse number, now it represents Doppler bin or velocity bin. The column dimension still corresponds to range.</p>
+<div class="table-wrap"><table><thead><tr><th>Variable</th><th>Row direction</th><th>Column direction</th></tr></thead><tbody><tr><td><code>range_data</code></td><td>Pulse index</td><td>Range samples</td></tr><tr><td><code>rd_map</code></td><td>Doppler / velocity bin</td><td>range bin</td></tr></tbody></table></div>
+<p>This step is easy to get wrong.<code>rd_map</code> It still appears to be a 2D matrix, but it is no longer a pulse–fast-time table.</p>
+<h4 id="sub-134">The velocity axis and <code>fftshift</code></h4>
+<p>For a two-sided complex I/Q sequence, the Doppler frequency range is written as</p>
 <div class="math-block">$$
 f_d\in\left[-\frac{\text{PRF}}{2},\frac{\text{PRF}}{2}\right)
 $$</div>
-<p>因此速度轴写成：</p>
+<p>Therefore the velocity axis is written as:</p>
 <pre><code class="language-matlab">Npulse = scene.Npulse;
 doppler_freq = (-Npulse/2:Npulse/2-1) * scene.PRF / Npulse;
 vel_axis = doppler_freq * scene.lambda / 2;</code></pre>
-<p><code>fftshift</code> 把零 Doppler 移到中间。没有 <code>fftshift</code> 时，速度轴仍按双边方式标，图上的速度位置会错位。</p>
-<p>本例中速度分辨率为</p>
+<p><code>fftshift</code> Shift zero Doppler to the center. Without <code>fftshift</code> the velocity axis will still be labeled in two-sided form, causing velocity positions in the plot to be misaligned.</p>
+<p>In this example, the velocity resolution is</p>
 <div class="math-block">$$
 \Delta v=\frac{\lambda}{2T_{\text{CPI}}}
 =\frac{\lambda\,\text{PRF}}{2N}
 $$</div>
-<p>代入 $\lambda=0.03\,m$、$\text{PRF}=5000\,Hz$、$N=32$，得到</p>
+<p>Substituting $\lambda=0.03\,m$, $\text{PRF}=5000\,Hz$, $N=32$, we obtain</p>
 <div class="math-block">$$
 \Delta v\approx2.34\,m/s
 $$</div>
-<p>所以目标速度不一定正好落在某一个速度 bin 上，实际峰值会出现在最接近的 bin 附近。</p>
-<p>图8.2 展示了距离-速度图的细节。左图标注了两个目标的真实位置，右图叠加了检测结果。有的目标附近会出现多个检测点，这是因为主瓣展宽和固定阈值的共同作用。</p>
-<figure><img src="../figures/ch08/fig8_2_rd_map_detail.png" alt="图8.2 距离-速度图与检测结果" loading="lazy"><figcaption>图8.2 距离-速度图与检测结果</figcaption></figure>
-<h3 id="sub-135">8.6 从 <code>rd_map</code> 到 <code>det_mask</code></h3>
-<h4 id="sub-136">固定阈值先跑通</h4>
-<p>距离-速度图上的亮点还不是目标表。第 6 章已经讲过，图上的响应可能来自目标，也可能来自噪声、旁瓣或杂波。检测要把连续幅度图变成 0/1 掩码。</p>
-<p>最小实现先用固定阈值：</p>
+<p>So the target velocity may not fall exactly on a particular velocity bin; the actual peak will appear near the closest bin.</p>
+<p>Figure 8.2 shows the range-velocity map in detail. The left image marks the true positions of two targets, while the right image overlays the detection results. Multiple detection points may appear near some targets due to the combined effects of mainlobe broadening and fixed thresholding.</p>
+<figure><img src="../figures/ch08/fig8_2_rd_map_detail.png" alt="Figure 8.2 Range-Velocity Map and Detection Results" loading="lazy"><figcaption>Figure 8.2 Range-Velocity Map and Detection Results</figcaption></figure>
+<h3 id="sub-135">8.6 From <code>rd_map</code> to <code>det_mask</code></h3>
+<h4 id="sub-136">Get Fixed Threshold Working First</h4>
+<p>Bright spots on the range-velocity map are not yet a target list. As explained in Chapter 6, responses on the map may come from targets, noise, sidelobes, or clutter. Detection converts the continuous amplitude map into a 0/1 mask.</p>
+<p>The minimal implementation starts with a fixed threshold:</p>
 <pre><code class="language-matlab">threshold = 0.35;
 det_mask = rd_power &gt; threshold;
 [row_idx, col_idx] = find(det_mask);</code></pre>
-<p><code>det_mask</code> 和 <code>rd_map</code> 使用同一套行列坐标。<code>det_mask(row, col)=1</code> 表示 <code>rd_map(row, col)</code> 这个距离-速度单元通过检测。</p>
-<p>固定阈值适合先跑通处理链。它的局限也很明显：背景不均匀、旁瓣高、强弱目标差距大时，一个全局阈值很难兼顾整张图。第 6 章讲过的 CFAR 可以替换这个检测模块，但第 8 章不展开二维 CFAR 代码。</p>
-<h4 id="sub-137">检测掩码的常见误读</h4>
-<p><code>det_mask</code> 中的 1 不一定一一对应目标。一个目标的主瓣附近可能有多个相邻格子越过阈值，强目标旁瓣也可能触发检测。实际输出目标表前，通常还要做局部峰值保留或点迹凝聚。</p>
-<p>一个简化的局部峰值保留：</p>
+<p><code>det_mask</code> and <code>rd_map</code> Uses the same row-column coordinates.<code>det_mask(row, col)=1</code> indicates <code>rd_map(row, col)</code> this range-velocity cell passes detection.</p>
+<p>Fixed thresholding is suitable for getting the processing chain working initially. Its limitations are obvious: when the background is non-uniform, sidelobes are high, or the dynamic range between strong and weak targets is large, a single global threshold struggles to work well across the entire map. The CFAR covered in Chapter 6 can replace this detection module, but Chapter 8 does not expand on 2D CFAR code.</p>
+<h4 id="sub-137">Common Misconception about Detection Masks</h4>
+<p><code>det_mask</code> The 1s in the mask do not necessarily correspond one-to-one with targets. Multiple adjacent cells near a target's mainlobe may exceed the threshold, and sidelobes from strong targets may also trigger detection. Before outputting the actual target list, local peak preservation or plot clustering is typically performed.</p>
+<p>A simplified local peak preservation:</p>
 <pre><code class="language-matlab">is_peak = imregionalmax(rd_power);
 det_mask = (rd_power &gt; threshold) &amp; is_peak;
 [row_idx, col_idx] = find(det_mask);</code></pre>
-<p>这段代码需要图像处理工具箱。没有这个工具箱时，也可以用第 6 章的点迹凝聚思路：先找到通过阈值的区域，再取每个区域内响应最大的格子作为代表点。</p>
-<h3 id="sub-138">8.7 从检测掩码到目标表</h3>
-<h4 id="sub-139">索引到物理量的换算</h4>
-<p><code>find(det_mask)</code> 返回的是行列索引，还不是距离和速度。换算关系写成：</p>
+<p>This code requires the Image Processing Toolbox. Without this toolbox, you can use the plot clustering approach from Chapter 6: first find regions that pass the threshold, then take the cell with the maximum response within each region as the representative point.</p>
+<h3 id="sub-138">8.7 From Detection Mask to Target List</h3>
+<h4 id="sub-139">Converting Indices to Physical Quantities</h4>
+<p><code>find(det_mask)</code> The returned values are row and column indices, not yet range and velocity. The conversion relationship is written as:</p>
 <pre><code class="language-matlab">range_est = range_axis(col_idx);
 vel_est = vel_axis(row_idx);</code></pre>
-<p>其中 <code>range_axis</code> 对应距离坐标轴，<code>vel_axis</code> 对应速度坐标轴。这两个轴在前面的距离压缩和 Doppler 处理中已经生成。</p>
-<p>到这一步，前面得到的距离-速度图才真正转化为可以汇报的目标结果。</p>
-<h4 id="sub-140">目标表的组织</h4>
-<p>最简单的目标表只保留距离、速度和响应强度：</p>
+<p>where <code>range_axis</code> corresponds to the range axis,<code>vel_axis</code> corresponds to the velocity axis. These two axes were already generated in the previous range compression and Doppler processing.</p>
+<p>At this step, the range-velocity map obtained earlier is finally converted into reportable target results.</p>
+<h4 id="sub-140">Target Table Organization</h4>
+<p>The simplest target table retains only range, velocity, and response amplitude:</p>
 <pre><code class="language-matlab">target_list = table(range_est, vel_est, rd_power(sub2ind(size(rd_power), row_idx, col_idx)), ...
     &#x27;VariableNames&#x27;, {&#x27;Range&#x27;, &#x27;Velocity&#x27;, &#x27;Power&#x27;});</code></pre>
-<p>实际工程中，目标表还会包含检测时刻、信噪比估计、角度信息等字段。第 7 章讲过的角度测量可以在这里并入目标表。</p>
-<h3 id="sub-141">8.8 参数变化练习</h3>
-<p>练习 1：改变目标距离。把目标 A 的距离从 $6\,km$ 改成 $7\,km$，观察 <code>range_data</code> 的距离峰和 <code>rd_map</code> 中亮点的横向位置。速度位置不应明显改变。</p>
-<p>练习 2：改变目标速度。把目标 B 的速度从 $-20\,m/s$ 改成 $+20\,m/s$，观察 <code>rd_map</code> 中亮点从负速度一侧移动到正速度一侧。距离位置不应明显改变。</p>
-<p>练习 3：降低脉冲数。把 <code>Npulse</code> 从 32 改成 16。速度 bin 变粗，<code>rd_map</code> 的速度向分辨能力下降。这个变化对应第 5 章的 CPI 与速度分辨率关系。</p>
-<p>练习 4：降低 PRF。把 <code>PRF</code> 从 $5\,kHz$ 改成 $2\,kHz$。最大不模糊速度变成 $15\,m/s$，目标 A 的 $+30\,m/s$ 会折叠到 $0\,m/s$ 附近，目标 B 的 $-20\,m/s$ 会折叠到 $+10\,m/s$ 附近。观察 <code>vel_axis</code> 的范围和峰值位置变化。</p>
-<p>练习 5：调整阈值。把 <code>threshold</code> 从 0.35 改成 0.2 和 0.6。阈值降低时检测点会增多，阈值升高时弱目标更容易消失。这个练习对应第 6 章的虚警和漏检取舍。</p>
-<p>练习 6：加入一个强零速度杂波。在某个距离附近加入速度为 $0\,m/s$、幅度较大的回波。距离-速度图上零速度附近会出现强响应，检测模块可能优先报出它。这个练习用来连接第 5 章的零 Doppler 杂波和第 6 章的检测限制。</p>
-<p>图8.4 展示了不同参数设置对处理结果的影响。左列是原始设置，右列分别展示了改变带宽、脉冲数和 PRF 后的效果。</p>
-<figure><img src="../figures/ch08/fig8_4_parameter_effects.png" alt="图8.4 参数变化对处理结果的影响" loading="lazy"><figcaption>图8.4 参数变化对处理结果的影响</figcaption></figure>
-<p>跑完这些练习后，目标不再只是图上的亮点。它从 <code>scene</code> 中的真值出发，经过 <code>rx_matrix</code>、<code>range_data</code>、<code>rd_map</code> 和 <code>det_mask</code>，最后变成 <code>target_list</code> 中的一行。能解释这条路径，就能把这份 MATLAB 处理流程和前面几章的公式接起来。</p></section>
+<p>In practical engineering, the target table also includes fields such as detection time, SNR estimate, angle information, etc. The angle measurement covered in Chapter 7 can be incorporated into the target table here.</p>
+<h3 id="sub-141">8.8 Parameter Variation Exercises</h3>
+<p>Exercise 1: Change the target range. Change target A's range from $6\,km$ to $7\,km$ and observe <code>range_data</code> the range peak in <code>rd_map</code> and the horizontal position of the bright spot in the figure. The velocity position should not change noticeably.</p>
+<p>Exercise 2: Change the target velocity. Change target B's velocity from $-20\,m/s$ to $+20\,m/s$ and observe <code>rd_map</code> the bright spot moving from the negative velocity side to the positive velocity side in the figure. The range position should not change noticeably.</p>
+<p>Exercise 3: Reduce the pulse count. Change <code>Npulse</code> Change from 32 to 16. The velocity bins become coarser,<code>rd_map</code> and velocity resolution degrades. This change corresponds to the CPI-velocity resolution relationship in Chapter 5.</p>
+<p>Exercise 4: Reduce PRF. Change <code>PRF</code> from $5\,kHz$ to $2\,kHz$. The maximum unambiguous velocity becomes $15\,m/s$; target A's $+30\,m/s$ will fold to near $0\,m/s$, and target B's $-20\,m/s$ will fold to near $+10\,m/s$. Observe <code>vel_axis</code> the range and peak position changes.</p>
+<p>Exercise 5: Adjust threshold. Change <code>threshold</code> from 0.35 to 0.2 and 0.6. Lowering the threshold increases detections; raising it causes weak targets to disappear more easily. This exercise corresponds to the false alarm and missed detection trade-off in Chapter 6.</p>
+<p>Exercise 6: Add strong zero-velocity clutter. At some range, add an echo with velocity $0\,m/s$ and large amplitude. A strong response will appear near zero velocity on the range-velocity map, and the detector may report it first. This exercise connects zero-Doppler clutter from Chapter 5 with detection limitations from Chapter 6.</p>
+<p>Figure 8.4 shows the impact of different parameter settings on processing results. The left column shows the original settings; the right column shows the effects after changing bandwidth, pulse count, and PRF respectively.</p>
+<figure><img src="../figures/ch08/fig8_4_parameter_effects.png" alt="Figure 8.4 Impact of parameter variations on processing results" loading="lazy"><figcaption>Figure 8.4 Impact of parameter variations on processing results</figcaption></figure>
+<p>After running these exercises, targets are no longer just bright spots on a plot. They start from <code>scene</code> as ground truth, pass through <code>rx_matrix</code>、<code>range_data</code>、<code>rd_map</code> and <code>det_mask</code>, and finally become <code>target_list</code> a single row. Being able to explain this path connects the MATLAB processing pipeline with the formulas from previous chapters.</p></section>
     </article>
   </main>
 </div>

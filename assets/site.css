@@ -1602,6 +1602,8 @@ body.toc-collapsed .article-actions {
 }
 .home-topbar .nav-terminal {
   display: flex;
+  align-items: center;
+  gap: 10px;
   justify-self: end;
 }
 .home-topbar .nav-link,
@@ -1622,6 +1624,19 @@ body.toc-collapsed .article-actions {
 .home-topbar .nav-link.active,
 .home-topbar .github-link {
   color: #0d4746;
+}
+.home-topbar .github-link {
+  justify-content: center;
+  width: 40px;
+  padding: 9px;
+}
+.home-topbar .nav-divider {
+  display: block;
+  flex: 0 0 1px;
+  width: 1px;
+  min-width: 1px;
+  height: 24px;
+  background: rgba(13, 71, 70, 0.18);
 }
 .home-topbar .toplinks a::after {
   display: none;

@@ -1,243 +1,291 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>第3章 雷达信号的收发 | 易懂的雷达信号处理教程</title>
-  <meta name="description" content="第2章把回波当成一段随时间起伏的信号来看：它有幅度，有频率，可以采样，也可以写成复数 I/Q。放到雷达系统里，这段信号不是凭空出现的。雷达先按一定节奏发射电磁波，电磁波碰到目标后散射回来，接收机再把返回的微弱电压采样成数据。">
+  <title>Chapter 3: Radar Signal Transmission and Reception | Easy Radar Signal Processing Tutorial</title>
+  <meta name="description" content="Chapter 2 treated the echo as a time-varying signal: it has amplitude, frequency, can be sampled, and can be written in complex I/Q form. Within a radar system, this signal doesn&#x27;t appear out of nowhere. The radar first transmits electromagnetic waves at a regular rhythm, these waves scatter off the target and return, then the receiver samples the weak returning voltage into data.">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch03.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <script defer src="../assets/site.js?v=20260506-code-font-fix"></script>
+
+  <style>
+    .home-topbar .nav-terminal {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-self: end;
+    }
+    .home-topbar .github-link {
+      justify-content: center;
+      width: 40px;
+      padding: 9px;
+    }
+    .home-topbar .nav-divider {
+      display: block;
+      flex: 0 0 1px;
+      width: 1px;
+      min-width: 1px;
+      height: 24px;
+      background: rgba(13, 71, 70, 0.18);
+    }
+    .language-switcher {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #0d4746;
+      text-decoration: none;
+      flex: 0 0 auto;
+    }
+    .language-switcher:hover { color: var(--teal); background: rgba(13, 71, 70, 0.07); }
+    .language-switcher .language-icon,
+    .language-switcher .language-icon svg { width: 21px; height: 21px; }
+    .language-switcher svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
 </head>
 <body><div class="read-progress" aria-hidden="true"><span></span></div>
 <header class="article-top">
-  <nav class="topbar home-topbar" aria-label="站点导航">
-    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="教程图标"><span>Easy Radar Tutorial</span></a>
+  <nav class="topbar home-topbar" aria-label="Site Navigation">
+    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="Tutorial Icon"><span>Easy Radar Tutorial</span></a>
     <div class="toplinks nav-primary">
-      <a class="nav-link" href="../index.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5"></path><path d="M6.5 9.5V20h4v-5.5h3V20h4V9.5"></path></svg></span><span>首页</span></a>
-      <a class="nav-link" href="../index.html#chapters"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6.5h14"></path><path d="M5 12h14"></path><path d="M5 17.5h10"></path><path d="M3 6.5h.01"></path><path d="M3 12h.01"></path><path d="M3 17.5h.01"></path></svg></span><span>章节导航</span></a>
-      <a class="nav-link active" href="ch03.html" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5A3.5 3.5 0 0 1 8 2h11.5v18H8a3.5 3.5 0 0 0-3.5 2z"></path><path d="M8 2v18"></path><path d="M11 7h5"></path><path d="M11 11h4"></path></svg></span><span>开始阅读</span></a>
-      <a class="nav-link" href="https://github.com/apple-art/easy-radar-tutorial/releases/latest"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 9 5 5 5-5"></path><path d="M5 19h14"></path></svg></span><span>配套资源</span></a>
+      <a class="nav-link" href="../index.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5"></path><path d="M6.5 9.5V20h4v-5.5h3V20h4V9.5"></path></svg></span><span>Home</span></a>
+      <a class="nav-link" href="../index.html#chapters"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6.5h14"></path><path d="M5 12h14"></path><path d="M5 17.5h10"></path><path d="M3 6.5h.01"></path><path d="M3 12h.01"></path><path d="M3 17.5h.01"></path></svg></span><span>Chapters</span></a>
+      <a class="nav-link active" href="ch03.html" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5A3.5 3.5 0 0 1 8 2h11.5v18H8a3.5 3.5 0 0 0-3.5 2z"></path><path d="M8 2v18"></path><path d="M11 7h5"></path><path d="M11 11h4"></path></svg></span><span>Start Reading</span></a>
+      <a class="nav-link" href="https://github.com/apple-art/easy-radar-tutorial/releases/latest"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 9 5 5 5-5"></path><path d="M5 19h14"></path></svg></span><span>Resources</span></a>
+      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>More</span></a>
     </div>
     <div class="nav-terminal">
-      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>查看更多</span></a>
-      <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span><span>GitHub</span></a>
+      <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span></a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <a class="language-switcher" href="ch03.zh-CN.html" aria-label="Switch to Chinese" title="中文"><span class="nav-icon language-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg></span></a>
     </div>
   </nav>
 </header>
 </header>
 <div class="article-layout">
   <aside class="sidebar">
-    <a class="back-home" href="../index.html">← 首页</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch03.html">第3章 雷达信号的收发</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch03-s01"><a class="toc-link" href="#ch03-s01">3.1 发射信号与脉冲串</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-23">脉冲雷达的工作方式</a><a class="subtoc-link" href="#sub-24">PRI、PRF 与占空比</a><a class="subtoc-link" href="#sub-25">连续波雷达的工作方式</a><a class="subtoc-link" href="#sub-26">脉冲串与 CPI</a></div></div><div class="toc-section" data-section="ch03-s02"><a class="toc-link" href="#ch03-s02">3.2 目标反射与点目标模型</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-27">目标对电磁波的散射</a><a class="subtoc-link" href="#sub-28">雷达截面积（RCS）</a><a class="subtoc-link" href="#sub-29">点目标假设</a></div></div><div class="toc-section" data-section="ch03-s03"><a class="toc-link" href="#ch03-s03">3.3 距离衰减与雷达方程</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-30">去程的 $1/R^2$</a><a class="subtoc-link" href="#sub-31">回程的 $1/R^2$</a><a class="subtoc-link" href="#sub-32">接收功率公式</a></div></div><div class="toc-section" data-section="ch03-s04"><a class="toc-link" href="#ch03-s04">3.4 接收端信号模型</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-33">时间延迟、幅度衰减与多普勒</a><a class="subtoc-link" href="#sub-34">噪声、杂波与干扰</a></div></div><div class="toc-section" data-section="ch03-s05"><a class="toc-link" href="#ch03-s05">3.5 从 I/Q 样本到回波矩阵</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-35">从射频回波到 I/Q 样本</a><a class="subtoc-link" href="#sub-36">一发脉冲对应一条快时间序列</a><a class="subtoc-link" href="#sub-37">多发脉冲组成 `rx_matrix`</a></div></div><div class="toc-section" data-section="ch03-s06"><a class="toc-link" href="#ch03-s06">3.6 小练习</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-38">练习 1：往返时间与距离</a><a class="subtoc-link" href="#sub-39">练习 2：PRI、PRF 与占空比</a><a class="subtoc-link" href="#sub-40">练习 3：距离衰减的量级感</a><a class="subtoc-link" href="#sub-41">练习 4：多普勒频移计算</a><a class="subtoc-link" href="#sub-42">练习 5：`rx_matrix` 的尺寸</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 角度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整 MATLAB 处理流程</a></div></nav>
+    <a class="back-home" href="../index.html">← Home</a>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">Chapter 1: What is Radar</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">Chapter 2: Signal Fundamentals</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch03.html">Chapter 3: Radar Signal Transmission and Reception</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch03-s01"><a class="toc-link" href="#ch03-s01">3.1 Transmitted Signals and Pulse Trains</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-23">Pulse Radar Operation</a><a class="subtoc-link" href="#sub-24">PRI, PRF and Duty Cycle</a><a class="subtoc-link" href="#sub-25">Continuous Wave Radar Operation</a><a class="subtoc-link" href="#sub-26">Pulse Trains and CPI</a></div></div><div class="toc-section" data-section="ch03-s02"><a class="toc-link" href="#ch03-s02">3.2 Target Reflection and Point Target Model</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-27">Target Scattering of Electromagnetic Waves</a><a class="subtoc-link" href="#sub-28">Radar Cross Section (RCS)</a><a class="subtoc-link" href="#sub-29">Point Target Assumption</a></div></div><div class="toc-section" data-section="ch03-s03"><a class="toc-link" href="#ch03-s03">3.3 Range Attenuation and Radar Equation</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-30">Outbound $1/R^2$</a><a class="subtoc-link" href="#sub-31">Return $1/R^2$</a><a class="subtoc-link" href="#sub-32">Received Power Equation</a></div></div><div class="toc-section" data-section="ch03-s04"><a class="toc-link" href="#ch03-s04">3.4 Receiver Signal Model</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-33">Time Delay, Amplitude Attenuation, and Doppler</a><a class="subtoc-link" href="#sub-34">Noise, Clutter, and Interference</a></div></div><div class="toc-section" data-section="ch03-s05"><a class="toc-link" href="#ch03-s05">3.5 From I/Q Samples to Echo Matrix</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-35">From RF Echo to I/Q Samples</a><a class="subtoc-link" href="#sub-36">One Transmitted Pulse Corresponds to One Fast-Time Sequence</a><a class="subtoc-link" href="#sub-37">Multiple Transmitted Pulses Form `rx_matrix`</a></div></div><div class="toc-section" data-section="ch03-s06"><a class="toc-link" href="#ch03-s06">3.6 Exercises</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-38">Exercise 1: Round-Trip Time and Range</a><a class="subtoc-link" href="#sub-39">Exercise 2: PRI, PRF, and Duty Cycle</a><a class="subtoc-link" href="#sub-40">Exercise 3: Understanding the Magnitude of Range Attenuation</a><a class="subtoc-link" href="#sub-41">Exercise 4: Doppler Frequency Shift Calculation</a><a class="subtoc-link" href="#sub-42">Exercise 5: Dimensions of `rx_matrix`</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">Chapter 4 Range Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">Chapter 5 Velocity Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">Chapter 6 Target Detection</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">Chapter 7 Angle Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">Chapter 8: Complete MATLAB Processing Flow</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <article class="prose chapter-prose">
-      <h1>第3章 雷达信号的收发</h1>
-      <section class="chapter-section" data-section="ch03-s01"><h2 id="ch03-s01" class="section-title">3.1 发射信号与脉冲串</h2>
-<p>第2章把回波当成一段随时间起伏的信号来看：它有幅度，有频率，可以采样，也可以写成复数 I/Q。放到雷达系统里，这段信号不是凭空出现的。雷达先按一定节奏发射电磁波，电磁波碰到目标后散射回来，接收机再把返回的微弱电压采样成数据。</p>
-<p>只看一次发射，接收机得到的是一条回波记录；连续发射很多次，这些回波记录就会一行一行排成矩阵。距离处理、速度处理和检测，都要从这张矩阵开始。</p>
-<h3 id="sub-23">脉冲雷达的工作方式</h3>
-<p>想象你在一个黑暗的山洞里，想知道前方有没有墙壁。你拍一下手，然后屏住呼吸听回声。听到了，说明有墙；根据回声花了多久传回来，还能估算距离。声速大约 $340\,\text{m/s}$，如果回声在 $0.6\,\text{s}$ 后传回，那墙壁大约在</p>
+      <h1>Chapter 3: Radar Signal Transmission and Reception</h1>
+      <section class="chapter-section" data-section="ch03-s01"><h2 id="ch03-s01" class="section-title">3.1 Transmitted Signals and Pulse Trains</h2>
+<p>Chapter 2 treated the echo as a time-varying signal: it has amplitude, frequency, can be sampled, and can be written in complex I/Q form. Within a radar system, this signal doesn't appear out of nowhere. The radar first transmits electromagnetic waves at a regular rhythm, these waves scatter off the target and return, then the receiver samples the weak returning voltage into data.</p>
+<p>Looking at a single transmission, the receiver gets one echo record; transmitting continuously many times, these echo records stack up row by row into a matrix. Range processing, velocity processing, and detection all start from this matrix.</p>
+<h3 id="sub-23">Pulse Radar Operation</h3>
+<p>Imagine you're in a dark cave and want to know if there's a wall ahead. You clap once, then hold your breath and listen for the echo. Hearing it means there's a wall; from how long the echo takes to return, you can estimate the distance. The speed of sound is approximately $340\,\text{m/s}$. If the echo returns after $0.6\,\text{s}$, the wall is roughly</p>
 <div class="math-block">$$
 \frac{340\times0.6}{2}\approx100\,\text{m}
 $$</div>
-<p>外。</p>
-<p>脉冲雷达就是这个逻辑，只是把声波换成了电磁波，速度从 $340\,\text{m/s}$ 变成了光速 $3\times10^8\,\text{m/s}$。雷达天线先发出一段很短的电磁波脉冲，然后立刻停止发射，切换成接收状态，等待目标反射回来的回波。</p>
-<p>把刚才山洞里的计算换成雷达符号，如果回波相对发射时刻延迟了 $\tau$，目标距离可以写成</p>
+<p>away.</p>
+<p>Pulse radar follows this same logic, just replacing sound waves with electromagnetic waves, and the speed changes from $340\,\text{m/s}$ to the speed of light $3\times10^8\,\text{m/s}$. The radar antenna first emits a very short electromagnetic pulse, then immediately stops transmitting, switches to receive mode, and waits for the echo reflected back from the target.</p>
+<p>Converting the cave calculation to radar notation, if the echo is delayed by $\tau$ relative to the transmission time, the target range can be written as</p>
 <div class="math-block">$$
 R=\frac{c\tau}{2}
 $$</div>
-<p>分母中的 $2$ 仍然来自往返路程：电磁波先从雷达到目标，再从目标返回雷达。</p>
-<p>脉冲宽度通常记为 $\tau_p$。如果 $\tau_p=1\,\mu\text{s}$，这段脉冲在空间中大约延展</p>
+<p>The factor of $2$ in the denominator comes from the round-trip path: the electromagnetic wave travels from radar to target, then from target back to radar.</p>
+<p>Pulse width is typically denoted $\tau_p$. If $\tau_p=1\,\mu\text{s}$, this pulse extends in space approximately</p>
 <div class="math-block">$$
 c\tau_p=3\times10^8\times10^{-6}=300\,\text{m}
 $$</div>
-<p>约等于数百米的长度。脉冲延展会影响距离分辨率；对接收窗口来说，发射结束后，不同距离处的目标回波会在不同时间陆续返回。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_1_pulse_vs_cw_excali.png" alt="图3.1 脉冲雷达与连续波雷达发射信号对比" loading="lazy"><figcaption>图3.1 脉冲雷达与连续波雷达发射信号对比</figcaption></figure>
-<p>图3.1 的上半部分是脉冲雷达：短时间发射，剩余时间接收。下半部分是连续波雷达：一直发射，也一直接收。两种体制都能做雷达，但数据组织方式不同。</p>
-<h3 id="sub-24">PRI、PRF 与占空比</h3>
-<p>脉冲雷达不会只发一个脉冲。它会隔一段时间发一次，形成有节奏的脉冲序列。相邻两个脉冲发射起点之间的时间间隔，叫<strong>脉冲重复间隔</strong>（Pulse Repetition Interval，PRI）。PRI 的倒数叫<strong>脉冲重复频率</strong>（Pulse Repetition Frequency，PRF）：</p>
+<p>roughly several hundred meters in length. Pulse extension affects range resolution; for the receive window, after transmission ends, echoes from targets at different ranges return successively at different times.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_1_pulse_vs_cw_excali.png" alt="Figure 3.1: Comparison of pulse radar and continuous wave radar transmit signals" loading="lazy"><figcaption>Figure 3.1: Comparison of pulse radar and continuous wave radar transmit signals</figcaption></figure>
+<p>The upper portion of Figure 3.1 shows pulse radar: transmit for a short time, receive for the remaining time. The lower portion shows continuous wave radar: transmit continuously while also receiving continuously. Both approaches work for radar, but organize data differently.</p>
+<h3 id="sub-24">PRI, PRF and Duty Cycle</h3>
+<p>Pulse radar doesn't transmit just one pulse. It transmits at regular intervals, forming a rhythmic pulse train. The time interval between the starting points of two adjacent pulses is called<strong>Pulse Repetition Interval</strong>(Pulse Repetition Interval, PRI). The reciprocal of PRI is called<strong>Pulse Repetition Frequency</strong>（Pulse Repetition Frequency，PRF）：</p>
 <div class="math-block">$$
 \text{PRF}=\frac{1}{\text{PRI}}
 $$</div>
-<p>例如 PRI 为 $1\,\text{ms}$ 时，PRF 就是 $1000\,\text{Hz}$，表示雷达每秒发射 1000 个脉冲。</p>
-<p>PRI 限制最大不模糊距离。一个远距离目标的回波如果还没有回来，雷达就发出了下一个脉冲，接收机就可能分不清这个回波到底来自上一发脉冲，还是来自新脉冲后的近距离目标。为了避免这种混淆，目标回波的往返时间要小于 PRI：</p>
+<p>For example, when PRI is $1\,\text{ms}$, PRF is $1000\,\text{Hz}$, meaning the radar transmits 1000 pulses per second.</p>
+<p>PRI limits the maximum unambiguous range. If a distant target's echo hasn't yet returned before the radar transmits the next pulse, the receiver may not be able to distinguish whether this echo came from the previous pulse or from a nearby target after the new pulse. To avoid this confusion, the target echo's round-trip time must be less than PRI:</p>
 <div class="math-block">$$
 \frac{2R_{\max}}{c}&lt;\text{PRI}
 $$</div>
-<p>因此最大不模糊距离近似为</p>
+<p>Therefore the maximum unambiguous range is approximately</p>
 <div class="math-block">$$
 R_{\max}=\frac{c\cdot\text{PRI}}{2}
 $$</div>
-<p>PRI 为 $1\,\text{ms}$ 时，$R_{\max}=150\,\text{km}$。如果要看得更远，就要给远距离回波更多返回时间，也就是增大 PRI、降低 PRF。</p>
-<p>另一个常用参数是<strong>占空比</strong>（Duty Cycle），表示发射时间在整个 PRI 中占多少：</p>
+<p>When PRI is $1\,\text{ms}$, $R_{\max}=150\,\text{km}$. To see farther, you need to give distant echoes more return time, which means increasing PRI or decreasing PRF.</p>
+<p>Another commonly used parameter is<strong>duty cycle</strong>(Duty Cycle), which represents the fraction of transmit time within the entire PRI:</p>
 <div class="math-block">$$
 D=\frac{\tau_p}{\text{PRI}}
 $$</div>
-<p>如果脉冲宽度 $\tau_p=1\,\mu\text{s}$，PRI 为 $1\,\text{ms}$，占空比就是 $0.1\%$。这意味着雷达绝大多数时间在接收，只有很短时间在发射。平均功率不一定很高，但脉冲发射瞬间的峰值功率可能很大。</p>
-<h3 id="sub-25">连续波雷达的工作方式</h3>
-<p>连续波雷达持续发射，同时接收回波，不再有“发一下、停下来听”的间隔。它天然适合测多普勒频移，因为发射信号一直存在，回波相对发射信号的频率偏移可以持续观测。测速枪就是很典型的连续波雷达例子。</p>
-<p>连续波雷达测距比较困难，因为它没有清楚的“出发时刻”。调频连续波雷达（FMCW）通过让发射频率随时间变化，把距离信息转成差频或拍频来处理。汽车毫米波雷达里常见的很多公式，就来自这个体制。</p>
-<p>脉冲雷达把“发出去、等回来、再处理”这条链路拆得最清楚。距离、速度和检测问题，都能沿着这条链路展开。FMCW 的拍频公式属于另一种距离信息组织方式，和脉冲雷达不是同一条数据链。</p>
-<h3 id="sub-26">脉冲串与 CPI</h3>
-<p>单发脉冲能提供一个回波记录。它可以帮助测距离，但对速度和弱目标检测还不够。</p>
-<p>速度信息常体现在多次回波之间的相位变化里。目标如果靠近雷达，每次脉冲返回时，相位会比上一次多转一点；目标如果远离，方向相反。只看一发脉冲，很难稳定判断这种跨脉冲变化。</p>
-<p>弱目标也需要多次观测来积累证据。一次回波可能埋在噪声里，连续几十次或几百次回波放在一起，目标响应会更容易从背景中浮出来。</p>
-<p>因此，雷达处理通常以一串脉冲为单位。这一串用于共同处理的脉冲，对应一个<strong>相干处理间隔</strong>（Coherent Processing Interval，CPI）。“相干”表示这些脉冲之间保持稳定的相位关系，跨脉冲比较才有意义。如果一个 CPI 中有 $N_p$ 个脉冲，PRI 为 $T_r$，那么这个 CPI 的持续时间大约是</p>
+<p>If the pulse width $\tau_p=1\,\mu\text{s}$ and the PRI is $1\,\text{ms}$, the duty cycle is $0.1\%$. This means the radar spends most of its time receiving, with only a brief period transmitting. Average power may not be very high, but the peak power during pulse transmission can be substantial.</p>
+<h3 id="sub-25">Continuous Wave Radar Operation</h3>
+<p>Continuous wave radar transmits continuously while receiving echoes simultaneously, eliminating the "transmit-then-listen" intervals. It is naturally suited for measuring Doppler frequency shifts because the transmitted signal is always present, allowing continuous observation of the echo's frequency offset relative to the transmitted signal. Speed guns are a typical example of continuous wave radar.</p>
+<p>Continuous wave radar has difficulty measuring range because it lacks a clear "departure time." Frequency-modulated continuous wave (FMCW) radar addresses this by varying the transmit frequency over time, converting range information into beat frequency for processing. Many formulas commonly seen in automotive millimeter-wave radar originate from this approach.</p>
+<p>Pulse radar provides the clearest decomposition of the "transmit, wait for return, then process" chain. Range, velocity, and detection problems can all be developed along this chain. The FMCW beat frequency formula represents a different way of organizing range information and follows a different data chain than pulse radar.</p>
+<h3 id="sub-26">Pulse Trains and CPI</h3>
+<p>A single transmitted pulse yields one echo record. It can help measure range, but is insufficient for velocity and weak target detection.</p>
+<p>Velocity information is typically reflected in phase changes between multiple echoes. If a target approaches the radar, each pulse return will have slightly more phase advance than the previous one; if the target recedes, the direction reverses. Observing only a single pulse makes it difficult to reliably determine this pulse-to-pulse change.</p>
+<p>Weak targets also require multiple observations to accumulate evidence. A single echo may be buried in noise, but when dozens or hundreds of consecutive echoes are combined, the target response becomes easier to extract from the background.</p>
+<p>Therefore, radar processing typically operates on a burst of pulses. This burst of pulses used for joint processing corresponds to a<strong>Coherent Processing Interval</strong>(Coherent Processing Interval, CPI). "Coherent" indicates that these pulses maintain a stable phase relationship, making pulse-to-pulse comparisons meaningful. If a CPI contains $N_p$ pulses with PRI $T_r$, the CPI duration is approximately</p>
 <div class="math-block">$$
 T_{\text{CPI}}=N_pT_r
 $$</div>
-<p>这里把 CPI 理解为一段由多发脉冲构成的观测时间。第5章的速度处理会正式使用它。</p>
+<p>Here, think of the CPI as an observation period composed of multiple transmitted pulses. Chapter 5 on velocity processing will formally use this concept.</p>
 
-</section><section class="chapter-section" data-section="ch03-s02"><h2 id="ch03-s02" class="section-title">3.2 目标反射与点目标模型</h2>
-<h3 id="sub-27">目标对电磁波的散射</h3>
-<p>雷达发出去的电磁波遇到飞机、舰船、雨滴、地面或建筑物后，会发生什么？</p>
-<p>答案有点神奇：它不会简单地“全部弹回来”，也不会“全部穿过去”。真实情况更接近散射：目标表面不同位置把能量送向不同方向，只有一部分刚好回到雷达天线。</p>
-<p>你想呀，朝山谷喊一声，山能给你回声；一只苍蝇当然也会散射一点点能量，只是微乎其微。要是苍蝇都能给出清楚回声，生活得有多乱呀。雷达看目标，本质上也在面对这种“谁能把能量送回来、送回来多少”的问题。</p>
-<p>镜子反射可见光时，能量主要沿特定方向返回；飞机或舰船表面形状复杂，金属边缘、曲面、缝隙和涂层都会影响电磁波怎么散射。目标朝向变一下，雷达看到的回波强度也可能明显变化。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_2_scattering_excali.png" alt="图3.2 目标散射示意图" loading="lazy"><figcaption>图3.2 目标散射示意图</figcaption></figure>
-<p>图3.2 中，入射波打到目标后向多个方向散射。雷达只接收沿回波方向返回的那一小部分能量。隐身外形和吸波材料的作用，也主要是减少朝雷达方向返回的能量。</p>
-<p>我小时候就听说过隐形战斗机，以为飞机真的是肉眼见不到的。现在才知道，这里的“隐形”更多是对雷达来说的。</p>
-<h3 id="sub-28">雷达截面积（RCS）</h3>
-<p>工程师需要一个数字描述“目标对雷达有多亮”。这个数字叫<strong>雷达截面积</strong>（Radar Cross Section，RCS），通常记为 $\sigma$，单位是平方米。</p>
-<p>RCS 这个定义有点绕。它的单位是平方米，但千万别把它当成目标真的有这么大一块面积。它更像是在问：在雷达眼里，这个目标有多“亮”？如果某个理想目标能产生和真实目标一样强的回波，就用这个理想目标的等效面积来代表真实目标的散射能力。要是只能反射一半的能量，等效面积就相应变小；这个例子不严谨，但能帮助你先抓住“等效”两个字。RCS 越大，在同样距离和雷达参数下，接收回波通常越强。</p>
-<p>一架飞机的物理尺寸可能很大，但如果外形和材料让大部分能量偏离雷达方向，它的 RCS 可以很小。一根细长金属杆的几何截面积很小，但在某些角度下也可能产生很强的反射。RCS 衡量的是“向雷达方向散射回来的能力”，不是目标占了多大地方。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_3_rcs_comparison_excali.png" alt="图3.3 典型目标 RCS 数量级对比" loading="lazy"><figcaption>图3.3 典型目标 RCS 数量级对比</figcaption></figure>
-<p>图3.3 使用对数坐标展示了不同目标 RCS 的数量级差异。从昆虫到大型舰船，RCS 可以跨越很多个数量级。这个差异会影响回波功率，也会影响后续检测难度。</p>
-<p>RCS 还会随观察角度和频率变化。同一架飞机，正面对雷达和侧面对雷达，RCS 可能相差很多；同一个目标，在米波、厘米波、毫米波下呈现出的散射特性也可能不同。电磁散射细节在这里承担一个提醒：RCS 是工程估计量，不是一个永远固定的几何常数。工程计算要接受这种变化，再用测量、标定和余量设计去处理它。</p>
-<h3 id="sub-29">点目标假设</h3>
-<p>真实目标有尺寸、有形状，也可能由多个散射点组成。飞机有机头、机翼、尾翼和发动机，舰船有桅杆、甲板和舷侧；这些部位的回波可能有不同延迟和相位。</p>
-<p>真要把飞机的机头、机翼、发动机、边缘缝隙都算进去，这一章就变成电磁散射课了。我们先做一个很好用的简化：把目标看成<strong>点目标</strong>。点目标并不要求目标真的没有大小；它表示在当前雷达分辨能力下，可以把目标折叠成一个位置上的等效响应。</p>
-<p>在本书的简化模型里，一个点目标主要由三个量描述：</p>
-<div class="table-wrap"><table><thead><tr><th>量</th><th>决定什么</th><th>在回波中的表现</th></tr></thead><tbody><tr><td>距离 $R$</td><td>往返传播时间</td><td>回波延迟 $\tau=2R/c$</td></tr><tr><td>径向速度 $v_r$</td><td>目标沿雷达视线方向运动</td><td>多普勒频移 $f_d=2v_r/\lambda$</td></tr><tr><td>RCS $\sigma$</td><td>目标向雷达方向散射的能力</td><td>回波幅度大小</td></tr></tbody></table></div>
-<p>点目标假设让后续处理变得清楚：目标的形状先放一边，先用延迟找距离，用跨脉冲相位或频率变化找速度，再从背景中判断这个响应是否可信。等到做高分辨成像、复杂目标散射时，再把那些细节请回来。</p>
-</section><section class="chapter-section" data-section="ch03-s03"><h2 id="ch03-s03" class="section-title">3.3 距离衰减与雷达方程</h2>
-<p>在山谷里喊一声，近处石壁回声响，远处山峰回声轻。声波传播时，能量会随球面面积扩散，出现 $1/R^2$ 量级的衰减。雷达回波要走往返路径：先从雷达到目标，再从目标返回雷达，因此经历两次扩散，接收功率按 $1/R^4$ 衰减。目标距离翻倍，接收功率变成原来的 $1/16$。</p>
-<p>这个四次方来自两段路。</p>
-<h3 id="sub-30">去程的 $1/R^2$</h3>
-<p>先看雷达发射出去的能量。假设发射功率为 $P_t$，先暂时把天线看成向各个方向均匀辐射。电磁波传播到距离 $R$ 处时，发射功率已经分布在半径为 $R$ 的球面上，球面面积为 $4\pi R^2$。</p>
-<p>目标处的功率密度为</p>
+</section><section class="chapter-section" data-section="ch03-s02"><h2 id="ch03-s02" class="section-title">3.2 Target Reflection and Point Target Model</h2>
+<h3 id="sub-27">Target Scattering of Electromagnetic Waves</h3>
+<p>What happens when electromagnetic waves transmitted by a radar encounter aircraft, ships, raindrops, terrain, or buildings?</p>
+<p>The answer is somewhat surprising: they don't simply "bounce straight back," nor do they "pass through completely." The reality is closer to scattering: different locations on the target surface redirect energy in different directions, with only a portion returning to the radar antenna.</p>
+<p>Think about it: when you shout into a valley, the mountain gives you an echo; a fly will also scatter a tiny bit of energy, but it's negligible. If flies could produce clear echoes, life would be quite chaotic. When radar observes targets, it's essentially dealing with this question of "who can send energy back, and how much."</p>
+<p>When a mirror reflects visible light, energy returns primarily in a specific direction; aircraft or ship surfaces have complex shapes, and metal edges, curved surfaces, gaps, and coatings all affect how electromagnetic waves scatter. A slight change in target orientation can significantly alter the echo strength observed by the radar.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_2_scattering_excali.png" alt="Figure 3.2 Target scattering illustration" loading="lazy"><figcaption>Figure 3.2 Target scattering illustration</figcaption></figure>
+<p>In Figure 3.2, the incident wave scatters in multiple directions after striking the target. The radar only receives the small fraction of energy that returns along the echo direction. Stealth shaping and radar-absorbing materials primarily work by reducing the energy returned toward the radar direction.</p>
+<p>When I was a child, I heard about stealth fighters and thought the aircraft were literally invisible to the naked eye. Now I know that 'stealth' here refers more to being invisible to radar.</p>
+<h3 id="sub-28">Radar Cross Section (RCS)</h3>
+<p>Engineers need a number to describe 'how bright a target appears to radar.' This number is called<strong>Radar Cross Section</strong>(Radar Cross Section, RCS), typically denoted as $\sigma$, with units of square meters.</p>
+<p>The definition of RCS is somewhat convoluted. Its unit is square meters, but you should never think of it as the target actually having a physical area of that size. It's more like asking: how'bright' does this target appear to the radar? If an ideal target could produce an echo as strong as the real target, we use the equivalent area of that ideal target to represent the scattering capability of the real target. If it can only reflect half the energy, the equivalent area becomes correspondingly smaller; this example isn't rigorous, but it helps you grasp the word 'equivalent.' The larger the RCS, the stronger the received echo is typically at the same distance and radar parameters.</p>
+<p>An aircraft may have large physical dimensions, but if its shape and materials deflect most of the energy away from the radar direction, its RCS can be very small. A thin, elongated metal rod has a small geometric cross-sectional area, but at certain angles it may also produce strong reflections. RCS measures the 'ability to scatter back toward the radar direction,' not how much space the target occupies.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_3_rcs_comparison_excali.png" alt="Figure 3.3 Comparison of typical target RCS magnitudes" loading="lazy"><figcaption>Figure 3.3 Comparison of typical target RCS magnitudes</figcaption></figure>
+<p>Figure 3.3 uses a logarithmic scale to show the order-of-magnitude differences in RCS for various targets. From insects to large ships, RCS can span many orders of magnitude. This difference affects echo power and also impacts subsequent detection difficulty.</p>
+<p>RCS also varies with observation angle and frequency. The same aircraft may have very different RCS when facing the radar head-on versus from the side; the same target may exhibit different scattering characteristics at meter-wave, centimeter-wave, and millimeter-wave frequencies. The details of electromagnetic scattering serve as a reminder here: RCS is an engineering estimate, not a fixed geometric constant. Engineering calculations must account for this variability and handle it through measurement, calibration, and margin design.</p>
+<h3 id="sub-29">Point Target Assumption</h3>
+<p>Real targets have size and shape, and may consist of multiple scattering points. An aircraft has a nose, wings, tail, and engines; a ship has masts, decks, and hull sides; the echoes from these parts may have different delays and phases.</p>
+<p>If we really accounted for an aircraft's nose, wings, engines, and edge gaps, this chapter would turn into an electromagnetic scattering course. We'll start with a very useful simplification: treat the target as a<strong>point target</strong>. A point target does not require the target to actually have no size; it means that under the current radar resolution capability, the target can be collapsed into an equivalent response at a single location.</p>
+<p>In the simplified model of this book, a point target is primarily described by three quantities:</p>
+<div class="table-wrap"><table><thead><tr><th>Quantity</th><th>What it determines</th><th>Manifestation in the echo</th></tr></thead><tbody><tr><td>Range $R$</td><td>Round-trip propagation time</td><td>Echo delay $\tau=2R/c$</td></tr><tr><td>Radial velocity $v_r$</td><td>Target motion along the radar line of sight</td><td>Doppler shift $f_d=2v_r/\lambda$</td></tr><tr><td>RCS $\sigma$</td><td>Target's ability to scatter energy back toward the radar</td><td>Echo amplitude magnitude</td></tr></tbody></table></div>
+<p>The point target assumption simplifies subsequent processing: the target's shape is set aside for now. First, use delay to find range, use interpulse phase or frequency change to find velocity, then determine whether this response is reliable against the background. When it comes to high-resolution imaging and complex target scattering, those details can be brought back in.</p>
+</section><section class="chapter-section" data-section="ch03-s03"><h2 id="ch03-s03" class="section-title">3.3 Range Attenuation and Radar Equation</h2>
+<p>Shout in a valley, and the nearby cliff echoes loudly while the distant peak echoes faintly. As sound waves propagate, energy spreads over the spherical surface area, resulting in attenuation on the order of $1/R^2$. Radar echoes travel a round-trip path: first from the radar to the target, then from the target back to the radar, experiencing two expansions. The received power attenuates as $1/R^4$. When the target distance doubles, the received power becomes $1/16$ of the original.</p>
+<p>This fourth power comes from two legs.</p>
+<h3 id="sub-30">Outbound $1/R^2$</h3>
+<p>First consider the energy transmitted by the radar. Assume the transmit power is $P_t$, and temporarily treat the antenna as radiating uniformly in all directions. When the electromagnetic wave propagates to distance $R$, the transmit power has spread over a spherical surface of radius $R$ with area $4\pi R^2$.</p>
+<p>The power density at the target is</p>
 <div class="math-block">$$
 S_1=\frac{P_t}{4\pi R^2}
 $$</div>
-<p>真实雷达天线有方向性，会把能量集中到某个方向。用天线增益 $G$ 表示这种集中能力后，主方向上的功率密度可以写成</p>
+<p>Real radar antennas have directionality, concentrating energy in a particular direction. Using antenna gain $G$ to represent this concentrating capability, the power density in the main direction can be written as</p>
 <div class="math-block">$$
 S_1=\frac{P_tG}{4\pi R^2}
 $$</div>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_4_sphere_radiation_excali.png" alt="图3.4 球面辐射与功率密度衰减" loading="lazy"><figcaption>图3.4 球面辐射与功率密度衰减</figcaption></figure>
-<p>这是第一次 $R^2$。它来自能量随球面面积扩散。</p>
-<h3 id="sub-31">回程的 $1/R^2$</h3>
-<p>目标被功率密度 $S_1$ 照射后，会向雷达方向散射回一部分能量。RCS $\sigma$ 在雷达方程中承担的作用，是把真实目标复杂的散射过程等效成“在雷达方向能产生多少回波”。RCS 并不表示目标真的截获了一个几何面积为 $\sigma$ 的平板，它是按回波强度定义出来的等效量。</p>
-<p>用这个等效量表示，雷达方向上的散射功率密度可以写成</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_4_sphere_radiation_excali.png" alt="Figure 3.4 Spherical radiation and power density attenuation" loading="lazy"><figcaption>Figure 3.4 Spherical radiation and power density attenuation</figcaption></figure>
+<p>This is the first $R^2$. It comes from energy spreading over the spherical surface area.</p>
+<h3 id="sub-31">Return $1/R^2$</h3>
+<p>After the target is illuminated by power density $S_1$, it scatters part of the energy back toward the radar. The role of RCS $\sigma$ in the radar equation is to equate the complex scattering process of a real target into "how much echo can be produced in the radar direction." RCS does not mean the target actually intercepts a geometric area of a flat plate with area $\sigma$; it is an equivalent quantity defined by echo strength.</p>
+<p>Using this equivalent quantity, the scattered power density in the radar direction can be written as</p>
 <div class="math-block">$$
 S_2=\frac{S_1\sigma}{4\pi R^2}
 $$</div>
-<p>分母中的 $4\pi R^2$ 表示回波返回雷达时再次随球面面积扩散。代入去程功率密度，得到</p>
+<p>The $4\pi R^2$ in the denominator represents the echo spreading again over the spherical surface area as it returns to the radar. Substituting the outbound power density gives</p>
 <div class="math-block">$$
 S_2=\frac{P_tG\sigma}{(4\pi)^2R^4}
 $$</div>
-<p>去程一个 $R^2$，回程一个 $R^2$，合起来就是 $R^4$。</p>
-<h3 id="sub-32">接收功率公式</h3>
-<p>雷达接收天线不能把整个球面上的能量都收进来，只能收下有效孔径覆盖到的一小部分。接收天线的有效孔径记为 $A_e$，接收功率为</p>
+<p>One $R^2$ on the outbound leg, one $R^2$ on the return leg, combined to give $R^4$.</p>
+<h3 id="sub-32">Received Power Equation</h3>
+<p>The radar receiving antenna cannot collect energy from the entire spherical surface, only the small portion covered by the effective aperture. The effective aperture of the receiving antenna is denoted $A_e$, and the received power is</p>
 <div class="math-block">$$
 P_r=S_2A_e=\frac{P_tG\sigma A_e}{(4\pi)^2R^4}
 $$</div>
-<p>有效孔径和天线增益之间有关系</p>
+<p>There is a relationship between effective aperture and antenna gain</p>
 <div class="math-block">$$
 A_e=\frac{G\lambda^2}{4\pi}
 $$</div>
-<p>其中 $\lambda$ 是工作波长。代入后得到单站雷达常见的基础雷达方程：</p>
+<p>where $\lambda$ is the operating wavelength. Substituting this gives the basic radar equation commonly seen for monostatic radar:</p>
 <div class="math-block">$$
 \boxed{P_r=\frac{P_tG^2\lambda^2\sigma}{(4\pi)^3R^4}}
 $$</div>
-<p>如果发射和接收天线增益不同，也可以写成 $G_tG_r$ 的形式。本书多数简化例子默认收发共用同一天线，所以写成 $G^2$。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_5_range_attenuation_excali.png" alt="图3.5 $1/R^4$ 距离衰减曲线" loading="lazy"><figcaption>图3.5 $1/R^4$ 距离衰减曲线</figcaption></figure>
-<p>图3.5 同时画出了 $1/R^2$ 和 $1/R^4$。雷达回波要经历“去”和“回”两段扩散，下降速度比普通单程传播更快。距离从 $50\,\text{km}$ 增加到 $100\,\text{km}$，接收功率下降到 $1/16$；从 $100\,\text{km}$ 增加到 $200\,\text{km}$，又下降到 $1/16$。</p>
-<p>雷达方程还给出了一些工程判断。发射功率 $P_t$ 增大，回波更强；天线增益 $G$ 增大，发射和接收都受益；目标 RCS $\sigma$ 越大，越容易被发现；距离 $R$ 是最难对抗的项，因为它在分母中是四次方。</p>
-<p>现实系统还要考虑大气吸收、雨衰、馈线损耗、系统噪声、地面多径等额外因素。先抓住主结构就够了：远距离雷达难，不只难在目标远，更难在回波要走一个往返路径，功率衰减极快。</p>
-<p>这篇文章把 $1/R^4$ 拆开了：雷达回波要走去程和回程两段路。</p>
-</section><section class="chapter-section" data-section="ch03-s04"><h2 id="ch03-s04" class="section-title">3.4 接收端信号模型</h2>
-<h3 id="sub-33">时间延迟、幅度衰减与多普勒</h3>
-<p>前面分别看了发射、散射和距离衰减。把它们合起来，一个点目标回波可以看成发射信号经过三类变化后的结果：晚到一点，变弱很多，频率或相位有轻微变化。</p>
-<p>时间延迟由距离决定：</p>
+<p>If transmit and receive antenna gains differ, it can also be written as $G_tG_r$. Most simplified examples in this book assume transmit and receive share the same antenna, so it's written as $G^2$.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_5_range_attenuation_excali.png" alt="Figure 3.5 $1/R^4$ range attenuation curve" loading="lazy"><figcaption>Figure 3.5 $1/R^4$ range attenuation curve</figcaption></figure>
+<p>Figure 3.5 plots both $1/R^2$ and $1/R^4$. Radar echo undergoes spreading in both the outbound and return paths, attenuating faster than single-path propagation. When range increases from $50\,\text{km}$ to $100\,\text{km}$, received power drops to $1/16$; from $100\,\text{km}$ to $200\,\text{km}$, it drops to $1/16$ again.</p>
+<p>The radar equation also provides engineering insights. Increasing transmit power $P_t$ strengthens the echo; increasing antenna gain $G$ benefits both transmit and receive; larger target RCS $\sigma$ makes detection easier; range $R$ is the hardest parameter to overcome because it appears as a fourth power in the denominator.</p>
+<p>Real systems must also account for atmospheric absorption, rain attenuation, feedline losses, system noise, ground multipath, and other factors. Grasping the main structure is sufficient for now: long-range radar is challenging not only because targets are far, but more critically because the echo must travel a round-trip path, causing extremely rapid power attenuation.</p>
+<p>This article breaks down $1/R^4$: radar echo must travel both outbound and return paths.</p>
+</section><section class="chapter-section" data-section="ch03-s04"><h2 id="ch03-s04" class="section-title">3.4 Receiver Signal Model</h2>
+<h3 id="sub-33">Time Delay, Amplitude Attenuation, and Doppler</h3>
+<p>We've examined transmission, scattering, and range attenuation separately. Combining them, a point target echo can be viewed as the transmitted signal after three types of changes: slightly delayed, significantly weakened, and with minor frequency or phase variations.</p>
+<p>Time delay is determined by range:</p>
 <div class="math-block">$$
 \tau=\frac{2R}{c}
 $$</div>
-<p>一个 $150\,\text{km}$ 外的目标，对应往返延迟</p>
+<p>A target at $150\,\text{km}$ corresponds to a round-trip delay of</p>
 <div class="math-block">$$
 \tau=\frac{2\times150000}{3\times10^8}=1\,\text{ms}
 $$</div>
-<p>远距离目标的回波常常非常微弱，需要接收机放大和后续处理才能看见。</p>
-<p>如果目标沿雷达视线方向运动，回波频率还会产生多普勒频移。单站雷达中常写成</p>
+<p>Echoes from long-range targets are often extremely weak, requiring receiver amplification and subsequent processing to be detectable.</p>
+<p>If the target moves along the radar line of sight, the echo frequency will exhibit Doppler shift. In monostatic radar, this is commonly written as</p>
 <div class="math-block">$$
 f_d=\frac{2v_r}{\lambda}
 $$</div>
-<p>其中 $v_r$ 是<strong>径向速度</strong>，即目标速度在雷达视线方向上的分量。这里约定靠近雷达为正，远离雷达为负。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_6_radial_velocity_excali.png" alt="图3.6 径向速度分解示意图" loading="lazy"><figcaption>图3.6 径向速度分解示意图</figcaption></figure>
-<p>图3.6 展示了三个情况。目标正对雷达靠近时，径向速度等于目标速度，多普勒频移最大；斜向靠近时，只取速度在视线方向上的分量；横向飞过时，径向速度接近零，多普勒频移也接近零。雷达通过多普勒看到的是“靠近或远离”，不是目标的全部运动。</p>
-<p>举一个数值。X 波段雷达工作波长约 $\lambda=3\,\text{cm}$，目标以 $100\,\text{m/s}$ 径向速度靠近，则</p>
+<p>where $v_r$ is the<strong>radial velocity</strong>, i.e., the component of target velocity along the radar line of sight. By convention, approaching the radar is positive, receding is negative.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_6_radial_velocity_excali.png" alt="Figure 3.6 Radial velocity decomposition diagram" loading="lazy"><figcaption>Figure 3.6 Radial velocity decomposition diagram</figcaption></figure>
+<p>Figure 3.6 illustrates three scenarios. When the target approaches head-on, radial velocity equals target velocity and Doppler shift is maximum; when approaching at an angle, only the velocity component along the line of sight is used; when passing tangentially, radial velocity approaches zero and Doppler shift is also near zero. Radar sees 'approaching or receding' through Doppler, not the target's complete motion.</p>
+<p>Consider a numerical example. An X-band radar operates at wavelength $\lambda=3\,\text{cm}$, and a target approaches with radial velocity $100\,\text{m/s}$, then</p>
 <div class="math-block">$$
 f_d=\frac{2\times100}{0.03}\approx6667\,\text{Hz}
 $$</div>
-<p>和 $10\,\text{GHz}$ 量级的载频相比，几千赫兹的偏移很小；但在频域或跨脉冲相位中，它是可以被稳定测出来的。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_7_doppler_excali.png" alt="图3.7 多普勒频移：时域不明显，频域更清楚" loading="lazy"><figcaption>图3.7 多普勒频移：时域不明显，频域更清楚</figcaption></figure>
-<p>如果用复基带形式写，单个点目标的回波可以简化为</p>
+<p>Compared to a carrier frequency on the order of $10\,\text{GHz}$, a shift of several kilohertz is small; however, it can be reliably measured in the frequency domain or across pulse phases.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_7_doppler_excali.png" alt="Figure 3.7 Doppler shift: subtle in time domain, clearer in frequency domain" loading="lazy"><figcaption>Figure 3.7 Doppler shift: subtle in time domain, clearer in frequency domain</figcaption></figure>
+<p>If written in complex baseband form, the echo from a single point target can be simplified to</p>
 <div class="math-block">$$
 r(t)=\alpha s(t-\tau)e^{j2\pi f_d(t-\tau)}+w(t)
 $$</div>
-<p>这里 $s(t)$ 是发射信号，$\tau$ 表示延迟，$\alpha$ 是包含传播衰减、RCS 和初始相位的复幅度，$f_d$ 表示多普勒频移，$w(t)$ 表示噪声。这个式子用于对齐前面几件事：距离进延迟，RCS 和距离衰减进幅度，速度进多普勒。</p>
-<h3 id="sub-34">噪声、杂波与干扰</h3>
-<p>接收端不只收到目标回波。真实数据里还混着噪声、杂波和干扰。三者都让目标更难找，但来源不同。</p>
-<div class="table-wrap"><table><thead><tr><th>成分</th><th>来源</th><th>对后续处理的影响</th></tr></thead><tbody><tr><td>噪声</td><td>接收机热噪声、量化噪声等随机扰动</td><td>抬高背景底噪，降低 SNR</td></tr><tr><td>杂波</td><td>地面、海面、雨滴、建筑物等环境回波</td><td>可能比目标更强，常集中在特定距离或多普勒区域</td></tr><tr><td>干扰</td><td>其他雷达、通信信号、发射泄漏或有意压制</td><td>可能出现强窄带、宽带或非稳定成分</td></tr></tbody></table></div>
-<p>噪声可以用功率来描述。接收机热噪声常写成</p>
+<p>Here $s(t)$ is the transmitted signal, $\tau$ represents delay, $\alpha$ is the complex amplitude incorporating propagation loss, RCS, and initial phase, $f_d$ represents Doppler shift, and $w(t)$ represents noise. This equation ties together the preceding concepts: range becomes delay, RCS and range attenuation become amplitude, and velocity becomes Doppler.</p>
+<h3 id="sub-34">Noise, Clutter, and Interference</h3>
+<p>The receiver does not only capture target echoes. Real data also contains noise, clutter, and interference. All three make targets harder to detect, but they have different origins.</p>
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Source</th><th>Impact on Subsequent Processing</th></tr></thead><tbody><tr><td>Noise</td><td>Random disturbances such as receiver thermal noise and quantization noise</td><td>Raises the noise floor and reduces SNR</td></tr><tr><td>Clutter</td><td>Environmental echoes from ground, sea surface, rain, buildings, etc.</td><td>May be stronger than targets, often concentrated in specific range or Doppler regions</td></tr><tr><td>Interference</td><td>Other radars, communication signals, transmitter leakage, or intentional jamming</td><td>May appear as strong narrowband, wideband, or non-stationary components</td></tr></tbody></table></div>
+<p>Noise can be described by its power. Receiver thermal noise is commonly written as</p>
 <div class="math-block">$$
 P_n=kTBF
 $$</div>
-<p>其中 $k$ 是玻尔兹曼常数，$T$ 是系统温度，$B$ 是接收带宽，$F$ 是噪声系数。带宽越宽，接收到的噪声通常越多。</p>
-<p>杂波可以理解为环境产生的真实回波，来源通常不是当前关心的目标。地面、海面和雨滴都能反射电磁波。固定阈值和 CFAR 都必须面对这种背景变化。</p>
-<p>干扰更像外部或系统内部闯进来的能量。它可能来自邻近雷达，也可能来自发射泄漏。把它和噪声、杂波分开即可：噪声是随机底噪，杂波是环境回波，干扰是外部或泄漏信号。</p>
-<p>这篇文章把点目标回波写成了延迟、衰减和多普勒共同作用后的信号。</p>
-</section><section class="chapter-section" data-section="ch03-s05"><h2 id="ch03-s05" class="section-title">3.5 从 I/Q 样本到回波矩阵</h2>
-<h3 id="sub-35">从射频回波到 I/Q 样本</h3>
-<p>天线接收到的是很高频的模拟电压。例如 X 波段雷达的载频可能在 $10\,\text{GHz}$ 附近。电脑最后处理的是一串一串复数样本，不是这个 $10\,\text{GHz}$ 的高频波形。中间的接收机电路很复杂，但落到算法输入端，形态已经收束成一组 I/Q 数字样本。</p>
-<p>接收机会把射频回波搬移到较低频率，或者搬到基带附近，再转换成 I/Q 两路数字样本。第2章已经见过，I/Q 可以合成复数样本</p>
+<p>where $k$ is Boltzmann's constant, $T$ is the system temperature, $B$ is the receiver bandwidth, and $F$ is the noise figure. Wider bandwidth typically means more received noise.</p>
+<p>Clutter can be understood as real echoes produced by the environment, typically from sources that are not the targets of interest. Ground, sea surface, and rain can all reflect electromagnetic waves. Both fixed thresholds and CFAR must contend with this background variation.</p>
+<p>Interference is more like energy intruding from outside or within the system. It may come from nearby radars or from transmitter leakage. The distinction is straightforward: noise is random background, clutter is environmental echoes, and interference is external or leakage signals.</p>
+<p>This article models point-target echoes as signals jointly affected by delay, attenuation, and Doppler.</p>
+</section><section class="chapter-section" data-section="ch03-s05"><h2 id="ch03-s05" class="section-title">3.5 From I/Q Samples to Echo Matrix</h2>
+<h3 id="sub-35">From RF Echo to I/Q Samples</h3>
+<p>The antenna receives a high-frequency analog voltage. For example, an X-band radar may have a carrier frequency near $10\,\text{GHz}$. What the computer ultimately processes is a sequence of complex samples, not the $10\,\text{GHz}$ waveform itself. The receiver circuitry in between is complex, but by the time it reaches the algorithm input, the form has converged to a set of I/Q digital samples.</p>
+<p>The receiver downconverts the RF echo to a lower frequency, or to near baseband, then converts it into I/Q digital samples. As seen in Chapter 2, I/Q can form complex samples.</p>
 <div class="math-block">$$
 x[n]=I[n]+jQ[n]
 $$</div>
-<p>一个复数样本能同时保存幅度和相位。幅度会用于判断回波强弱，相位会用于后续速度处理。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_8_iq_data_flow_ai_excali.png" alt="图3.8 从射频回波到 `rx_matrix`" loading="lazy"><figcaption>图3.8 从射频回波到 `rx_matrix`</figcaption></figure>
-<p>图3.8 画的是数据形态的变化：天线端是高频模拟回波，接收机把它搬到中频或基带附近，再采成 I、Q 两路数字样本。每一发脉冲得到一串复数 I/Q 样本，多发脉冲按发射顺序排起来，代码里通常记作 <code>rx_matrix</code>。</p>
-<p>下表把这条数据形态的变化列出来。</p>
-<div class="table-wrap"><table><thead><tr><th>到了哪一步</th><th>数据长什么样</th><th>在算法中的作用</th></tr></thead><tbody><tr><td>RF echo</td><td>天线收到的高频模拟回波</td><td>电脑一般不直接处理它</td></tr><tr><td>IF / baseband</td><td>下变频后的中频或基带信号</td><td>保留回波的幅度和相位</td></tr><tr><td>complex I/Q samples</td><td>离散复数序列 $x[n]=I[n]+jQ[n]$</td><td>作为信号处理输入</td></tr><tr><td><code>rx_matrix</code></td><td>多发脉冲的 I/Q 样本矩阵</td><td>距离和速度处理从这里开始</td></tr></tbody></table></div>
-<p>FMCW 资料中的 dechirp、beat frequency、range FFT，属于调频连续波雷达的数据组织方式。它们和本节的脉冲回波矩阵不属于同一条数据链，拍频公式不能套到这里。</p>
-<h3 id="sub-36">一发脉冲对应一条快时间序列</h3>
-<p>雷达发射一个脉冲后，接收机会在一段时间内连续采样。假设采样率为 $f_s$，采样间隔为</p>
+<p>A complex sample stores both amplitude and phase. Amplitude is used to determine echo strength, while phase is used for subsequent velocity processing.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_8_iq_data_flow_ai_excali.png" alt="Figure 3.8 From RF echo to `rx_matrix`" loading="lazy"><figcaption>Figure 3.8 From RF echo to `rx_matrix`</figcaption></figure>
+<p>Figure 3.8 illustrates the data transformation: at the antenna side is a high-frequency analog echo, which the receiver downconverts to IF or near baseband, then samples into I and Q digital channels. Each transmitted pulse yields a sequence of complex I/Q samples, and multiple pulses are arranged by transmit order, commonly denoted in code as <code>rx_matrix</code>。</p>
+<p>The following table lists this data transformation.</p>
+<div class="table-wrap"><table><thead><tr><th>Stage</th><th>Data form</th><th>Role in algorithm</th></tr></thead><tbody><tr><td>RF echo</td><td>High-frequency analog echo received by antenna</td><td>Generally not directly processed by computer</td></tr><tr><td>IF / baseband</td><td>IF or baseband signal after downconversion</td><td>Preserves echo amplitude and phase</td></tr><tr><td>complex I/Q samples</td><td>Discrete complex sequence $x[n]=I[n]+jQ[n]$</td><td>Serves as signal processing input</td></tr><tr><td><code>rx_matrix</code></td><td>I/Q sample matrix from multiple transmitted pulses</td><td>Range and velocity processing begins here</td></tr></tbody></table></div>
+<p>The terms dechirp, beat frequency, and range FFT found in FMCW literature belong to frequency-modulated continuous-wave radar data organization. They are not part of the same data chain as the pulse echo matrix in this section, and the beat frequency formula does not apply here.</p>
+<h3 id="sub-36">One Transmitted Pulse Corresponds to One Fast-Time Sequence</h3>
+<p>After the radar transmits a pulse, the receiver samples continuously for a period of time. Assuming a sampling rate of $f_s$, the sampling interval is</p>
 <div class="math-block">$$
 T_s=\frac{1}{f_s}
 $$</div>
-<p>用一组小数字熟悉 $\mathbf r_0$ 的写法。假设接收机以 $f_s=10\,\text{MHz}$ 采样，那么 $T_s=0.1\,\mu\text{s}$。如果一发脉冲后的接收窗口取前 8 个样本，就得到一条复数序列：</p>
+<p>Use a set of small numbers to familiarize with the notation of $\mathbf r_0$. Assuming the receiver samples at $f_s=10\,\text{MHz}$, then $T_s=0.1\,\mu\text{s}$. If the receive window takes the first 8 samples after one transmitted pulse, a complex sequence is obtained:</p>
 <div class="math-block">$$
 \mathbf r_0=[r_0[0],r_0[1],\ldots,r_0[7]]
 $$</div>
-<div class="table-wrap"><table><thead><tr><th>写法</th><th>读法</th></tr></thead><tbody><tr><td>$r_0[0]$</td><td>第 0 发脉冲里的第 0 个采样点</td></tr><tr><td>$r_0[1]$</td><td>第 0 发脉冲里的第 1 个采样点</td></tr><tr><td>$r_0[4]$</td><td>第 0 发脉冲里的第 4 个采样点</td></tr><tr><td>$r_0[7]$</td><td>第 0 发脉冲里的第 7 个采样点</td></tr></tbody></table></div>
-<p>$r_0$ 的下标 $0$ 表示第 0 发脉冲，方括号里的 $n$ 表示这发脉冲内部的采样点编号。第 $n$ 个采样点如果要标出时间，就是</p>
+<div class="table-wrap"><table><thead><tr><th>Notation</th><th>Reading convention</th></tr></thead><tbody><tr><td>$r_0[0]$</td><td>The 0th sample point in the 0th transmitted pulse</td></tr><tr><td>$r_0[1]$</td><td>The 1st sample point in the 0th transmitted pulse</td></tr><tr><td>$r_0[4]$</td><td>The 4th sample point in the 0th transmitted pulse</td></tr><tr><td>$r_0[7]$</td><td>The 7th sample point in the 0th transmitted pulse</td></tr></tbody></table></div>
+<p>The subscript $0$ in $r_0$ indicates the 0th transmitted pulse, and the $n$ in brackets indicates the sample index within that pulse. If we want to mark the time for the $n$th sample point, it is</p>
 <div class="math-block">$$
 t_n=nT_s
 $$</div>
-<p>所以，一发脉冲内部有一条很短的采样时间轴。这个脉冲内的采样时间，通常叫<strong>快时间</strong>（fast time）。它变化得很快，常在纳秒到微秒量级。第4章会沿这条方向寻找回波延迟；在这里，先把 $\mathbf r_0$ 看成“一发脉冲采出来的一行复数样本”。</p>
-<h3 id="sub-37">多发脉冲组成 <code>rx_matrix</code></h3>
-<p>现在把上一小节的“一行数据”重复多次。仍用刚才的例子，如果一个 CPI 内发 4 个脉冲，每发都取 8 个采样点，那么第 0 发、第 1 发、第 2 发、第 3 发会得到四条序列：</p>
+<p>Therefore, within a single pulse there is a very short sampling time axis. The sampling time within this pulse is commonly called<strong>fast time</strong>(fast time). It changes very rapidly, typically on the order of nanoseconds to microseconds. Chapter 4 will search for echo delays along this dimension; here, we first treat $\mathbf r_0$ as 'a row of complex samples acquired from a single pulse.'</p>
+<h3 id="sub-37">Formed by multiple pulses <code>rx_matrix</code></h3>
+<p>Now repeat the 'single row of data' from the previous subsection multiple times. Using the same example, if 4 pulses are transmitted within a CPI, with 8 sample points acquired for each, then the 0th, 1st, 2nd, and 3rd transmissions yield four sequences:</p>
 <div class="math-block">$$
 \mathbf r_0,\quad \mathbf r_1,\quad \mathbf r_2,\quad \mathbf r_3
 $$</div>
-<p>把它们按发射顺序逐行排起来，就是一个 $4\times 8$ 的 <code>rx_matrix</code>：</p>
-<div class="table-wrap"><table><thead><tr><th>脉冲/采样</th><th>$n=0$</th><th>$n=1$</th><th>$n=2$</th><th>$n=3$</th><th>$n=4$</th><th>$n=5$</th><th>$n=6$</th><th>$n=7$</th></tr></thead><tbody><tr><td>$m=0$</td><td>$r_0[0]$</td><td>$r_0[1]$</td><td>$r_0[2]$</td><td>$r_0[3]$</td><td>$r_0[4]$</td><td>$r_0[5]$</td><td>$r_0[6]$</td><td>$r_0[7]$</td></tr><tr><td>$m=1$</td><td>$r_1[0]$</td><td>$r_1[1]$</td><td>$r_1[2]$</td><td>$r_1[3]$</td><td>$r_1[4]$</td><td>$r_1[5]$</td><td>$r_1[6]$</td><td>$r_1[7]$</td></tr><tr><td>$m=2$</td><td>$r_2[0]$</td><td>$r_2[1]$</td><td>$r_2[2]$</td><td>$r_2[3]$</td><td>$r_2[4]$</td><td>$r_2[5]$</td><td>$r_2[6]$</td><td>$r_2[7]$</td></tr><tr><td>$m=3$</td><td>$r_3[0]$</td><td>$r_3[1]$</td><td>$r_3[2]$</td><td>$r_3[3]$</td><td>$r_3[4]$</td><td>$r_3[5]$</td><td>$r_3[6]$</td><td>$r_3[7]$</td></tr></tbody></table></div>
-<p>例如 $r_2[4]$ 这个格子，表示“编号 $m=2$ 的脉冲里，索引 $n=4$ 的那个采样点”。横着看一行，是一发脉冲采出来的快时间序列；竖着看一列，是不同脉冲在同一个采样位置上的样本。</p>
-<p>写成一般形式，一个 CPI 中有 $N_p$ 发脉冲，每发取 $N_s$ 个采样点，矩阵为</p>
+<p>Arranging them row by row in transmission order gives a $4\times 8$ <code>rx_matrix</code>：</p>
+<div class="table-wrap"><table><thead><tr><th>pulse/sample</th><th>$n=0$</th><th>$n=1$</th><th>$n=2$</th><th>$n=3$</th><th>$n=4$</th><th>$n=5$</th><th>$n=6$</th><th>$n=7$</th></tr></thead><tbody><tr><td>$m=0$</td><td>$r_0[0]$</td><td>$r_0[1]$</td><td>$r_0[2]$</td><td>$r_0[3]$</td><td>$r_0[4]$</td><td>$r_0[5]$</td><td>$r_0[6]$</td><td>$r_0[7]$</td></tr><tr><td>$m=1$</td><td>$r_1[0]$</td><td>$r_1[1]$</td><td>$r_1[2]$</td><td>$r_1[3]$</td><td>$r_1[4]$</td><td>$r_1[5]$</td><td>$r_1[6]$</td><td>$r_1[7]$</td></tr><tr><td>$m=2$</td><td>$r_2[0]$</td><td>$r_2[1]$</td><td>$r_2[2]$</td><td>$r_2[3]$</td><td>$r_2[4]$</td><td>$r_2[5]$</td><td>$r_2[6]$</td><td>$r_2[7]$</td></tr><tr><td>$m=3$</td><td>$r_3[0]$</td><td>$r_3[1]$</td><td>$r_3[2]$</td><td>$r_3[3]$</td><td>$r_3[4]$</td><td>$r_3[5]$</td><td>$r_3[6]$</td><td>$r_3[7]$</td></tr></tbody></table></div>
+<p>For example, the cell $r_2[4]$ represents 'the sample point with index $n=4$ in the pulse numbered $m=2$.' Reading horizontally across a row gives the fast-time sequence acquired from a single pulse; reading vertically down a column gives samples at the same sampling position across different pulses.</p>
+<p>In general form, a CPI contains $N_p$ transmitted pulses, with $N_s$ sample points acquired per pulse, forming the matrix</p>
 <div class="math-block">$$
 \mathbf R=\begin{bmatrix}
 r_0[0] &amp; r_0[1] &amp; \cdots &amp; r_0[N_s-1]\\
@@ -246,91 +294,91 @@ r_1[0] &amp; r_1[1] &amp; \cdots &amp; r_1[N_s-1]\\
 r_{N_p-1}[0] &amp; r_{N_p-1}[1] &amp; \cdots &amp; r_{N_p-1}[N_s-1]
 \end{bmatrix}
 $$</div>
-<p>代码里可以把它叫做 <code>rx_matrix</code>。它的尺寸是</p>
+<p>In code, this can be called <code>rx_matrix</code>. Its dimensions are</p>
 <div class="math-block">$$
 N_p\times N_s
 $$</div>
-<p>其中 $N_p$ 是脉冲数，$N_s$ 是每发脉冲内的采样点数。也就是说，行数等于脉冲数，列数等于每发脉冲的采样点数。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_9_rx_matrix_excali.png" alt="图3.9 一串脉冲排成 `rx_matrix`" loading="lazy"><figcaption>图3.9 一串脉冲排成 `rx_matrix`</figcaption></figure>
-<p>在图3.9 中，列方向是快时间：同一行中从左到右，列索引 $n$ 从小到大，对应从近到远的回波延迟。行方向是慢时间：行索引 $m$ 从上到下，对应第 $m$ 发脉冲。相邻两行之间隔着一个 PRI。</p>
-<p>快时间用于找距离，慢时间用于比较多发脉冲之间的相位变化。一个静止目标如果一直处在同一个距离附近，它会在同一列附近反复出现；一个运动目标除了距离可能变化，它的复数相位也会在行与行之间逐步旋转。第4章沿列方向找延迟和距离，第5章沿行方向看相位变化和速度。</p>
-<p>这篇文章把 <code>rx_matrix</code> 的行和列讲清楚了：列对应快时间，行对应慢时间。</p>
-</section><section class="chapter-section" data-section="ch03-s06"><h2 id="ch03-s06" class="section-title">3.6 小练习</h2>
-<h3 id="sub-38">练习 1：往返时间与距离</h3>
-<p>一部脉冲雷达接收到某目标回波，测得回波相对发射时刻延迟</p>
+<p>where $N_p$ is the number of pulses and $N_s$ is the number of sample points per pulse. That is, the number of rows equals the number of pulses, and the number of columns equals the number of sample points per pulse.</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig3_9_rx_matrix_excali.png" alt="Figure 3.9 A train of pulses arranged into `rx_matrix`" loading="lazy"><figcaption>Figure 3.9 A train of pulses arranged into `rx_matrix`</figcaption></figure>
+<p>In Figure 3.9, the column direction is fast time: within the same row, from left to right, the column index $n$ increases, corresponding to echo delays from near to far. The row direction is slow time: the row index $m$ increases from top to bottom, corresponding to the $m$th transmitted pulse. Adjacent rows are separated by one PRI.</p>
+<p>Fast time is used to find range, while slow time is used to compare phase changes between multiple pulses. If a stationary target remains at approximately the same range, it will repeatedly appear near the same column; for a moving target, not only may its range change, but its complex phase will also gradually rotate from row to row. Chapter 4 finds delay and range along the column direction, while Chapter 5 examines phase changes and velocity along the row direction.</p>
+<p>This article clearly explains the rows and columns of <code>rx_matrix</code> : columns correspond to fast time, rows correspond to slow time.</p>
+</section><section class="chapter-section" data-section="ch03-s06"><h2 id="ch03-s06" class="section-title">3.6 Exercises</h2>
+<h3 id="sub-38">Exercise 1: Round-Trip Time and Range</h3>
+<p>A pulse radar receives an echo from a target and measures the echo delay relative to the transmission time as</p>
 <div class="math-block">$$
 \tau=400\,\mu\text{s}
 $$</div>
-<p>（a）目标距离雷达多远？</p>
-<p>（b）如果这部雷达的 PRI 为 $1\,\text{ms}$，最大不模糊距离是多少？这个目标是否超出最大不模糊距离？</p>
-<p><strong>解析：</strong> 目标距离由往返时间决定：</p>
+<p>(a) How far is the target from the radar?</p>
+<p>(b) If this radar has a PRI of $1\,\text{ms}$, what is the maximum unambiguous range? Does this target exceed the maximum unambiguous range?</p>
+<p><strong>Solution:</strong> The target range is determined by the round-trip time:</p>
 <div class="math-block">$$
 R=\frac{c\tau}{2}=\frac{3\times10^8\times400\times10^{-6}}{2}=60000\,\text{m}=60\,\text{km}
 $$</div>
-<p>最大不模糊距离为</p>
+<p>The maximum unambiguous range is</p>
 <div class="math-block">$$
 R_{\max}=\frac{c\cdot\text{PRI}}{2}=\frac{3\times10^8\times10^{-3}}{2}=150\,\text{km}
 $$</div>
-<p>目标距离 $60\,\text{km}$，没有超过最大不模糊距离。</p>
-<h3 id="sub-39">练习 2：PRI、PRF 与占空比</h3>
-<p>某雷达的 PRI 为 $2\,\text{ms}$，脉冲宽度为 $2\,\mu\text{s}$。</p>
-<p>（a）PRF 是多少？</p>
-<p>（b）占空比是多少？</p>
-<p>（c）如果平均发射功率为 $1\,\text{kW}$，峰值功率大约是多少？</p>
-<p><strong>解析：</strong> PRF 为</p>
+<p>The target range is $60\,\text{km}$, which does not exceed the maximum unambiguous range.</p>
+<h3 id="sub-39">Exercise 2: PRI, PRF, and Duty Cycle</h3>
+<p>A radar has a PRI of $2\,\text{ms}$ and a pulse width of $2\,\mu\text{s}$.</p>
+<p>(a) What is the PRF?</p>
+<p>(b) What is the duty cycle?</p>
+<p>(c) If the average transmit power is $1\,\text{kW}$, what is the approximate peak power?</p>
+<p><strong>Solution:</strong> The PRF is</p>
 <div class="math-block">$$
 \text{PRF}=\frac{1}{2\times10^{-3}}=500\,\text{Hz}
 $$</div>
-<p>占空比为</p>
+<p>The duty cycle is</p>
 <div class="math-block">$$
 D=\frac{2\times10^{-6}}{2\times10^{-3}}=10^{-3}=0.1\%
 $$</div>
-<p>平均功率和峰值功率近似满足</p>
+<p>The average power and peak power approximately satisfy</p>
 <div class="math-block">$$
 P_{\text{avg}}=P_{\text{peak}}D
 $$</div>
-<p>因此</p>
+<p>Therefore</p>
 <div class="math-block">$$
 P_{\text{peak}}=\frac{1000}{10^{-3}}=10^6\,\text{W}=1\,\text{MW}
 $$</div>
-<p>脉冲雷达平均功率看起来不高，但发射瞬间的峰值功率可能很大。</p>
-<h3 id="sub-40">练习 3：距离衰减的量级感</h3>
-<p>两个目标的 RCS 相同，其他条件也相同。目标 A 距离雷达 $50\,\text{km}$，目标 B 距离雷达 $100\,\text{km}$。</p>
-<p>（a）目标 B 的接收功率是目标 A 的几分之几？</p>
-<p>（b）如果目标 A 的 SNR 是 $30\,\text{dB}$，目标 B 的 SNR 大约是多少？</p>
-<p><strong>解析：</strong> 接收功率与 $1/R^4$ 成正比。目标 B 距离是目标 A 的 2 倍，所以接收功率变为</p>
+<p>Although the average power of pulse radar may not appear high, the peak power at the moment of transmission can be very large.</p>
+<h3 id="sub-40">Exercise 3: Understanding the Magnitude of Range Attenuation</h3>
+<p>Two targets have the same RCS and all other conditions are identical. Target A is $50\,\text{km}$ from the radar, and target B is $100\,\text{km}$ from the radar.</p>
+<p>(a) What fraction of target A's received power does target B have?</p>
+<p>(b) If target A's SNR is $30\,\text{dB}$, what is target B's SNR approximately?</p>
+<p><strong>Solution:</strong> Received power is proportional to $1/R^4$. Target B is at twice the range of target A, so the received power becomes</p>
 <div class="math-block">$$
 \frac{1}{2^4}=\frac{1}{16}
 $$</div>
-<p>功率下降 $1/16$ 对应 dB 变化为</p>
+<p>A power drop of $1/16$ corresponds to a dB change of</p>
 <div class="math-block">$$
 10\log_{10}\frac{1}{16}\approx-12\,\text{dB}
 $$</div>
-<p>如果噪声功率不变，SNR 也下降约 $12\,\text{dB}$，从 $30\,\text{dB}$ 变为约 $18\,\text{dB}$。</p>
-<h3 id="sub-41">练习 4：多普勒频移计算</h3>
-<p>一部 S 波段雷达工作波长为 $\lambda=0.1\,\text{m}$，目标以径向速度 $v_r=200\,\text{m/s}$ 靠近雷达。</p>
-<p>（a）多普勒频移 $f_d$ 是多少？</p>
-<p>（b）如果目标以相同速度横向飞过，径向速度近似为 0，多普勒频移会怎样？</p>
-<p><strong>解析：</strong> 靠近时</p>
+<p>If noise power remains constant, SNR also drops by about $12\,\text{dB}$, from $30\,\text{dB}$ to approximately $18\,\text{dB}$.</p>
+<h3 id="sub-41">Exercise 4: Doppler Frequency Shift Calculation</h3>
+<p>An S-band radar operates at wavelength $\lambda=0.1\,\text{m}$. A target approaches the radar with radial velocity $v_r=200\,\text{m/s}$.</p>
+<p>(a) What is the Doppler shift $f_d$?</p>
+<p>(b) If the target flies tangentially at the same speed with radial velocity approximately 0, what happens to the Doppler shift?</p>
+<p><strong>Solution:</strong> When approaching</p>
 <div class="math-block">$$
 f_d=\frac{2v_r}{\lambda}=\frac{2\times200}{0.1}=4000\,\text{Hz}
 $$</div>
-<p>如果目标横向飞过，径向速度接近 0，则</p>
+<p>If the target flies tangentially, the radial velocity approaches 0, so</p>
 <div class="math-block">$$
 f_d\approx0
 $$</div>
-<p>这说明多普勒频移只反映目标沿雷达视线方向的运动。</p>
-<h3 id="sub-42">练习 5：<code>rx_matrix</code> 的尺寸</h3>
-<p>某雷达在一个 CPI 中发射 $64$ 个脉冲。每发脉冲后的接收窗口采样 $1024$ 个复数 I/Q 点。</p>
-<p>（a）<code>rx_matrix</code> 的尺寸是多少？</p>
-<p>（b）哪一个维度对应快时间？哪一个维度对应慢时间？</p>
-<p>（c）第4章距离处理主要沿哪个方向展开？第5章速度处理主要沿哪个方向展开？</p>
-<p><strong>解析：</strong> 每发脉冲得到一条长度为 $1024$ 的快时间序列，一共有 $64$ 发脉冲。因此矩阵尺寸为</p>
+<p>This shows that Doppler shift only reflects target motion along the radar line of sight.</p>
+<h3 id="sub-42">Exercise 5:<code>rx_matrix</code> dimensions</h3>
+<p>A radar transmits $64$ pulses in one CPI. The receive window after each pulse samples $1024$ complex I/Q points.</p>
+<p>（a）<code>rx_matrix</code> What are the dimensions?</p>
+<p>(b) Which dimension corresponds to fast time? Which dimension corresponds to slow time?</p>
+<p>(c) In which direction does Chapter 4 range processing primarily operate? In which direction does Chapter 5 velocity processing primarily operate?</p>
+<p><strong>Solution:</strong> Each pulse produces a fast-time sequence of length $1024$, and there are $64$ pulses in total. Therefore the matrix dimensions are</p>
 <div class="math-block">$$
 64\times1024
 $$</div>
-<p>行方向对应脉冲编号，也就是慢时间；列方向对应脉冲内采样点，也就是快时间。</p>
-<p>第4章距离处理主要沿列方向寻找回波延迟；第5章速度处理主要沿行方向比较多发脉冲之间的相位变化。</p></section>
+<p>The row direction corresponds to pulse number, i.e., slow time; the column direction corresponds to in-pulse sample points, i.e., fast time.</p>
+<p>Chapter 4 range processing primarily operates along the column direction to find echo delays; Chapter 5 velocity processing primarily operates along the row direction to compare phase changes across multiple pulses.</p></section>
     </article>
   </main>
 </div>
