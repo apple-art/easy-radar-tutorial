@@ -141,6 +141,52 @@
   updateProgress(); updateActive();
 })();
 
+// Site black/white theme toggle
+(function(){
+  const toggles=[...document.querySelectorAll('[data-theme-toggle]')];
+  if(!toggles.length) return;
+
+  const key='easy-radar-theme';
+  const legacyKey='easy-radar-home-theme';
+  const root=document.documentElement;
+  const isZh=document.documentElement.lang.toLowerCase().startsWith('zh');
+
+  function normalizeTheme(value){
+    return value==='dark' ? 'dark' : 'light';
+  }
+
+  function setTheme(theme){
+    const next=normalizeTheme(theme);
+    if(next==='dark'){
+      root.setAttribute('data-theme','dark');
+      root.setAttribute('data-home-theme','dark');
+    }else{
+      root.removeAttribute('data-theme');
+      root.removeAttribute('data-home-theme');
+    }
+    try{
+      localStorage.setItem(key,next);
+      localStorage.setItem(legacyKey,next);
+    }catch(_){}
+    toggles.forEach(button=>{
+      const dark=next==='dark';
+      button.setAttribute('aria-pressed',String(dark));
+      button.setAttribute('aria-label',isZh ? (dark ? '切换到白色背景' : '切换到黑色背景') : (dark ? 'Switch to white background' : 'Switch to black background'));
+      button.setAttribute('title',isZh ? (dark ? '白色背景' : '黑色背景') : (dark ? 'White background' : 'Black background'));
+    });
+  }
+
+  let saved='light';
+  try{ saved=localStorage.getItem(key) || localStorage.getItem(legacyKey) || (root.getAttribute('data-theme')==='dark' || root.getAttribute('data-home-theme')==='dark' ? 'dark' : 'light'); }catch(_){}
+  setTheme(saved);
+
+  toggles.forEach(button=>{
+    button.addEventListener('click',()=>{
+      setTheme(root.getAttribute('data-theme')==='dark' || root.getAttribute('data-home-theme')==='dark' ? 'light' : 'dark');
+    });
+  });
+})();
+
 // Appreciation modal
 (function(){
   const btn = document.getElementById('appreciationBtn');

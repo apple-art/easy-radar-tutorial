@@ -20,11 +20,12 @@
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/index.html">
   <link rel="icon" href="design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
   <meta name="keywords" content="radar signal processing,radar tutorial,pulse compression,matched filter,range resolution,Doppler processing,beamforming,LFM chirp,range-Doppler map,CFAR detection,FMCW radar,phased array,antenna array signal processing,SAR imaging,radar equation,waveform design,detection theory,target tracking,MATLAB code,radar basics">
-  <link rel="stylesheet" href="assets/site.css?v=20260525-clean-bg">
+  <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
+  <link rel="stylesheet" href="assets/site.css?v=20260613-site-theme">
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-  <script defer src="assets/site.js?v=20260525-appreciation"></script>
+  <script defer src="assets/site.js?v=20260613-site-theme"></script>
 
   <style>
     .home-topbar .nav-terminal {
@@ -46,7 +47,8 @@
       height: 24px;
       background: rgba(13, 71, 70, 0.18);
     }
-    .language-switcher {
+    .language-switcher,
+    .theme-toggle {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -59,11 +61,16 @@
       color: #0d4746;
       text-decoration: none;
       flex: 0 0 auto;
+      cursor: pointer;
     }
-    .language-switcher:hover { color: var(--teal); background: rgba(13, 71, 70, 0.07); }
+    .language-switcher:hover,
+    .theme-toggle:hover { color: var(--teal); background: rgba(13, 71, 70, 0.07); }
     .language-switcher .language-icon,
-    .language-switcher .language-icon svg { width: 21px; height: 21px; }
-    .language-switcher svg {
+    .language-switcher .language-icon svg,
+    .theme-toggle .theme-icon,
+    .theme-toggle .theme-icon svg { width: 21px; height: 21px; }
+    .language-switcher svg,
+    .theme-toggle svg {
       fill: none;
       stroke: currentColor;
       stroke-width: 2;
@@ -72,7 +79,7 @@
     }
   </style>
 </head>
-<body><div class="read-progress" aria-hidden="true"><span></span></div>
+<body class="home-page"><div class="read-progress" aria-hidden="true"><span></span></div>
 <header class="hero">
   <nav class="topbar home-topbar" aria-label="Primary navigation">
     <a class="brand" href="./"><img src="design/icon-concepts/logo-mark-light.svg" alt="Logo"><span>Easy Radar Tutorial</span></a>
@@ -87,6 +94,8 @@
       <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span></a>
       <span class="nav-divider" aria-hidden="true"></span>
       <a class="language-switcher" href="index.zh-CN.html" aria-label="Switch to Chinese" title="中文"><span class="nav-icon language-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg></span></a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to black background" title="Black background"><span class="nav-icon theme-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" stroke="none"></path><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg></span></button>
     </div>
   </nav><div class="hero-shell reveal">
     <div class="hero-banner">

@@ -21,7 +21,7 @@
   --sans: "LXGW WenKai Screen", "HarmonyOS Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 118px; background: #f3ead8; }
+html { scroll-behavior: smooth; scroll-padding-top: 118px; background: #fff; }
 body {
   margin: 0;
   min-height: 100vh;
@@ -447,7 +447,7 @@ figcaption { margin-top: 12px; color: var(--muted); text-align: center; font-fam
   --radar-glow: rgba(43, 127, 119, 0.18);
   --card-glass: rgba(255, 253, 248, 0.76);
 }
-html { background: #f3ead8; }
+html { background: #fff; }
 body {
   /* background removed - using bg-main.png from line 31 */
 }
@@ -1329,7 +1329,7 @@ figure img { box-shadow: 0 22px 58px rgba(47, 39, 28, 0.16); }
   display: none;
 }
 .hero-art {
-  /* background removed - using bg-hero.png on .hero instead */
+  /* background handled by the final homepage theme rules */
   background-image: none;
   background-position: center;
   background-size: cover;
@@ -1661,11 +1661,42 @@ body.toc-collapsed .article-actions {
   fill: none;
   stroke: currentColor;
 }
+.home-topbar .language-switcher,
+.home-topbar .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #0d4746;
+  text-decoration: none;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+.home-topbar .language-switcher .language-icon,
+.home-topbar .language-switcher .language-icon svg,
+.home-topbar .theme-toggle .theme-icon,
+.home-topbar .theme-toggle .theme-icon svg {
+  width: 21px;
+  height: 21px;
+}
+.home-topbar .language-switcher svg,
+.home-topbar .theme-toggle svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .hero {
   min-height: 690px;
   padding-top: 66px;
   padding-bottom: 72px;
-  /* background removed - using bg-hero.png from line 1826 */
+  /* background handled by the final homepage theme rules */
 }
 .hero::before {
   right: -18vw;
@@ -1821,12 +1852,12 @@ body.toc-collapsed .article-actions {
   }
 }
 
-/* Home first section: book-cover layout with generated background. */
+/* Home first section: book-cover layout with plain black/white background. */
 .hero {
   min-height: auto;
   padding-top: 66px;
   padding-bottom: 0;
-  background: #f5ead8 url("../design/bg-hero.png") center center / cover no-repeat;
+  background: #fff;
 }
 .hero::before,
 .hero::after {
@@ -2569,4 +2600,299 @@ figcaption {
   max-height: 380px;
   width: auto;
   object-fit: contain;
+}
+
+/* Site black/white background experiment. */
+html[data-theme="dark"],
+html[data-home-theme="dark"] {
+  background: #050505;
+}
+body.home-page {
+  background: #fff;
+  transition: background-color 0.22s ease, color 0.22s ease;
+}
+body.article-page {
+  background: #fff;
+  transition: background-color 0.22s ease, color 0.22s ease;
+}
+html[data-home-theme="dark"] body.home-page {
+  background: #050505;
+  color: #f6f6f6;
+}
+body.home-page .home-topbar {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #111;
+}
+body.home-page .home-topbar .brand,
+body.home-page .home-topbar .nav-link,
+body.home-page .home-topbar .toplinks a,
+body.home-page .home-topbar .github-link,
+body.home-page .language-switcher,
+body.home-page .theme-toggle {
+  color: #111;
+}
+body.home-page .home-topbar .nav-link:hover,
+body.home-page .home-topbar .toplinks a:hover,
+body.home-page .language-switcher:hover,
+body.home-page .theme-toggle:hover {
+  color: #000;
+  background: rgba(0, 0, 0, 0.07);
+}
+body.home-page .home-topbar .nav-divider {
+  background: rgba(0, 0, 0, 0.2);
+}
+body.home-page .hero {
+  background: #fff;
+  color: #111;
+  transition: background-color 0.22s ease, color 0.22s ease;
+}
+body.home-page .hero-copy h1,
+body.home-page .feature-content h3,
+body.home-page .feature-figures-header h3,
+body.home-page .chapter-nav-title {
+  color: #111;
+}
+body.home-page .hero-copy p,
+body.home-page .feature-content p,
+body.home-page .feature-figures-header p,
+body.home-page .section-head p {
+  color: #363636;
+}
+body.home-page .hero-proof,
+body.home-page .hero-stat strong {
+  color: #111;
+}
+body.home-page .hero-stat > span:not(.stat-icon) {
+  color: #444;
+}
+body.home-page .github-star-card,
+body.home-page .zhihu-column-card {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(0, 0, 0, 0.16);
+  color: #111;
+}
+body.home-page .github-star-card span,
+body.home-page .zhihu-column-card span {
+  background: rgba(0, 0, 0, 0.04);
+}
+body.home-page main {
+  color: #111;
+}
+body.article-page .article-top,
+body.article-page .article-layout,
+body.article-page .sidebar,
+body.toc-collapsed.article-page .sidebar {
+  background: #fff;
+}
+body.article-page .article-top {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+body.article-page .home-topbar {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #111;
+}
+body.article-page .home-topbar .brand,
+body.article-page .home-topbar .nav-link,
+body.article-page .home-topbar .toplinks a,
+body.article-page .home-topbar .github-link,
+body.article-page .language-switcher,
+body.article-page .theme-toggle {
+  color: #111;
+}
+body.article-page .home-topbar .nav-link:hover,
+body.article-page .home-topbar .toplinks a:hover,
+body.article-page .language-switcher:hover,
+body.article-page .theme-toggle:hover {
+  color: #000;
+  background: rgba(0, 0, 0, 0.07);
+}
+body.article-page .home-topbar .nav-divider {
+  background: rgba(0, 0, 0, 0.2);
+}
+html[data-home-theme="dark"] body.home-page .home-topbar {
+  background: rgba(6, 6, 6, 0.82);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #f6f6f6;
+}
+html[data-home-theme="dark"] body.home-page .home-topbar .brand,
+html[data-home-theme="dark"] body.home-page .home-topbar .nav-link,
+html[data-home-theme="dark"] body.home-page .home-topbar .toplinks a,
+html[data-home-theme="dark"] body.home-page .home-topbar .github-link,
+html[data-home-theme="dark"] body.home-page .language-switcher,
+html[data-home-theme="dark"] body.home-page .theme-toggle {
+  color: #f6f6f6;
+}
+html[data-home-theme="dark"] body.home-page .home-topbar .nav-link:hover,
+html[data-home-theme="dark"] body.home-page .home-topbar .toplinks a:hover,
+html[data-home-theme="dark"] body.home-page .language-switcher:hover,
+html[data-home-theme="dark"] body.home-page .theme-toggle:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+html[data-home-theme="dark"] body.home-page .home-topbar .nav-divider {
+  background: rgba(255, 255, 255, 0.28);
+}
+html[data-home-theme="dark"] body.home-page .hero {
+  background: #050505;
+  color: #f6f6f6;
+}
+html[data-home-theme="dark"] body.home-page .hero-copy h1,
+html[data-home-theme="dark"] body.home-page .feature-content h3,
+html[data-home-theme="dark"] body.home-page .feature-figures-header h3,
+html[data-home-theme="dark"] body.home-page .chapter-nav-title {
+  color: #f8f8f8;
+}
+html[data-home-theme="dark"] body.home-page .hero-copy p,
+html[data-home-theme="dark"] body.home-page .feature-content p,
+html[data-home-theme="dark"] body.home-page .feature-figures-header p,
+html[data-home-theme="dark"] body.home-page .section-head p {
+  color: #cacaca;
+}
+html[data-home-theme="dark"] body.home-page .hero-proof,
+html[data-home-theme="dark"] body.home-page .hero-stat strong {
+  color: #f6f6f6;
+}
+html[data-home-theme="dark"] body.home-page .hero-stat > span:not(.stat-icon) {
+  color: #cfcfcf;
+}
+html[data-home-theme="dark"] body.home-page .hero-stat:not(:first-child)::before {
+  background: rgba(255, 255, 255, 0.26);
+}
+html[data-home-theme="dark"] body.home-page .github-star-card,
+html[data-home-theme="dark"] body.home-page .zhihu-column-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f6f6f6;
+}
+html[data-home-theme="dark"] body.home-page .github-star-card span,
+html[data-home-theme="dark"] body.home-page .zhihu-column-card span {
+  background: rgba(255, 255, 255, 0.08);
+}
+html[data-home-theme="dark"] body.home-page main {
+  color: #f6f6f6;
+}
+html[data-home-theme="dark"] body.home-page .section-icon {
+  color: #f6f6f6;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+html[data-home-theme="dark"] body.home-page .feature-visual img,
+html[data-home-theme="dark"] body.home-page .figures-grid img {
+  background: #fff;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.42);
+}
+html[data-home-theme="dark"] body.home-page .site-footer {
+  color: #cfcfcf;
+  background: #050505;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+html[data-theme="dark"] body.article-page {
+  background: #050505;
+  color: #f4f4f4;
+}
+html[data-theme="dark"] body.article-page .article-top,
+html[data-theme="dark"] body.article-page .article-layout,
+html[data-theme="dark"] body.article-page .sidebar,
+html[data-theme="dark"] body.toc-collapsed.article-page .sidebar {
+  background: #050505;
+}
+html[data-theme="dark"] body.article-page .article-top {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+html[data-theme="dark"] body.article-page .home-topbar {
+  background: rgba(6, 6, 6, 0.82);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #f6f6f6;
+}
+html[data-theme="dark"] body.article-page .home-topbar .brand,
+html[data-theme="dark"] body.article-page .home-topbar .nav-link,
+html[data-theme="dark"] body.article-page .home-topbar .toplinks a,
+html[data-theme="dark"] body.article-page .home-topbar .github-link,
+html[data-theme="dark"] body.article-page .language-switcher,
+html[data-theme="dark"] body.article-page .theme-toggle {
+  color: #f6f6f6;
+}
+html[data-theme="dark"] body.article-page .home-topbar .nav-link:hover,
+html[data-theme="dark"] body.article-page .home-topbar .toplinks a:hover,
+html[data-theme="dark"] body.article-page .language-switcher:hover,
+html[data-theme="dark"] body.article-page .theme-toggle:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+html[data-theme="dark"] body.article-page .home-topbar .nav-divider {
+  background: rgba(255, 255, 255, 0.28);
+}
+html[data-theme="dark"] body.article-page .sidebar {
+  border-color: rgba(255, 255, 255, 0.16);
+  scrollbar-color: #777 transparent;
+}
+html[data-theme="dark"] body.article-page .back-home,
+html[data-theme="dark"] body.article-page .chapter-toc-link,
+html[data-theme="dark"] body.article-page .toc-link,
+html[data-theme="dark"] body.article-page .subtoc-link {
+  color: #bdbdbd;
+}
+html[data-theme="dark"] body.article-page .chapter-toc-link:hover,
+html[data-theme="dark"] body.article-page .chapter-toc-link.active,
+html[data-theme="dark"] body.article-page .toc-link:hover,
+html[data-theme="dark"] body.article-page .subtoc-link:hover,
+html[data-theme="dark"] body.article-page .toc-link.active,
+html[data-theme="dark"] body.article-page .subtoc-link.active {
+  color: #fff;
+  background: transparent;
+}
+html[data-theme="dark"] body.article-page .toc-subitems {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+html[data-theme="dark"] body.article-page .prose {
+  color: #e8e8e8;
+}
+html[data-theme="dark"] body.article-page .prose h1,
+html[data-theme="dark"] body.article-page .section-title,
+html[data-theme="dark"] body.article-page .prose h3,
+html[data-theme="dark"] body.article-page .prose h4 {
+  color: #fff;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+html[data-theme="dark"] body.article-page .section-title {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+html[data-theme="dark"] body.article-page .prose p,
+html[data-theme="dark"] body.article-page .prose li {
+  color: #e0e0e0;
+}
+html[data-theme="dark"] body.article-page .prose strong,
+html[data-theme="dark"] body.article-page .prose em,
+html[data-theme="dark"] body.article-page figcaption {
+  color: #f1f1f1;
+}
+html[data-theme="dark"] body.article-page .prose blockquote {
+  color: #dedede;
+  background: rgba(255, 255, 255, 0.08);
+}
+html[data-theme="dark"] body.article-page .prose code {
+  color: #f5f5f5;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+}
+html[data-theme="dark"] body.article-page table {
+  background: rgba(255, 255, 255, 0.06);
+}
+html[data-theme="dark"] body.article-page th,
+html[data-theme="dark"] body.article-page td {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+html[data-theme="dark"] body.article-page th {
+  background: rgba(255, 255, 255, 0.1);
+}
+html[data-theme="dark"] body.article-page .prose tbody tr:nth-child(even) td,
+html[data-theme="dark"] body.article-page .prose tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.06);
+}
+html[data-theme="dark"] body.article-page .toc-toggle {
+  color: #e8e8e8;
 }
