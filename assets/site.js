@@ -219,13 +219,17 @@
 
 // ECharts cognitive curve initialization
 (function(){
-  if(typeof echarts === 'undefined') return;
+  const chartDom = document.getElementById('curve-chart');
+  if(!chartDom) return;
 
-  window.addEventListener('load', function() {
-    const chartDom = document.getElementById('curve-chart');
-    if(!chartDom) return;
+  const echartsSrc = 'https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js';
+  let chart = null;
+  let loading = false;
 
-    const chart = echarts.init(chartDom);
+  function initChart() {
+    if(chart || typeof echarts === 'undefined') return;
+
+    chart = echarts.init(chartDom);
     const option = {
       legend: {
         data: ['本教程', '传统教材'],
@@ -285,5 +289,31 @@
 
     chart.setOption(option);
     window.addEventListener('resize', () => chart.resize());
-  });
+  }
+
+  function loadEcharts() {
+    if(typeof echarts !== 'undefined') {
+      initChart();
+      return;
+    }
+    if(loading) return;
+    loading = true;
+    const script = document.createElement('script');
+    script.src = echartsSrc;
+    script.defer = true;
+    script.onload = initChart;
+    document.head.appendChild(script);
+  }
+
+  if('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      if(entries.some(entry => entry.isIntersecting)) {
+        observer.disconnect();
+        loadEcharts();
+      }
+    }, { rootMargin: '360px 0px' });
+    observer.observe(chartDom);
+  } else {
+    window.addEventListener('load', loadEcharts, { once: true });
+  }
 })();

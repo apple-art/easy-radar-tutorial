@@ -121,7 +121,7 @@ img { max-width: 100%; }
   border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 30px;
 }
-.hero-art { position: absolute; inset: 0; background: url("../design/hero/radar-hero-clean.png") center / cover no-repeat; transform: scale(1.02); }
+.hero-art { position: absolute; inset: 0; background: url("../design/hero/radar-hero-clean.webp") center / cover no-repeat; transform: scale(1.02); }
 .hero-copy { position: relative; z-index: 3; width: min(980px, 78%); padding: clamp(38px, 6vw, 76px); }
 .hero-mark { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 20px; }
 .hero-mark img { width: 48px; height: 48px; border-radius: 16px; filter: drop-shadow(0 12px 20px rgba(13, 71, 70, 0.16)); }
@@ -1895,6 +1895,7 @@ body.toc-collapsed .article-actions {
   width: 100%;
   max-width: 340px;
   height: auto;
+  aspect-ratio: 2 / 3;
   border: 1px solid rgba(69, 55, 35, 0.16);
   border-radius: 2px;
   background: #d6bd8d;
@@ -1911,7 +1912,7 @@ body.toc-collapsed .article-actions {
   border: 1px solid rgba(69, 55, 35, 0.18);
   background:
     linear-gradient(180deg, rgba(255, 248, 222, 0.2), rgba(56, 86, 76, 0.1)),
-    url("../design/hero/radar-hero-clean.png") 52% center / auto 100% no-repeat,
+    url("../design/hero/radar-hero-clean.webp") 52% center / auto 100% no-repeat,
     linear-gradient(145deg, #efe0b7, #cfa66f);
   box-shadow: 0 28px 70px rgba(75, 52, 26, 0.24);
 }
