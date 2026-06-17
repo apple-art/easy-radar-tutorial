@@ -1,4 +1,6 @@
 /* CSS Variables */
+@import url("../local-fonts.css");
+
 :root {
   --ink: #17211d;
   --muted: #65726b;
@@ -18,6 +20,6 @@
   --shadow: 0 28px 90px rgba(47, 39, 28, 0.14);
   --shadow-soft: 0 16px 48px rgba(47, 39, 28, 0.1);
   --mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
-  --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
-  --sans: "LXGW WenKai Screen", "HarmonyOS Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --serif: "Newsreader", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
+  --sans: "Inter", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
 }

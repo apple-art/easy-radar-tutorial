@@ -1,3 +1,5 @@
+@import url("local-fonts.css");
+
 :root {
   --ink: #17211d;
   --muted: #65726b;
@@ -17,8 +19,8 @@
   --shadow: 0 28px 90px rgba(47, 39, 28, 0.14);
   --shadow-soft: 0 16px 48px rgba(47, 39, 28, 0.1);
   --mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
-  --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
-  --sans: "LXGW WenKai Screen", "HarmonyOS Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --serif: "Newsreader", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
+  --sans: "Inter", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 118px; background: #fff; }
@@ -2690,8 +2692,9 @@ body.article-page .article-top {
   border-color: rgba(0, 0, 0, 0.1);
 }
 body.article-page .home-topbar {
-  background: rgba(255, 255, 255, 0.86);
-  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(0, 0, 0, 0.16);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
   color: #111;
 }
 body.article-page .home-topbar .brand,
@@ -2804,8 +2807,9 @@ html[data-theme="dark"] body.article-page .article-top {
   border-color: rgba(255, 255, 255, 0.14);
 }
 html[data-theme="dark"] body.article-page .home-topbar {
-  background: rgba(6, 6, 6, 0.82);
-  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(6, 6, 6, 0.96);
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.42);
   color: #f6f6f6;
 }
 html[data-theme="dark"] body.article-page .home-topbar .brand,

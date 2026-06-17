@@ -1,3 +1,4 @@
+@import url("../../assets/local-fonts.css");
 
 :root {
   --ink: #17211d;
@@ -15,8 +16,8 @@
   --line: rgba(23, 33, 29, 0.13);
   --shadow: 0 24px 72px rgba(47, 39, 28, 0.14);
   --mono: "Cascadia Code", "Fira Code", Consolas, monospace;
-  --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
-  --sans: "LXGW WenKai Screen", "HarmonyOS Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --serif: "Newsreader", "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
+  --sans: "Inter", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; background: var(--paper); }
