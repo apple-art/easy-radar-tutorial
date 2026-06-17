@@ -52,36 +52,37 @@ jobs:
               raise SystemExit(f"Unexpected stargazers_count: {stars!r}")
           stars = str(stars)
 
-          path = Path("index.html")
-          html = path.read_text(encoding="utf-8")
+          paths = [Path("index.html"), Path("index.zh-CN.html")]
+          for path in paths:
+              html = path.read_text(encoding="utf-8")
 
-          html = re.sub(
-              r'(<a class="github-star-card"[^>]*aria-label="GitHub Stars )\d+(")',
-              rf"\g<1>{stars}\2",
-              html,
-              count=1,
-          )
-          html = re.sub(
-              r'(<strong data-github-star-count>)\d+(</strong>)',
-              rf"\g<1>{stars}\2",
-              html,
-              count=1,
-          )
+              html = re.sub(
+                  r'(<a class="github-star-card"[^>]*aria-label="GitHub Stars )\d+(")',
+                  rf"\g<1>{stars}\2",
+                  html,
+                  count=1,
+              )
+              html = re.sub(
+                  r'(<strong data-github-star-count>)\d+(</strong>)',
+                  rf"\g<1>{stars}\2",
+                  html,
+                  count=1,
+              )
 
-          path.write_text(html, encoding="utf-8")
+              path.write_text(html, encoding="utf-8")
           PY
 
       - name: Commit update
         run: |
           set -euo pipefail
 
-          if git diff --quiet -- index.html; then
+          if git diff --quiet -- index.html index.zh-CN.html; then
             echo "Star count already up to date."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add index.html index.zh-CN.html
           git commit -m "Update GitHub star count"
           git push
