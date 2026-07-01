@@ -44,7 +44,18 @@ GITHUB_URL = "https://github.com/apple-art/easy-radar-tutorial"
 SITE_URL = "https://apple-art.github.io/easy-radar-tutorial/"
 ASSET_VERSION = "20260506-code-font-fix"
 DEFAULT_SOURCE_DIR = Path(r"D:\Obsidian\唐承乾的笔记本\雷达教材\第二版\知乎版\系列文章")
+DEFAULT_WHOLE_SOURCE_DIR = Path(r"D:\Obsidian\唐承乾的笔记本\雷达教材\第二版\知乎版\整章版")
 DEFAULT_MANUSCRIPT_DIR = Path(r"D:\Obsidian\唐承乾的笔记本\雷达教材\第二版\正文")
+WHOLE_CHAPTER_FILES = {
+    "ch01": "第01章_雷达是什么.md",
+    "ch02": "第02章_信号基础.md",
+    "ch03": "第03章_雷达信号模型与数据组织.md",
+    "ch04": "第04章_距离测量.md",
+    "ch05": "第05章_速度测量.md",
+    "ch06": "第06章_目标检测.md",
+    "ch07": "第07章_角度测量.md",
+    "ch08": "第08章_完整MATLAB处理流程.md",
+}
 PROMO_CUTOFF_MARKERS = (
     "相关资料放在了公众号",
     "后台回复：**雷达**",
@@ -157,6 +168,20 @@ def paragraph_summary(markdown_text: str) -> str:
     text = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)
     text = re.sub(r"\$([^$]+)\$", r"\1", text)
     return text[:120] + ("..." if len(text) > 120 else "")
+
+
+def normalize_whole_chapter_headings(markdown_text: str) -> str:
+    """Keep the chapter title as H1 and render chapter subsections as H2."""
+    lines: list[str] = []
+    first_h1_seen = False
+    for line in markdown_text.splitlines():
+        if re.match(r"^#\s+", line):
+            if first_h1_seen:
+                lines.append("#" + line)
+                continue
+            first_h1_seen = True
+        lines.append(line)
+    return "\n".join(lines)
 
 
 class MarkdownRenderer:
@@ -418,9 +443,11 @@ class MarkdownRenderer:
 
 
 class SiteBuilder:
-    def __init__(self, source_dir: Path, output_root: Path) -> None:
+    def __init__(self, source_dir: Path, output_root: Path, source_mode: str, write_assets: bool) -> None:
         self.source_dir = source_dir
         self.output_root = output_root
+        self.source_mode = source_mode
+        self.should_write_assets = write_assets
         self.chapter_out = output_root / "chapters"
         self.asset_out = output_root / "assets"
         self.figure_out = output_root / "figures"
@@ -433,19 +460,20 @@ class SiteBuilder:
         self.validate_source_dir()
         self.validate_public_repo()
         reset_dir(self.chapter_out, self.output_root)
-        reset_dir(self.asset_out, self.output_root)
-        remove_generated_dir(self.figure_out, self.output_root)
+        self.asset_out.mkdir(parents=True, exist_ok=True)
         self.discover_assets()
         self.discover_chapters()
-        self.write_assets()
+        if self.should_write_assets:
+            self.write_assets()
         self.write_pages()
         self.write_gitignore_guard()
         print(f"Generated {len(self.chapters)} chapter pages")
         print("Images: online Zhihu links plus copied local manuscript figures when needed")
 
     def validate_source_dir(self) -> None:
-        if self.source_dir.resolve() != DEFAULT_SOURCE_DIR.resolve():
-            raise RuntimeError(f"Unexpected source directory: {self.source_dir}. Expected: {DEFAULT_SOURCE_DIR}")
+        expected = DEFAULT_WHOLE_SOURCE_DIR if self.source_mode == "whole" else DEFAULT_SOURCE_DIR
+        if self.source_dir.resolve() != expected.resolve():
+            raise RuntimeError(f"Unexpected source directory: {self.source_dir}. Expected: {expected}")
         if not self.source_dir.exists():
             raise FileNotFoundError(f"Source directory not found: {self.source_dir}")
 
@@ -454,7 +482,8 @@ class SiteBuilder:
         for child in self.output_root.iterdir():
             if child.is_dir() and child.name in blocked_dirs:
                 raise RuntimeError(f"Refusing to build with private source directory in public repo: {child}")
-        leaked_markdown = [p for p in self.output_root.rglob("*.md") if p.name != "README.md" and ".git" not in p.parts and ".lazyweb" not in p.parts]
+        public_markdown = {"README.md", "README.zh-CN.md"}
+        leaked_markdown = [p for p in self.output_root.rglob("*.md") if p.name not in public_markdown and ".git" not in p.parts and ".lazyweb" not in p.parts]
         if leaked_markdown:
             listed = "\n".join(str(p) for p in leaked_markdown[:10])
             raise RuntimeError(f"Private Markdown files found in public repo:\n{listed}")
@@ -475,6 +504,10 @@ class SiteBuilder:
                     self.matlab_files_by_name[mfile.name] = posix_rel(mfile, self.output_root)
 
     def discover_chapters(self) -> None:
+        if self.source_mode == "whole":
+            self.discover_whole_chapters()
+            return
+
         for chapter_slug, chapter_cn, chapter_label, chapter_title in CHAPTERS:
             files = sorted(self.source_dir.rglob(f"{chapter_cn}_*.md"), key=section_sort_key)
             if chapter_slug == "ch08" and not files:
@@ -509,6 +542,38 @@ class SiteBuilder:
             )
 
 
+    def discover_whole_chapters(self) -> None:
+        for chapter_slug, chapter_cn, chapter_label, chapter_title in CHAPTERS:
+            path = self.source_dir / WHOLE_CHAPTER_FILES[chapter_slug]
+            if not path.exists():
+                raise FileNotFoundError(f"Whole-chapter Markdown not found: {path}")
+            text = path.read_text(encoding="utf-8")
+            text = clean_markdown(text)
+            text = normalize_whole_chapter_headings(text)
+            text = self.materialize_local_images(text, path, chapter_slug)
+            section_id = f"{chapter_slug}-s01"
+            self.chapters.append(
+                {
+                    "slug": chapter_slug,
+                    "cn": chapter_cn,
+                    "label": chapter_label,
+                    "title": chapter_title,
+                    "href": f"chapters/{chapter_slug}.html",
+                    "sections": [
+                        {
+                            "path": path,
+                            "id": section_id,
+                            "title": extract_title(text, f"{chapter_label} {chapter_title}"),
+                            "summary": paragraph_summary(text),
+                            "text": text,
+                        }
+                    ],
+                    "pdf": self.pdf_by_chapter.get(chapter_cn),
+                    "matlab": self.matlab_by_chapter.get(chapter_cn),
+                }
+            )
+
+
     def materialize_local_images(self, markdown_text: str, markdown_path: Path, chapter_slug: str) -> str:
         def repl(match: re.Match[str]) -> str:
             alt = match.group(1)
@@ -531,11 +596,15 @@ class SiteBuilder:
         return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", repl, markdown_text)
 
     def write_pages(self) -> None:
-        (self.output_root / "index.html").write_text(self.render_index(), encoding="utf-8")
+        index_html = self.render_index()
+        (self.output_root / "index.html").write_text(index_html, encoding="utf-8")
+        (self.output_root / "index.zh-CN.html").write_text(index_html, encoding="utf-8")
         (self.output_root / ".nojekyll").write_text("", encoding="utf-8")
         renderer = MarkdownRenderer(self.matlab_files_by_name)
         for chapter in self.chapters:
-            (self.chapter_out / f"{chapter['slug']}.html").write_text(self.render_chapter(chapter, renderer), encoding="utf-8")
+            chapter_html = self.render_chapter(chapter, renderer)
+            (self.chapter_out / f"{chapter['slug']}.html").write_text(chapter_html, encoding="utf-8")
+            (self.chapter_out / f"{chapter['slug']}.zh-CN.html").write_text(chapter_html, encoding="utf-8")
 
     def render_index(self) -> str:
         card_images = {
@@ -563,6 +632,7 @@ class SiteBuilder:
       <div class="chapter-actions">{''.join(actions)}</div>
     </article>"""
             )
+        unit_label = "篇整章稿" if self.source_mode == "whole" else "个小节"
         body = f"""
 <header class="hero">
   <nav class="topbar">
@@ -594,7 +664,7 @@ class SiteBuilder:
         <div class="hero-actions"><a class="btn primary" href="chapters/ch01.html"><span>开始阅读</span></a><a class="btn" href="#chapters"><span>浏览章节</span></a><a class="btn ghost" href="{html_attr(github_tree_url('matlab'))}"><span>MATLAB 代码</span></a><a class="btn" href="{html_attr(GITHUB_URL + '/releases/latest')}"><span>下载资料包</span></a></div>
         <div class="hero-proof" aria-label="教程概览">
           <div class="hero-stat"><strong>8</strong><span>个章节</span></div>
-          <div class="hero-stat"><strong>{sum(len(c["sections"]) for c in self.chapters)}</strong><span>个小节</span></div>
+          <div class="hero-stat"><strong>{sum(len(c["sections"]) for c in self.chapters)}</strong><span>{unit_label}</span></div>
           <div class="hero-stat"><strong>{len(self.matlab_files_by_name)}</strong><span>个脚本</span></div>
         </div>
       </div>
@@ -2304,10 +2374,13 @@ JS = r"""
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build one-page-per-chapter static HTML from Zhihu Markdown.")
-    parser.add_argument("--source-dir", default=DEFAULT_SOURCE_DIR, type=Path, help="Private Zhihu Markdown directory.")
+    parser.add_argument("--source-mode", choices=("split", "whole"), default="split", help="Use split article Markdown or whole-chapter Markdown.")
+    parser.add_argument("--source-dir", type=Path, help="Private Zhihu Markdown directory.")
     parser.add_argument("--output-root", default=Path.cwd(), type=Path, help="Public repository root.")
+    parser.add_argument("--write-assets", action="store_true", help="Regenerate assets/site.css and assets/site.js from the embedded templates.")
     args = parser.parse_args()
-    SiteBuilder(args.source_dir.resolve(), args.output_root.resolve()).build()
+    source_dir = args.source_dir or (DEFAULT_WHOLE_SOURCE_DIR if args.source_mode == "whole" else DEFAULT_SOURCE_DIR)
+    SiteBuilder(source_dir.resolve(), args.output_root.resolve(), args.source_mode, args.write_assets).build()
 
 
 if __name__ == "__main__":

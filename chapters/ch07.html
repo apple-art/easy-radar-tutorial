@@ -1,284 +1,236 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Chapter 7 Angle Measurement | Easy Radar Signal Processing Tutorial</title>
-  <meta name="description" content="The previous chapters have obtained range, velocity, and detection results in the target list. Now one piece of information is missing: which direction is the target in?">
+  <title>第7章 测角 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="前面几章已经得到目标表里的距离、速度和检测结果。现在还缺一个信息，就是目标在哪个方向。">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch07.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
-  <link rel="stylesheet" href="../assets/site.css?v=20260617-local-fonts-nav1">
+  <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-  <script defer src="../assets/site.js?v=20260613-site-theme"></script>
-
-  <style>
-    .home-topbar .nav-terminal {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-self: end;
-    }
-    .home-topbar .github-link {
-      justify-content: center;
-      width: 40px;
-      padding: 9px;
-    }
-    .home-topbar .nav-divider {
-      display: block;
-      flex: 0 0 1px;
-      width: 1px;
-      min-width: 1px;
-      height: 24px;
-      background: rgba(13, 71, 70, 0.18);
-    }
-    .language-switcher {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      border: 0;
-      border-radius: 999px;
-      background: transparent;
-      color: #0d4746;
-      text-decoration: none;
-      flex: 0 0 auto;
-    }
-    .language-switcher:hover { color: var(--teal); background: rgba(13, 71, 70, 0.07); }
-    .language-switcher .language-icon,
-    .language-switcher .language-icon svg { width: 21px; height: 21px; }
-    .language-switcher svg {
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-  </style>
+  <script defer src="../assets/site.js?v=20260506-code-font-fix"></script>
 </head>
-<body class="article-page"><div class="read-progress" aria-hidden="true"><span></span></div>
+<body><div class="read-progress" aria-hidden="true"><span></span></div>
 <header class="article-top">
-  <nav class="topbar home-topbar">
-    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="Tutorial Icon"><span>Easy Radar Tutorial</span></a>
-    <div class="toplinks nav-primary"><a href="../index.html">Home</a><a href="ch01.html">Chapters</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a>
-      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>More</span></a></div>
-      <div class="nav-terminal">
-      <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span></a>
-      <span class="nav-divider" aria-hidden="true"></span>
-      <a class="language-switcher" href="ch07.zh-CN.html" aria-label="Switch to Chinese" title="中文"><span class="nav-icon language-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg></span></a>
-      <span class="nav-divider" aria-hidden="true"></span>
-      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to black background" title="Black background"><span class="nav-icon theme-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" stroke="none"></path><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg></span></button>
-    </div>
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="教程图标"><span>Easy Radar Tutorial</span></a>
+    <div class="toplinks"><a href="../index.html">首页</a><a href="ch01.html">章节</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a><a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a></div>
   </nav>
 </header>
 <div class="article-layout">
   <aside class="sidebar">
-    <a class="back-home" href="../index.html">← Home</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">Chapter 1 What is Radar</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">Chapter 2 Signal Fundamentals</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">Chapter 3 Radar Signal Transmission and Reception</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">Chapter 4 Range Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">Chapter 5 Velocity Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">Chapter 6 Target Detection</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch07.html">Chapter 7 Angle Measurement</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch07-s01"><a class="toc-link" href="#ch07-s01">7.1 Direction Information and Radar Coordinates</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-102">Why Direction Matters</a><a class="subtoc-link" href="#sub-103">Azimuth and Elevation</a></div></div><div class="toc-section" data-section="ch07-s02"><a class="toc-link" href="#ch07-s02">7.2 Antenna Pattern and Beamwidth</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-104">Main Lobe, Sidelobes, and 3 dB Beamwidth</a><a class="subtoc-link" href="#sub-105">Wavelength, Antenna Size, and Beamwidth</a></div></div><div class="toc-section" data-section="ch07-s03"><a class="toc-link" href="#ch07-s03">7.3 Angle Measurement via Beam Scanning</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-106">Mechanical Scanning</a><a class="subtoc-link" href="#sub-107">Electronic Scanning</a></div></div><div class="toc-section" data-section="ch07-s04"><a class="toc-link" href="#ch07-s04">7.4 Angular Resolution and Angle Measurement Accuracy</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-108">When Can Two Targets Be Resolved</a><a class="subtoc-link" href="#sub-109">Distinction Between Resolution and Accuracy</a></div></div><div class="toc-section" data-section="ch07-s05"><a class="toc-link" href="#ch07-s05">7.5 Main Sources of Angle Measurement Error</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-110">Noise</a><a class="subtoc-link" href="#sub-111">Multipath Effects</a><a class="subtoc-link" href="#sub-112">Angular Glint</a><a class="subtoc-link" href="#sub-113">Pointing Error and Calibration</a></div></div><div class="toc-section" data-section="ch07-s06"><a class="toc-link" href="#ch07-s06">7.6 Monopulse Angle Measurement</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-114">Sum Channel and Difference Channel</a><a class="subtoc-link" href="#sub-115">Ratio and Angle Estimation</a></div></div><div class="toc-section" data-section="ch07-s07"><a class="toc-link" href="#ch07-s07">7.7 Exercises</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-116">Exercise 1: Beamwidth and Angular Range</a><a class="subtoc-link" href="#sub-117">Exercise 2: Angular Resolution Assessment</a><a class="subtoc-link" href="#sub-118">Exercise 3: Estimating Beamwidth</a><a class="subtoc-link" href="#sub-119">Exercise 4: Multipath Effect Identification</a><a class="subtoc-link" href="#sub-120">Exercise 5: Difference Between Resolution and Accuracy</a><a class="subtoc-link" href="#sub-121">Exercise 6: Scanning Angle Measurement vs. Monopulse Angle Measurement</a><a class="subtoc-link" href="#sub-122">Exercise 7 (Optional): Beam Scanning Angle Measurement Experiment</a><a class="subtoc-link" href="#sub-123">Exercise 8 (Optional): Monopulse Ratio Experiment</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">Chapter 8: Complete MATLAB Processing Pipeline</a></div></nav>
+    <a class="back-home" href="../index.html">← 首页</a>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch07.html">第7章 测角</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch07-s01"><a class="toc-link" href="#ch07-s01">角度测量</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-135">7.1 方向信息与雷达坐标</a><a class="subtoc-link" href="#sub-136">7.1.1 方向为什么不可省</a><a class="subtoc-link" href="#sub-137">7.1.2 方位角和俯仰角</a><a class="subtoc-link" href="#sub-138">7.2 天线方向图与波束宽度</a><a class="subtoc-link" href="#sub-139">7.2.1 主瓣、旁瓣和 3 dB 波束宽度</a><a class="subtoc-link" href="#sub-140">7.2.2 波长、天线尺寸和波束宽度</a><a class="subtoc-link" href="#sub-141">7.3 波束扫描测角</a><a class="subtoc-link" href="#sub-142">7.3.1 机械扫描</a><a class="subtoc-link" href="#sub-143">7.3.2 电子扫描</a><a class="subtoc-link" href="#sub-144">7.4 角分辨力与测角精度</a><a class="subtoc-link" href="#sub-145">7.4.1 两个目标什么时候分得开</a><a class="subtoc-link" href="#sub-146">7.4.2 分辨力和精度的区别</a><a class="subtoc-link" href="#sub-147">7.5 测角误差的主要来源</a><a class="subtoc-link" href="#sub-148">7.5.1 噪声</a><a class="subtoc-link" href="#sub-149">7.5.2 多径效应</a><a class="subtoc-link" href="#sub-150">7.5.3 角闪烁</a><a class="subtoc-link" href="#sub-151">7.5.4 指向误差与校准</a><a class="subtoc-link" href="#sub-152">7.6 单脉冲测角</a><a class="subtoc-link" href="#sub-153">7.6.1 和通道与差通道</a><a class="subtoc-link" href="#sub-154">7.6.2 比值与角度估计</a><a class="subtoc-link" href="#sub-155">7.7 小练习</a><a class="subtoc-link" href="#sub-156">7.7.1 练习 1：波束宽度与角度范围</a><a class="subtoc-link" href="#sub-157">7.7.2 练习 2：角分辨力判断</a><a class="subtoc-link" href="#sub-158">7.7.3 练习 3：估算波束宽度</a><a class="subtoc-link" href="#sub-159">7.7.4 练习 4：多径效应识别</a><a class="subtoc-link" href="#sub-160">7.7.5 练习 5：分辨力和精度的区别</a><a class="subtoc-link" href="#sub-161">7.7.6 练习 6：扫描测角与单脉冲测角</a><a class="subtoc-link" href="#sub-162">7.7.7 练习 7（选做）：波束扫描测角实验</a><a class="subtoc-link" href="#sub-163">7.7.8 练习 8（选做）：单脉冲比实验</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
+    <div class="article-meta"><span>第7章</span><span>测角</span></div>
     <article class="prose chapter-prose">
-      <h1>Chapter 7 Angle Measurement</h1>
-      <section class="chapter-section" data-section="ch07-s01"><h2 id="ch07-s01" class="section-title">7.1 Direction Information and Radar Coordinates</h2>
-<p>The previous chapters have obtained range, velocity, and detection results in the target list. Now one piece of information is missing: which direction is the target in?</p>
-<p>What direction is it actually in?</p>
-<p>A target is $50\,km$ from the radar with a velocity of $300\,m/s$. This is certainly useful information, but without knowing whether it's to the east or west, at low altitude or high altitude, command and early warning cannot translate into concrete actions. The same applies to weather radar. Saying "heavy rainfall $100\,km$ away" doesn't tell the reader which direction to look.</p>
-<p>Angle measurement fills in the target direction. Range measurement captures time delay, velocity measurement tracks inter-pulse phase changes, detection checks if echoes cross a threshold; in angle measurement, the antenna's directivity becomes the protagonist. A radar can determine direction because its transmit and receive responses differ across directions. Beam scanning, angular resolution, angle measurement errors, and monopulse angle tracking all revolve around two questions: how to exploit antenna directivity, and which factors limit angle measurement results.</p>
-<p>This content connects to threads from earlier chapters. Chapter 3 covered antenna directivity, Chapter 4 explained how "width limits resolution capability," and Chapter 5 discussed parameter estimation errors. Applied to the angular axis, these threads become three relationships: directions with stronger responses are more likely to indicate the target direction; the wider the beam, the easier it is for closely-spaced targets to merge; and noise, multipath, and pointing errors will bias angle estimates.</p>
-<h3 id="sub-102">Why Direction Matters</h3>
-<p>Imagine standing on a playground. Someone says "there's a person $100\,m$ away, running toward you at $5\,m/s$." What would you ask? Most likely: from which direction? Straight ahead, from the side, or behind—the meaning is completely different.</p>
-<p>Air defense radar works the same way. The radar detects three targets, all around $50\,km$ in range, velocities also near $300\,m/s$. Without direction information, these three targets could be in the same direction, or they could be coming from three different directions—east, south, and west. The first case requires concentrated handling; the second requires allocating resources in different directions. Identical range and velocity do not mean identical spatial positions.</p>
-<p>Weather radar provides an easier example to understand. Strong echoes appear at $100\,km$ around the radar; with range alone, you can only say "there's heavy rainfall nearby." Adding azimuth allows you to say "heavy rainfall is approaching from the southeast." Those fan shapes, rings, and bright spots on radar displays are fundamentally combinations of range and direction.</p>
-<h3 id="sub-103">Azimuth and Elevation</h3>
-<p>To describe a target's position in three-dimensional space, start with "which way to look." Standing at the radar position requires two actions: first rotate in the horizontal plane, then decide whether to look up or down.</p>
-<p>Rotation in the horizontal plane is called <strong>azimuth</strong>, commonly denoted $\theta$. By convention, true north can be defined as $0^\circ$, rotating clockwise, with east at $90^\circ$, south at $180^\circ$, and west at $270^\circ$. The vertical angle is called <strong>elevation</strong>, commonly denoted $\phi$. The horizontal direction is $0^\circ$, upward angles are positive, downward angles are negative.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_2_radar_coordinates_excali.png" alt="Figure 7.1 Azimuth and elevation in radar coordinate system" loading="lazy"><figcaption>Figure 7.1 Azimuth and elevation in radar coordinate system</figcaption></figure>
-<p>With azimuth, elevation, and range $R$, you can describe a target's position in the radar coordinate system. For example:</p>
-<ul><li>A target due east, at horizontal level, range $10\,km$, can be recorded as azimuth $90^\circ$, elevation $0^\circ$, range $10\,km$.</li><li>A target northeast, elevation $30^\circ$, range $20\,km$, can be recorded as azimuth $45^\circ$, elevation $30^\circ$, range $20\,km$.</li><li>The target is directly overhead at a distance of $5\,km$, with an elevation angle of $90^\circ$. The azimuth angle loses practical meaning because all horizontal directions point to the same location.</li></ul>
-<p>This last case reminds us that coordinate representations also have boundaries. For ground-based search radars, targets exactly at zenith are uncommon; for ship-borne, airborne, or specialized tracking radars, near-zenith targets require more careful coordinate handling. Angle is not a single number—it typically includes at least azimuth and elevation.</p>
-<p>Radar can measure angles because the antenna responds differently to different directions. Range measurement captures time delay, velocity measurement captures inter-pulse phase change; for angle measurement, the antenna's own directionality plays the primary role.</p></section><section class="chapter-section" data-section="ch07-s02"><h2 id="ch07-s02" class="section-title">7.2 Antenna Pattern and Beamwidth</h2>
-<h3 id="sub-104">Main Lobe, Sidelobes, and 3 dB Beamwidth</h3>
-<p>A radar beam is not an infinitely thin line—it's more like a flashlight beam on a wall: brightest at the center, gradually dimming toward the edges, with no sharp "light/no-light" boundary in between. The antenna's transmission and reception of electromagnetic waves also follows this angular distribution.</p>
-<p>Suppose the antenna points straight ahead. By measuring the radiated power or receiving sensitivity at different angles and plotting the results as a curve, we obtain the<strong>antenna pattern</strong>. The pattern describes the antenna's own directional response, not the target echo curve from any particular scan.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_3_antenna_pattern_excali.png" alt="Figure 7.2 Antenna Pattern: Main Lobe and Sidelobes" loading="lazy"><figcaption>Figure 7.2 Antenna Pattern: Main Lobe and Sidelobes</figcaption></figure>
-<p>The highest peak in the center of the pattern is called the<strong>main lobe</strong>, which corresponds to the antenna's primary radiation or reception direction. The smaller peaks on either side of the main lobe are called<strong>sidelobes</strong>. Sidelobe energy is lower than the main lobe, but never completely disappears. Strong targets appearing in sidelobe directions can still cause interference with angle measurement and detection.</p>
-<p>The main lobe has a width. The common quantification method is the <strong>3 dB beamwidth</strong>: The width between two angles where the power drops3 dB from the peak, i.e., to half the peak power. If a radar has a 3 dB beamwidth of $5^\circ$ and the antenna points at $0^\circ$, targets within approximately $-2.5^\circ$ to $+2.5^\circ$ remain in the main lobe's strong response region.</p>
-<p>The antenna pattern is a curve showing how antenna response varies with angle; the echo intensity curve obtained during scanning angle measurement is the observed result of target echoes varying with beam direction. The former is a system property, the latter an observation result.</p>
-<h3 id="sub-105">Wavelength, Antenna Size, and Beamwidth</h3>
-<p>Beamwidth is constrained by antenna size and operating wavelength. For introductory purposes, this approximate relationship can be used:</p>
+      <h1>第7章 测角</h1>
+      <section class="chapter-section" data-section="ch07-s01"><h2 id="ch07-s01" class="section-title">角度测量</h2>
+<p>前面几章已经得到目标表里的距离、速度和检测结果。现在还缺一个信息，就是目标在哪个方向。</p>
+<p>一个目标距离雷达 $50\,km$，速度 $300\,m/s$。这当然已经是有用信息，但如果不知道它在东边还是西边、在低空还是高空，指挥和预警都很难落到具体动作上。气象雷达也是一样。只说“$100\,km$ 外有强降雨”，还不能告诉读者该往哪个方向看。</p>
+<p>角度测量补上的就是目标方向。测距离时抓的是时间延迟，测速时抓的是脉冲间相位变化，检测时看回波是否越过门限，测角时则是天线本身的方向性开始起主要作用。雷达能判断方向，是因为它对不同方向的响应并不相同。波束扫描、角分辨力、测角误差和单脉冲测角，都在追问怎样利用天线方向性，以及哪些因素会限制测角结果。</p>
+<p>这些内容可以接到前面几章的线索上。第 3 章讲过天线方向性，第 4 章讲过”宽度会限制分辨能力”，第 5 章讲过参数估计会有误差。放到角度轴上，响应越强的方向越可能接近目标方向，波束越宽则角度相近的目标越容易混在一起，噪声、多径和指向误差则会把角度估计推偏。</p>
+<h3 id="sub-135">7.1 方向信息与雷达坐标</h3>
+<h3 id="sub-136">7.1.1 方向为什么不可省</h3>
+<p>想象在操场上。有人说”有个人在 $100\,m$ 外，以 $5\,m/s$ 向你跑来”。你会问什么？大概率是从哪个方向——正前方、侧面、身后，意义完全不同。</p>
+<p>防空雷达也是这样。雷达探测到三个目标，距离都在 $50\,km$ 左右，速度也接近 $300\,m/s$。如果没有方向信息，这三个目标可能在同一方向，也可能分别来自东、南、西三个方向。前一种情况需要集中处理，后一种情况需要分配不同方向的资源。距离和速度相同，并不代表空间位置相同。</p>
+<p>天气雷达的例子更容易理解。强回波出现在雷达周围 $100\,km$ 处，只有距离时，只能说“附近有强降雨”。加上方位角后，才能说“东南方向有强降雨正在靠近”。雷达图上那些扇形、环形和亮斑，本质上都离不开距离和方向的组合。</p>
+<h3 id="sub-137">7.1.2 方位角和俯仰角</h3>
+<p>要描述一个目标在三维空间里的位置，可以从”往哪看”开始。站在雷达位置，先在水平面内转向，再决定抬头或低头。</p>
+<p>水平面内的转向叫<strong>方位角</strong>（azimuth），常用 $\theta$ 表示。习惯上可以把正北定义为 $0^\circ$，顺时针旋转，正东为 $90^\circ$，正南为 $180^\circ$，正西为 $270^\circ$。上下方向的角度叫<strong>俯仰角</strong>（elevation），常用 $\phi$ 表示。水平方向是 $0^\circ$，向上为正角度，向下为负角度。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_2_radar_coordinates_excali.png" alt="雷达坐标系中的方位角与俯仰角" loading="lazy"><figcaption>雷达坐标系中的方位角与俯仰角</figcaption></figure>
+<p>有了方位角、俯仰角和距离 $R$，就能描述目标在雷达坐标系中的位置。例如：</p>
+<ul><li>目标在正东方向、水平高度、距离 $10\,km$，可记为方位角 $90^\circ$，俯仰角 $0^\circ$，距离 $10\,km$。</li><li>目标在东北方向、仰角 $30^\circ$、距离 $20\,km$，可记为方位角 $45^\circ$，俯仰角 $30^\circ$，距离 $20\,km$。</li><li>目标在正上方、距离 $5\,km$，俯仰角为 $90^\circ$，方位角失去实际意义，因为所有水平方向都指向同一个点。</li></ul>
+<p>最后一种情况说明坐标表示也有局限。对地面搜索雷达来说，目标正好在天顶并不常见，对舰载、机载或特殊跟踪雷达，接近天顶的目标需要更仔细的坐标处理。角度不是一个数字，通常至少包括方位角和俯仰角。</p>
+<p>雷达能测角，是因为天线对不同方向的响应不同。测距离时抓的是时间延迟，测速时抓的是脉冲间相位变化，测角时天线本身的方向性开始起主要作用。</p>
+<h3 id="sub-138">7.2 天线方向图与波束宽度</h3>
+<h3 id="sub-139">7.2.1 主瓣、旁瓣和 3 dB 波束宽度</h3>
+<p>雷达波束不是一条无限细的线，更像手电筒照在墙上的光斑，中心最亮，边缘逐渐变暗，中间没有一条清楚的边界。天线对电磁波的发射和接收也有这样的角度分布。</p>
+<p>假设天线指向正前方，逐个测量不同角度上的辐射功率或接收灵敏度，再把结果画成曲线，就得到<strong>天线方向图</strong>。方向图描述的是天线自己的方向响应，不是某一次扫描得到的目标回波曲线。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_3_antenna_pattern_excali.png" alt="天线方向图：主瓣与旁瓣" loading="lazy"><figcaption>天线方向图：主瓣与旁瓣</figcaption></figure>
+<p>方向图中间最高的峰叫<strong>主瓣</strong>，它对应天线主要辐射或接收的方向。主瓣两侧较小的峰叫<strong>旁瓣</strong>，旁瓣能量低于主瓣，但不会完全消失。强目标如果落在旁瓣方向，也可能给测角和检测带来干扰。</p>
+<p>主瓣有宽度。常用的量化方式是 <strong>3 dB 波束宽度</strong>，从峰值下降 $3\,dB$，也就是功率下降到峰值一半时，对应的两个角度之间的宽度。若某雷达的 3 dB 波束宽度为 $5^\circ$，天线指向 $0^\circ$ 时，大约在 $-2.5^\circ$ 到 $+2.5^\circ$ 的范围内，目标仍处在主瓣的较强响应区域。</p>
+<p>方向图是天线响应随角度变化的曲线，扫描测角时得到的回波强度曲线是目标回波随波束指向变化的观测结果。前者是系统属性，后者是观测结果。</p>
+<h3 id="sub-140">7.2.2 波长、天线尺寸和波束宽度</h3>
+<p>波束宽度受天线尺寸和工作波长限制。入门时可以使用这个近似关系：</p>
 <div class="math-block">$$
 \theta_{\text{3dB}} \approx k\frac{\lambda}{D}
 $$</div>
-<p>where $\theta_{\text{3dB}}$ is expressed in radians, $\lambda$ is the radar operating wavelength, $D$ is the effective antenna aperture, and $k$ is a coefficient related to antenna type and illumination method. Many rough estimates use $k\approx1$.</p>
-<p>This formula shows: the larger the antenna, the narrower the beam; the shorter the wavelength, the narrower the beam. After calculating $\lambda/D$, multiply by $57.3^\circ$ to convert from radians to degrees.</p>
-<p>Example 1: An automotive millimeter-wave radar operates at $77\,GHz$, with a wavelength of approximately</p>
+<p>其中 $\theta_{\text{3dB}}$ 用弧度表示，$\lambda$ 是雷达工作波长，$D$ 是天线的有效尺寸，$k$ 是与天线类型和照射方式有关的系数。很多粗略估算中常取 $k\approx1$。</p>
+<p>这个公式说明，天线越大波束越窄，波长越短波束也越窄。把 $\lambda/D$ 算出来后，再乘以 $57.3^\circ$，就可以把弧度换成角度。</p>
+<p>例 1：车载毫米波雷达工作在 $77\,GHz$，波长约为</p>
 <div class="math-block">$$
 \lambda=\frac{3\times10^8}{77\times10^9}\approx3.9\,mm
 $$</div>
-<p>If the effective antenna aperture is $10\,cm=100\,mm$, then</p>
+<p>若天线有效尺寸为 $10\,cm=100\,mm$，则</p>
 <div class="math-block">$$
 \theta_{\text{3dB}}\approx\frac{3.9}{100}=0.039\,rad\approx2.2^\circ
 $$</div>
-<p>Example 2: A weather radar operates at $3\,GHz$, with a wavelength of approximately $10\,cm$. If the antenna diameter is $3\,m$, then</p>
+<p>例 2：气象雷达工作在 $3\,GHz$，波长约为 $10\,cm$。若天线直径为 $3\,m$，则</p>
 <div class="math-block">$$
 \theta_{\text{3dB}}\approx\frac{0.10}{3}=0.033\,rad\approx1.9^\circ
 $$</div>
-<p>Example 3: A search radar operates at $1\,GHz$, with a wavelength of approximately $30\,cm$. If the antenna aperture is $5\,m$, then</p>
+<p>例 3：某搜索雷达工作在 $1\,GHz$，波长约为 $30\,cm$。若天线尺寸为 $5\,m$，则</p>
 <div class="math-block">$$
 \theta_{\text{3dB}}\approx\frac{0.30}{5}=0.06\,rad\approx3.4^\circ
 $$</div>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_4_beamwidth_vs_antenna_size_excali.png" alt="Figure 7.3 Relationship between beamwidth and antenna aperture" loading="lazy"><figcaption>Figure 7.3 Relationship between beamwidth and antenna aperture</figcaption></figure>
-<p>Narrow beams facilitate angle measurement and resolving closely-spaced targets, but they come at a cost. Larger antennas increase weight, cost, and installation space requirements; higher frequencies affect components, losses, and propagation conditions. Engineering systems typically do not pursue the narrowest possible beam, but instead balance search coverage, update rate, accuracy, cost, and platform size.</p></section><section class="chapter-section" data-section="ch07-s03"><h2 id="ch07-s03" class="section-title">7.3 Angle Measurement via Beam Scanning</h2>
-<h3 id="sub-106">Mechanical Scanning</h3>
-<p>When the beam points at the target center, the echo is usually strongest. By scanning across different directions and recording echo intensity at each direction, the direction of the peak can be used as the target angle estimate. This is the principle of scanning angle measurement.</p>
-<p>One scanning method involves physically rotating the antenna. Rotating radars commonly seen at airports, ports, and weather stations are examples of mechanical scanning. As the antenna rotates to each direction, it transmits pulses, receives echoes, and records range and intensity information for that direction.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_5_scan_scene_excali.png" alt="Figure 7.4 Mechanical scanning radar schematic" loading="lazy"><figcaption>Figure 7.4 Mechanical scanning radar schematic</figcaption></figure>
-<p>If the antenna starts at $0^\circ$ and records echo intensity every $1^\circ$, after completing a full rotation it produces a "direction-intensity" curve. Peaks in the curve at $120^\circ$ and $240^\circ$ indicate strong targets or echo regions in those directions.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_6_scan_polar_excali.png" alt="Figure 7.5 Polar coordinate signal intensity distribution after radar scanning" loading="lazy"><figcaption>Figure 7.5 Polar coordinate signal intensity distribution after radar scanning</figcaption></figure>
-<p>Mechanical scanning is straightforward and reliable. The tradeoff is speed. Large antennas have mass and inertia and cannot be accelerated indefinitely. A search radar may take several seconds to complete one rotation; if a target maneuvers at high speed during these seconds, the angular information obtained by the radar becomes outdated. During mechanical scanning, the antenna spends most of its time looking in other directions, limiting the dwell time on any single target.</p>
-<p>Engineering practice uses pragmatic solutions to mitigate this problem. For example, two radars can be installed back-to-back and rotated synchronously, looking in two directions separated by $180^\circ$ at the same time. This way, the entire system only needs to rotate half a revolution to achieve full azimuthal coverage, nearly halving the effective refresh time; the tradeoff is increased equipment count, installation space, synchronization, and calibration requirements.</p>
-<p>The 'slowness' here is not just a matter of mechanical speed but also relates to the radar measurement itself. Each direction requires transmission, waiting for echoes, reception, and processing. Echoes from distant targets take time to return, and no matter how fast the scan, this waiting period cannot be eliminated.</p>
-<h3 id="sub-107">Electronic Scanning</h3>
-<p>To steer the beam more rapidly, phased arrays change the mainlobe direction by adjusting the phase of each element in the antenna array. Electromagnetic waves from multiple antenna elements add constructively in one direction and destructively in others, causing the mainlobe to point in the desired direction. Changing the phase differences changes the mainlobe direction. This is the principle behind phased array electronic scanning.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_7_electronic_scan_excali.png" alt="Figure 7.6 Beamforming principle of phased array antennas" loading="lazy"><figcaption>Figure 7.6 Beamforming principle of phased array antennas</figcaption></figure>
-<p>The advantage of electronic scanning is beam agility. It does not require physically rotating a large antenna and can switch from one direction to another in a very short time, allowing more time to be allocated to approaching targets. Phased arrays are now very common in modern fighter radars, air defense radars, and large early warning radars.</p>
-<p>Electronic scanning also has limitations. First, arrays are costly and power-hungry, with many elements requiring amplitude and phase control. Second, each direction still requires dwell time; one cannot simply 'point briefly' and obtain a reliable echo. Third, when the beam is steered too far from broadside, gain drops, sidelobes may rise, and beam shape degrades.</p>
-<p>How phase differences precisely form beams and how digital beamforming estimates angle from array data belong to the domain of array signal processing.</p></section><section class="chapter-section" data-section="ch07-s04"><h2 id="ch07-s04" class="section-title">7.4 Angular Resolution and Angle Measurement Accuracy</h2>
-<h3 id="sub-108">When Can Two Targets Be Resolved</h3>
-<p>In range measurement, if two targets' echoes are close together in time, only one peak may appear in the range profile. Angular measurement faces a similar problem: when two targets are too close in angle, can the beam resolve them as two targets? This capability is called<strong>angular resolution</strong>。</p>
-<p>Suppose two targets are at the same range, one at $20^\circ$ and the other at $23^\circ$, with an angular separation of $3^\circ$. If the radar beamwidth is $10^\circ$, when the beam points near $20^\circ$ to $23^\circ$, both targets fall within the mainlobe, and the echoes easily merge into one broad peak, making it difficult for the radar to distinguish two targets.</p>
-<p>If the beamwidth is only $2^\circ$, the situation differs. When the beam points to $20^\circ$, it primarily illuminates the first target; when it turns to $23^\circ$, it primarily illuminates the second target. Two peaks appear more easily in the scan curve, making the two targets easier to separate.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_8_angular_resolution_excali.png" alt="Figure 7.7 Angular resolution illustration: wide beam vs. narrow beam" loading="lazy"><figcaption>Figure 7.7 Angular resolution illustration: wide beam vs. narrow beam</figcaption></figure>
-<p>In engineering estimates, angular resolution can be considered on the same order as the 3 dB beamwidth:</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_4_beamwidth_vs_antenna_size_excali.png" alt="波束宽度与天线尺寸的关系" loading="lazy"><figcaption>波束宽度与天线尺寸的关系</figcaption></figure>
+<p>窄波束有利于测角和分辨相近目标，但它也带来代价。天线变大，重量、成本和安装空间都会增加，频率升高，器件、损耗和传播条件也会随之变化。工程系统通常不会只追求最窄波束，而要在搜索范围、刷新率、精度、成本和平台尺寸之间取折中。</p>
+<h3 id="sub-141">7.3 波束扫描测角</h3>
+<h3 id="sub-142">7.3.1 机械扫描</h3>
+<p>波束指向目标中心时，回波通常最强。沿着不同方向扫过去，记录每个方向上的回波强度，峰值所在的方向就可以作为目标角度估计。这就是扫描测角的思路。</p>
+<p>一种扫描方式是让天线物理转动。机场、港口和气象站常见的旋转雷达，就是机械扫描的例子。天线每转到一个方向，就发射脉冲、接收回波，并把这一方向上的距离和强度信息记录下来。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_5_scan_scene_excali.png" alt="机械扫描雷达示意" loading="lazy"><figcaption>机械扫描雷达示意</figcaption></figure>
+<p>如果天线从 $0^\circ$ 开始，每隔 $1^\circ$ 记录一次回波强度，转完一圈后就能得到一条“方向-强度”曲线。曲线在 $120^\circ$ 和 $240^\circ$ 出现峰值，就表示这两个方向上有较强目标或回波区域。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_6_scan_polar_excali.png" alt="雷达扫描后的极坐标信号强度分布" loading="lazy"><figcaption>雷达扫描后的极坐标信号强度分布</figcaption></figure>
+<p>机械扫描结构直观，也很可靠。代价是慢。大型天线有重量和惯性，不能无限加速。一个搜索雷达转一圈可能需要几秒钟，目标如果在这几秒内高速机动，雷达得到的角度信息就会变旧。机械扫描期间，天线大部分时间还在看别的方向，对单个目标的驻留时间有限。</p>
+<p>工程上也会用一些很工程化的办法缓解这个问题。例如把两部雷达背靠背安装、同步转动，同一时刻分别看相差 $180^\circ$ 的两个方向。这样整套系统只转过半圈，就相当于完成了一圈的方位覆盖，等效刷新时间可以接近减半，代价是设备数量、安装空间、同步和标定都要增加。</p>
+<p>这里的“慢”不仅是机械速度问题，也和雷达测量本身有关。每个方向上都要发射、等待回波、接收和处理。远距离目标的回波需要时间返回，扫描再快也不能把这个等待过程省掉。</p>
+<h3 id="sub-143">7.3.2 电子扫描</h3>
+<p>为了让波束更快地转向，相控阵通过改变天线阵列中各个单元的相位来改变主瓣方向。多个天线单元发出的电磁波在某个方向上同相叠加，在其他方向上相互抵消，主瓣就会指向希望的方向。改变相位差，主瓣方向也随之改变。这就是相控阵电子扫描的思路。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_7_electronic_scan_excali.png" alt="相控阵天线的波束形成原理" loading="lazy"><figcaption>相控阵天线的波束形成原理</figcaption></figure>
+<p>电子扫描的优点是波束捷变。它不需要让一个大天线物理转动，可以在很短时间内从一个方向切到另一个方向，也可以把更多时间分配给正在接近的目标。现代战斗机雷达、防空雷达和大型预警雷达中，相控阵已经非常常见。</p>
+<p>电子扫描也有局限。第一，阵列成本高、功耗大，很多单元都需要幅度和相位控制。第二，每个方向仍然需要驻留时间，不能只”指一下”就得到可靠回波。第三，波束偏离阵列正前方太多时，增益会下降，旁瓣可能升高，波束形状也会变差。</p>
+<p>相位差如何精确形成波束、数字波束形成怎样从阵列数据中估计角度，属于阵列信号处理内容。</p>
+<h3 id="sub-144">7.4 角分辨力与测角精度</h3>
+<h3 id="sub-145">7.4.1 两个目标什么时候分得开</h3>
+<p>距离测量中，两个目标如果回波在时间上挤在一起，距离像上可能只剩一个峰。测角也有类似问题，两个目标角度太接近时，波束能不能把它们分成两个目标？这个能力叫<strong>角分辨力</strong>。</p>
+<p>假设两个目标在同一距离上，一个在 $20^\circ$，另一个在 $23^\circ$，角度差为 $3^\circ$。若雷达波束宽度为 $10^\circ$，当波束指向 $20^\circ$ 到 $23^\circ$ 附近时，两个目标都会落在主瓣里，回波容易叠成一个宽峰，雷达很难判断有两个目标。</p>
+<p>若波束宽度只有 $2^\circ$，情况不同。波束指向 $20^\circ$ 时，主要照到第一个目标，转到 $23^\circ$ 时，主要照到第二个目标。扫描曲线上更容易出现两个峰，两个目标也就更容易分开。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_8_angular_resolution_excali.png" alt="角分辨力示意：宽波束与窄波束" loading="lazy"><figcaption>角分辨力示意：宽波束与窄波束</figcaption></figure>
+<p>工程估算中，可以把角分辨力看成和 3 dB 波束宽度同量级：</p>
 <div class="math-block">$$
 \Delta\theta_{\text{resolve}} \approx \theta_{\text{3dB}}
 $$</div>
-<p>This is a common engineering rule of thumb, not a strict theorem. Two targets at the same range with similar strength are easier to separate when their angular difference exceeds the beamwidth; when the angular difference is smaller than the beamwidth, the echo peaks tend to merge.</p>
-<p>The Rayleigh criterion uses the mainlobe peak of one target and the mainlobe null of another target to determine resolvability. The narrower the mainlobe, the easier it is to separate adjacent targets in angle.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_9_rayleigh_criterion_excali.png" alt="Figure 7.8 Rayleigh Criterion Illustration" loading="lazy"><figcaption>Figure 7.8 Rayleigh Criterion Illustration</figcaption></figure>
-<p>Angular resolution can also be understood in terms of cross-range distance. If the target range is $R$ and the angular difference between two targets is $\Delta\theta$ (in radians), their cross-range separation is approximately</p>
+<p>这是很常用的工程尺度判断，不是严格定理。两个同距离、强度接近的目标，角度差大于波束宽度时较容易分开，角度差小于波束宽度时回波峰容易融合。</p>
+<p>瑞利判据用一个目标的主瓣峰值和另一个目标的主瓣谷值来判断能否分辨。主瓣越窄，角度上越容易把相邻目标分开。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_9_rayleigh_criterion_excali.png" alt="瑞利判据示意" loading="lazy"><figcaption>瑞利判据示意</figcaption></figure>
+<p>角分辨力也可以换成横向距离来理解。若目标距离为 $R$，两个目标角度差为 $\Delta\theta$（弧度），它们在横向上的间隔约为</p>
 <div class="math-block">$$
 S \approx R\Delta\theta
 $$</div>
-<p>For the same $2^\circ$ angular difference, the farther from the radar, the larger the corresponding cross-range distance. Therefore, many radar specifications provide both angular resolution and operating range.</p>
-<h3 id="sub-109">Distinction Between Resolution and Accuracy</h3>
-<p>Angular resolution is easily confused with angle measurement accuracy. Both relate to "how accurate the angle is," but they address different questions.</p>
-<p>Angular resolution asks: can two targets be separated? Angle measurement accuracy asks: how precisely can a single target's angle be estimated?</p>
-<p>Using the previous example: two targets at $20^\circ$ and $23^\circ$ with a beamwidth of $10^\circ$ may not be resolved as two peaks by the radar—this is insufficient angular resolution. However, if there is only one target at $30^\circ$, the radar can estimate the angle to around $29.8^\circ$ or $30.2^\circ$ through the echo curve peak, multi-pulse averaging, and refined estimation algorithms. Single-target estimation can be finer than the beamwidth, but this does not mean two closely spaced targets can necessarily be separated.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_10_resolution_vs_accuracy_excali.png" alt="Figure 7.9 Comparison of Angular Resolution and Angle Measurement Accuracy" loading="lazy"><figcaption>Figure 7.9 Comparison of Angular Resolution and Angle Measurement Accuracy</figcaption></figure>
-<div class="table-wrap"><table><thead><tr><th>Concept</th><th>Question Asked</th><th>Primary Limitation</th><th>Typical Understanding</th></tr></thead><tbody><tr><td>Beamwidth</td><td>How wide is the antenna mainlobe</td><td>Wavelength, antenna size, illumination method</td><td>Antenna intrinsic properties</td></tr><tr><td>angular resolution</td><td>Can two targets be separated</td><td>Beamwidth, target strength, processing method</td><td>Two-target problem</td></tr><tr><td>Angle measurement accuracy</td><td>How large is the angle estimation error for a single target</td><td>Beamwidth, SNR, algorithm, calibration</td><td>Single-target problem</td></tr></tbody></table></div>
-<p>Angle measurement accuracy is commonly described by standard deviation $\sigma_\theta$. An order-of-magnitude relationship is:</p>
+<p>同样是 $2^\circ$ 的角度差，离雷达越远，对应的横向距离越大。因此很多雷达指标会同时给出角分辨力和作用距离。</p>
+<h3 id="sub-146">7.4.2 分辨力和精度的区别</h3>
+<p>角分辨力容易和测角精度混在一起。两者都和”角度准不准”有关，但问的是不同问题。角分辨力问的是两个目标能不能分开，测角精度问的是单个目标的角度能估计到多准。</p>
+<p>还是用刚才的例子。两个目标在 $20^\circ$ 和 $23^\circ$，波束宽度为 $10^\circ$ 时，雷达可能分不出两个峰，这是角分辨力不够。但如果只有一个目标在 $30^\circ$，雷达可以通过回波曲线峰值、多个脉冲平均和更细的估计算法，把角度估计到 $29.8^\circ$ 或 $30.2^\circ$ 附近。单目标估计可以比波束宽度更细，但这不等于两个相近目标一定能分开。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_10_resolution_vs_accuracy_excali.png" alt="角分辨力与测角精度的对比" loading="lazy"><figcaption>角分辨力与测角精度的对比</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>概念</th><th>问的问题</th><th>主要限制</th><th>典型理解</th></tr></thead><tbody><tr><td>波束宽度</td><td>天线主瓣有多宽</td><td>波长、天线尺寸、照射方式</td><td>天线自身属性</td></tr><tr><td>角分辨力</td><td>两个目标能否分开</td><td>波束宽度、目标强弱、处理方法</td><td>双目标问题</td></tr><tr><td>测角精度</td><td>单个目标角度估计误差多大</td><td>波束宽度、信噪比、算法、标校</td><td>单目标问题</td></tr></tbody></table></div>
+<p>测角精度常用标准差 $\sigma_\theta$ 描述。一个量级关系是：</p>
 <div class="math-block">$$
 \sigma_\theta \propto \frac{\theta_{\text{3dB}}}{\sqrt{\text{SNR}}}
 $$</div>
-<p>The narrower the beam, the more sensitive the echo is to angular changes; the higher the SNR, the more stable the peak or ratio. This expression only shows the trend; specific coefficients depend on beam shape, angle measurement method, target fluctuation, and processing algorithm.</p>
-<p>For example, with a beamwidth of $3^\circ$ and SNR of $100$ ($20\,dB$), the random angle measurement error may be on the order of a few tenths of a degree. Real systems are also affected by multipath, angle scintillation, and antenna pointing errors, so engineering specifications typically cannot rely solely on theoretical estimates under thermal noise.</p></section><section class="chapter-section" data-section="ch07-s05"><h2 id="ch07-s05" class="section-title">7.5 Main Sources of Angle Measurement Error</h2>
-<h3 id="sub-110">Noise</h3>
-<p>There is always noise in the receiver. Noise superimposed on the echo causes the scan curve or monopulse ratio to jitter. If the true target direction is $30^\circ$, ideally the peak should be at $30^\circ$; with noise added, the peak may appear at $29.8^\circ$, $30.1^\circ$, or $30.3^\circ$.</p>
-<p>The lower the SNR, the greater the jitter. The wider the beam, the flatter the curve near the peak, and the same noise is more likely to push the estimated position off. Reducing beamwidth, increasing transmit power, adding coherent integration, or averaging multiple measurements can all reduce random errors caused by noise.</p>
-<p>The random error here does not always "deviate in a fixed direction." In multiple measurements, it may shift left at one time and right at another. In engineering, standard deviation is commonly used to describe this jitter range.</p>
-<h3 id="sub-111">Multipath Effects</h3>
-<p>Multipath is a troublesome error source in low-elevation angle measurement. Electromagnetic waves can illuminate the target directly, or hit the ground or sea surface first and then reflect to the target; echoes returning to the radar may also travel multiple paths. Two paths, two echoes, with different times and phases.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_11_multipath_excali.png" alt="Figure 7.10 Multipath effect illustration" loading="lazy"><figcaption>Figure 7.10 Multipath effect illustration</figcaption></figure>
-<p>When two echoes superimpose, the equivalent echo seen by the radar may appear to come from another angle, causing the angle measurement to deviate. This deviation does not necessarily manifest as random jitter; sometimes it remains consistently high or low for a period of time.</p>
-<p>For example, an aircraft at altitude $300\,m$ and horizontal distance $10\,km$ has a true elevation angle of approximately</p>
+<p>波束越窄，角度变化在回波上表现得越敏感，信噪比越高，峰值或比值越稳定。这个式子只表示趋势，具体系数和波束形状、测角方法、目标起伏、处理算法有关。</p>
+<p>例如波束宽度为 $3^\circ$，信噪比为 $100$（$20\,dB$）时，随机测角误差可能落在零点几度的量级。实际系统还会受到多径、角闪烁和天线指向误差影响，所以工程指标通常不能只看热噪声下的理论估计。</p>
+<h3 id="sub-147">7.5 测角误差的主要来源</h3>
+<h3 id="sub-148">7.5.1 噪声</h3>
+<p>接收机里总有噪声。噪声叠加到回波上，会让扫描曲线或单脉冲比值出现抖动。目标真实方向是 $30^\circ$，理想情况下峰值应在 $30^\circ$，加上噪声后，峰值可能出现在 $29.8^\circ$、$30.1^\circ$ 或 $30.3^\circ$。</p>
+<p>信噪比越低，抖动越大。波束越宽，峰值附近的曲线越平，同样的噪声更容易把估计位置推偏。减小波束宽度、提高发射能量、增加相干积累或做多次测量平均，都可以降低噪声引起的随机误差。</p>
+<p>这里的随机误差并不总是“错到一个固定方向”。多次测量时，它可能一会儿偏左，一会儿偏右。工程上常用标准差描述这种抖动范围。</p>
+<h3 id="sub-149">7.5.2 多径效应</h3>
+<p>多径是低仰角测角里很麻烦的误差来源。电磁波可以直接照到目标，也可能先打到地面或海面再反射到目标，回波返回雷达时也可能走多条路径。两条路径，两个回波，时间和相位都不一样。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_11_multipath_excali.png" alt="多径效应示意" loading="lazy"><figcaption>多径效应示意</figcaption></figure>
+<p>两条回波叠加后，雷达看到的等效回波可能像是来自另一个角度，测角结果就会偏。这个偏差不一定表现为随机抖动，有时会在一段时间内稳定地偏高或偏低。</p>
+<p>例如一架飞机高度 $300\,m$，水平距离 $10\,km$，真实仰角约为</p>
 <div class="math-block">$$
 \arctan\frac{300}{10000}\approx1.7^\circ
 $$</div>
-<p>The ground reflection path can be roughly viewed as a "mirror target" $300\,m$ underground, corresponding to an elevation angle of approximately $-1.7^\circ$. When the direct echo and reflected echo superimpose, the equivalent elevation angle may deviate from the true value, with the deviation magnitude depending on the reflection intensity and phase relationship.</p>
-<p>Sea surface reflection is even more unstable. Sea surface fluctuations change the reflection path, and when shipborne or shore-based radars track low-altitude targets, angle measurements may fluctuate over time. Increasing antenna installation height, using narrower beams, selecting appropriate polarization and frequency, and suppressing multipath in signal processing can only mitigate the effects, rarely eliminating them completely.</p>
-<h3 id="sub-112">Angular Glint</h3>
-<p>Many previous examples treat the target as a point target. Real aircraft, ships, or missiles consist of multiple scattering centers such as the nose, wings, tail, engine compartment, etc. The echo strength from different scattering centers varies with attitude changes, and the equivalent scattering center seen by the radar also moves.</p>
-<p>When shining a flashlight on a keychain and rotating the keys, the brightest reflection point jumps between different keys and edges. Radar viewing complex targets is similar: at one instant the nose reflects strongly, at the next instant the wings reflect strongly, and the equivalent "bright spot" position changes. This angle measurement jitter caused by changes in the target's scattering centers is called<strong>Angular Glint</strong>（angular glint）。</p>
-<p>Angle glint significantly affects precision tracking. It originates from the target's own scattering structure, and simply increasing receiver sensitivity cannot eliminate it. Multiple frequencies, multiple viewing angles, wideband signals, and temporal smoothing can alleviate it, but cannot turn a complex target back into a point target.</p>
-<h3 id="sub-113">Pointing Error and Calibration</h3>
-<p>The angles provided by radar also depend on the antenna "knowing where it points." Mechanical scanning radars have motors, gears, bearings, and turntables; installation errors, gear backlash, wind loading, and temperature changes can all cause the actual pointing to deviate from the reading. Although phased arrays lack large mechanical rotation, the amplitude, phase, and position of each element cannot be perfectly ideal, causing beam pointing deviations.</p>
-<p>These types of errors are usually reduced through calibration. Radars can observe beacons, satellites, or ground targets at known positions, compare measured angles with true angles, and then correct the pointing model. For high-precision systems, calibration itself is part of the angle measurement capability.</p>
-<div class="table-wrap"><table><thead><tr><th>Error Source</th><th>Main Manifestation</th><th>Common Mitigation Methods</th></tr></thead><tbody><tr><td>Noise</td><td>Random jitter in angle measurements</td><td>Increase SNR, multiple averaging, narrow beam</td></tr><tr><td>Multipath</td><td>Low-elevation target deviation or fluctuation</td><td>Increase antenna height, suppress reflection paths, select polarization and frequency</td></tr><tr><td>Angular Glint</td><td>Complex target equivalent scattering center glint</td><td>Wideband, multi-frequency, multi-aspect, temporal smoothing</td></tr><tr><td>Pointing error</td><td>Overall angular measurement bias</td><td>Installation calibration, phase calibration, periodic calibration</td></tr></tbody></table></div>
-<p>Actual angle measurement results are often a combination of multiple error sources. Low-altitude targets may be primarily affected by multipath; high-SNR long-range targets may be mainly limited by pointing calibration; maneuvering targets may exhibit strong angle glint. When diagnosing error sources, one cannot rely on a single theoretical formula alone.</p></section><section class="chapter-section" data-section="ch07-s06"><h2 id="ch07-s06" class="section-title">7.6 Monopulse Angle Measurement</h2>
-<h3 id="sub-114">Sum Channel and Difference Channel</h3>
-<p>Scanning angle measurement relies on "probing": the beam points in one direction to measure echo intensity once; then switches to another direction and measures again; finally comparing which direction yields the strongest signal. For fast-moving targets or precision tracking, this direction-by-direction comparison becomes too slow.</p>
-<p>Monopulse angle measurement simultaneously obtains two types of information from a single echo: "how strong is the target" and "how far is the target from the center." The most common approach is to form a<strong>sum channel</strong> $\Sigma$ and a<strong>difference channel</strong> $\Delta$。</p>
-<p>First, view it as two receiving sub-apertures, left and right. When the target is at the beam center, both sides receive signals of equal strength; when the target is to the left, the left side receives a stronger signal; when the target is to the right, the right side receives a stronger signal.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_12_monopulse_excali.png" alt="Figure 7.11 Sum and Difference Beams for Monopulse Angle Measurement" loading="lazy"><figcaption>Figure 7.11 Sum and Difference Beams for Monopulse Angle Measurement</figcaption></figure>
-<p>Adding the signals from both sides yields the sum channel $\Sigma$. Like a conventional beam, it represents the total target echo strength and can be used with range and velocity processing. Subtracting the left and right signals yields the difference channel $\Delta$. The difference channel is zero near the center, positive when the target deviates to one side, and negative when it deviates to the other.</p>
-<p>A numerical example makes this clearer. If the target is at the center, both left and right channels receive $1\,V$:</p>
+<p>地面反射路径可以粗略看成一个“镜像目标”在地下 $300\,m$，对应仰角约为 $-1.7^\circ$。直射回波和反射回波叠加后，等效仰角可能偏离真实值，偏差大小取决于反射强度和相位关系。</p>
+<p>海面反射更不稳定。海面起伏会改变反射路径，舰载雷达或岸基雷达跟踪低空目标时，测角结果可能随时间摆动。提高天线架设高度、使用更窄波束、选择合适极化和频率、在信号处理中抑制多径，都只能减轻影响，很难完全消除。</p>
+<h3 id="sub-150">7.5.3 角闪烁</h3>
+<p>前面很多例子把目标当成点目标。真实飞机、舰船或导弹由机头、机翼、尾翼、发动机舱等多个散射中心组成。不同散射中心的回波强弱会随姿态变化而变化，雷达看到的等效散射中心也会移动。</p>
+<p>用手电筒照一串钥匙，转动钥匙时，最亮的反光点会在不同钥匙和不同边缘之间跳动。雷达看复杂目标也类似。某一瞬间机头反射强，下一瞬间机翼反射强，等效”亮点”位置就会变化。这种由目标散射中心变化引起的测角抖动，叫<strong>角闪烁</strong>（angular glint）。</p>
+<p>角闪烁对精确跟踪影响很大。它来自目标本身的散射结构，简单提高接收机灵敏度并不能消掉。多频率、多视角、宽带信号和时间平滑可以缓解，但不能把复杂目标重新变成点目标。</p>
+<h3 id="sub-151">7.5.4 指向误差与校准</h3>
+<p>雷达给出的角度还依赖天线“自己知道自己指向哪里”。机械扫描雷达有电机、齿轮、轴承和转台，安装误差、齿隙、风载、温度变化都可能让实际指向偏离读数。相控阵虽然没有大型机械转动，但每个单元的幅度、相位和位置也不可能完全理想，波束指向会因此产生偏差。</p>
+<p>这类误差通常靠标校减小。雷达可以观测已知位置的信标、卫星或地面目标，比较测得角度和真实角度，再修正指向模型。对高精度系统来说，标校本身就是测角能力的一部分。</p>
+<div class="table-wrap"><table><thead><tr><th>误差来源</th><th>主要表现</th><th>常见应对方式</th></tr></thead><tbody><tr><td>噪声</td><td>测角结果随机抖动</td><td>提高信噪比、多次平均、窄波束</td></tr><tr><td>多径</td><td>低仰角目标出现偏差或摆动</td><td>提高天线高度、抑制反射路径、选择极化和频率</td></tr><tr><td>角闪烁</td><td>复杂目标等效散射中心跳动</td><td>宽带、多频、多视角、时间平滑</td></tr><tr><td>指向误差</td><td>角度读数整体偏移</td><td>安装校准、相位校准、定期标校</td></tr></tbody></table></div>
+<p>实际测角结果往往由多种误差叠加而成。低空目标可能主要受多径影响，高信噪比远距离目标可能主要受指向标校限制，机动目标则可能有较强角闪烁。判断误差来源时，不能只看一个理论公式。</p>
+<h3 id="sub-152">7.6 单脉冲测角</h3>
+<h3 id="sub-153">7.6.1 和通道与差通道</h3>
+<p>扫描测角靠的是逐方向试探。波束指一个方向，测一次回波强度，换一个方向再测一次，最后比较哪个方向最强。快速目标或精确跟踪时，这种逐方向比较会显得慢。</p>
+<p>单脉冲测角在同一次回波中同时回答两个问题：目标强不强，以及目标偏离中心多少。最常见的做法是形成<strong>和通道</strong> $\Sigma$ 与<strong>差通道</strong> $\Delta$。</p>
+<p>先把它看成左右两个接收子孔径。目标在波束中心时，左右两边收到的信号强度相同，目标偏左时左边收到的信号更强，目标偏右时右边收到的信号更强。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_12_monopulse_excali.png" alt="单脉冲测角的和差波束" loading="lazy"><figcaption>单脉冲测角的和差波束</figcaption></figure>
+<p>把左右两边的信号相加，得到和通道 $\Sigma$。它像普通波束一样，用来表示目标总回波强度，也可以配合距离和速度处理。把左右两边的信号相减，得到差通道 $\Delta$。差通道在中心附近为零，目标偏向一侧时为正，偏向另一侧时为负。</p>
+<p>用一个数值例子看得更清楚。若目标在中心，左右两路都收到 $1\,V$：</p>
 <div class="math-block">$$
 \Sigma = 1+1=2\,V,\qquad \Delta = 1-1=0
 $$</div>
-<p>If the target is to the left, the left channel is $1.2\,V$ and the right channel is $0.8\,V$:</p>
+<p>若目标偏左，左路为 $1.2\,V$，右路为 $0.8\,V$：</p>
 <div class="math-block">$$
 \Sigma = 1.2+0.8=2\,V,\qquad \Delta = 1.2-0.8=0.4\,V
 $$</div>
-<p>The difference channel indicates the direction of deviation, and the magnitude of the difference indicates the degree of deviation. In this way, the radar can estimate the target's deviation direction from the center in a single echo, without waiting for the beam to complete a full rotation.</p>
-<h3 id="sub-115">Ratio and Angle Estimation</h3>
-<p>If we only look at $\Delta$, we encounter a problem: the target's own strength also affects the difference value. Distant targets, weak RCS targets, and nearby targets, strong RCS targets may have different echo amplitudes even with the same angular deviation. Using only the difference to estimate angle would confuse 'weak target' with 'small deviation'.</p>
-<p>Therefore, monopulse typically uses a normalized ratio:</p>
+<p>差通道给出偏离方向，差值大小给出偏离程度。这样，雷达不需要等波束转一圈，就能从一次回波中估计目标偏离中心的方向。</p>
+<h3 id="sub-154">7.6.2 比值与角度估计</h3>
+<p>如果只看 $\Delta$，会遇到一个问题：目标本身强弱也会改变差值。远目标、弱 RCS 目标和近目标、强 RCS 目标，即使角度偏离相同，回波幅度也可能不同。只用差值估角，会把”目标弱”和”偏离小”混在一起。</p>
+<p>因此单脉冲常使用归一化比值：</p>
 <div class="math-block">$$
 \frac{\Delta}{\Sigma}
 $$</div>
-<p>In the previous example, when the target is to the left</p>
+<p>在刚才的例子中，目标偏左时</p>
 <div class="math-block">$$
 \frac{\Delta}{\Sigma}=\frac{0.4}{2}=0.2
 $$</div>
-<p>If the overall echo from a target at the same angle becomes half as strong, with the left and right channels becoming $0.6\,V$ and $0.4\,V$, then</p>
+<p>若同样角度处的目标整体回波变弱一半，左右两路变成 $0.6\,V$ 和 $0.4\,V$，则</p>
 <div class="math-block">$$
 \Sigma=1\,V,\qquad \Delta=0.2\,V,\qquad \frac{\Delta}{\Sigma}=0.2
 $$</div>
-<p>The ratio remains constant. It removes the target's overall strength, leaving information that better reflects angular deviation.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_13_monopulse_curve_excali.png" alt="Figure 7.12 Monopulse Ratio versus Angle" loading="lazy"><figcaption>Figure 7.12 Monopulse Ratio versus Angle</figcaption></figure>
-<p>Near the beam center, the monopulse ratio and target deviation angle often have an approximately linear relationship:</p>
+<p>比值保持不变。它把目标整体强弱除掉，留下更能反映角度偏离的信息。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_13_monopulse_curve_excali.png" alt="单脉冲比与角度关系" loading="lazy"><figcaption>单脉冲比与角度关系</figcaption></figure>
+<p>在波束中心附近，单脉冲比和目标偏离角常近似成线性关系：</p>
 <div class="math-block">$$
 \theta_{\text{est}} \approx K_m\frac{\Delta}{\Sigma}
 $$</div>
-<p>where $K_m$ is a coefficient determined by the antenna beam shape and calibration results. Practical systems typically obtain this curve through calibration; the formula on paper only provides an approximate relationship.</p>
-<p>The advantage of monopulse angle measurement is speed, and it is also better suited for tracking. The cost is more complex hardware and channels: the system needs to simultaneously form sum and difference channels, and maintain consistent amplitude and phase across all channels. If the channels are imbalanced, $\Delta/\Sigma$ itself will introduce errors.</p>
-<p>Full amplitude comparison, phase comparison, multidimensional monopulse, and array processing belong to advanced topics in radar measurement and array signal processing.</p></section><section class="chapter-section" data-section="ch07-s07"><h2 id="ch07-s07" class="section-title">7.7 Exercises</h2>
-<h3 id="sub-116">Exercise 1: Beamwidth and Angular Range</h3>
-<p>A search radar has a 3 dB beamwidth of $5^\circ$. During one scan, the radar detects a strong echo at azimuth $30^\circ$. What angular range might the target roughly fall within?</p>
-<p>Solution: For a rough estimate, the strong region of the main lobe can be considered approximately $30^\circ\pm2.5^\circ$, that is, $27.5^\circ$ to $32.5^\circ$. This is only a range estimate, not a precise angle measurement result; the specific target angle also depends on the echo curve shape, SNR, and angle measurement method.</p>
-<h3 id="sub-117">Exercise 2: Angular Resolution Assessment</h3>
-<p>A radar has a beamwidth of $8^\circ$. There are now two targets at the same range, one at $20^\circ$ and the other at $23^\circ$. Can this radar easily resolve these two targets?</p>
-<p>Solution: The angular separation between the two targets is</p>
+<p>其中 $K_m$ 是由天线波束形状和标定结果决定的系数。实际系统通常通过标校得到这条曲线，纸面公式只给出近似关系。</p>
+<p>单脉冲测角的优点是快，也更适合跟踪。它的代价是硬件和通道更复杂，系统需要同时形成和通道、差通道，还要保持各通道幅度和相位一致。若通道不平衡，$\Delta/\Sigma$ 本身也会带来误差。</p>
+<p>完整的幅度比较、相位比较、多维单脉冲和阵列处理，属于雷达测量与阵列信号处理的深入内容。</p>
+<h3 id="sub-155">7.7 小练习</h3>
+<h3 id="sub-156">7.7.1 练习 1：波束宽度与角度范围</h3>
+<p>某搜索雷达的 3 dB 波束宽度为 $5^\circ$。一次扫描中，雷达在方位角 $30^\circ$ 方向探测到强回波。目标大致可能落在什么角度范围内？</p>
+<p>解析：若只做粗略判断，可认为主瓣较强区域约为 $30^\circ\pm2.5^\circ$，也就是 $27.5^\circ$ 到 $32.5^\circ$。这只是范围判断，不是精确测角结果。目标具体角度还要看回波曲线形状、信噪比和测角方法。</p>
+<h3 id="sub-157">7.7.2 练习 2：角分辨力判断</h3>
+<p>某雷达的波束宽度为 $8^\circ$。现在有两个同距离目标，一个在 $20^\circ$，另一个在 $23^\circ$。这部雷达能否容易地分辨这两个目标？</p>
+<p>解析：两个目标角度差为</p>
 <div class="math-block">$$
 23^\circ-20^\circ=3^\circ
 $$</div>
-<p>$3^\circ$, which is less than $8^\circ$. By a basic estimate, they are likely to fall within the same main lobe response, potentially merging into a single broad peak on the scan curve, making it difficult to separate them into two independent targets.</p>
-<h3 id="sub-118">Exercise 3: Estimating Beamwidth</h3>
-<p>A radar operates at $10\,GHz$ with an antenna diameter of $2\,m$. Taking $k\approx1$, estimate the 3 dB beamwidth.</p>
-<p>Solution: First calculate the wavelength:</p>
+<p>$3^\circ$ 小于 $8^\circ$。按入门估算，它们容易落在同一个主瓣响应里，扫描曲线上可能合成一个宽峰，因此很难被分成两个独立目标。</p>
+<h3 id="sub-158">7.7.3 练习 3：估算波束宽度</h3>
+<p>某雷达工作频率为 $10\,GHz$，天线直径为 $2\,m$。取 $k\approx1$，估算 3 dB 波束宽度。</p>
+<p>解析：先算波长：</p>
 <div class="math-block">$$
 \lambda=\frac{c}{f}=\frac{3\times10^8}{10\times10^9}=0.03\,m
 $$</div>
-<p>Then use the approximate relationship:</p>
+<p>再用近似关系：</p>
 <div class="math-block">$$
 \theta_{\text{3dB}}\approx\frac{\lambda}{D}=\frac{0.03}{2}=0.015\,rad
 $$</div>
-<p>Convert to degrees:</p>
+<p>换成角度：</p>
 <div class="math-block">$$
 0.015\times57.3^\circ\approx0.86^\circ
 $$</div>
-<p>Therefore, this radar's beamwidth is approximately $0.86^\circ$.</p>
-<h3 id="sub-119">Exercise 4: Multipath Effect Identification</h3>
-<p>A shipborne radar is tracking a low-altitude aircraft. Based on the aircraft's altitude and range, the true elevation angle should be approximately $10^\circ$, but the radar-measured elevation angle often fluctuates around $8^\circ$ to $9^\circ$. What is the most likely cause?</p>
-<p>A. Receiver thermal noise B. Multipath effect caused by sea surface reflection C. Insufficient target range resolution D. PRF setting too low</p>
-<p>Solution: Most likely B. Low-altitude targets and the sea surface easily form a reflection path, and the superposition of direct and reflected echoes changes the equivalent angle of arrival. Noise typically manifests as more random jitter; range resolution and PRF primarily affect range and velocity-related issues, which are not the main concern here.</p>
-<h3 id="sub-120">Exercise 5: Difference Between Resolution and Accuracy</h3>
-<p>Determine whether the following statement is correct and explain why.</p>
-<ol><li>Good angular resolution means two targets at similar angles are easier to separate.</li><li>Good angular accuracy means the angle estimation error for a single target is smaller.</li><li>If a radar beamwidth is $5^\circ$, it absolutely cannot estimate a single target's angle to within $1^\circ$.</li><li>If single-target angular accuracy reaches $0.5^\circ$, it can definitely separate two targets spaced $0.5^\circ$ apart.</li></ol>
-<p>Explanation: 1 and 2 are correct. 3 is not necessarily correct—single-target estimation can be finer than the beamwidth. 4 is incorrect—whether two targets can be separated depends mainly on angular resolution and echo shape, not single-target angular accuracy.</p>
-<h3 id="sub-121">Exercise 6: Scanning Angle Measurement vs. Monopulse Angle Measurement</h3>
-<p>Determine whether the following statements are correct.</p>
-<ol><li>Sequential lobing typically requires comparing echo intensities across multiple beam directions.</li><li>Monopulse angle tracking can estimate the angle offset using sum and difference channels from a single echo.</li><li>Monopulse angle tracking requires no calibration whatsoever.</li><li>Electronic scanning has no time constraint for waiting for echoes.</li></ol>
-<p>Explanation: 1 and 2 are correct. 3 is wrong—monopulse ratios and channel consistency both require calibration. 4 is wrong—beam switching can be fast, but each direction still requires transmission, waiting for echoes, and data processing.</p>
-<h3 id="sub-122">Exercise 7 (Optional): Beam Scanning Angle Measurement Experiment</h3>
-<p>If the supporting MATLAB files are available, you can run <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%B8%83%E7%AB%A0/ch07_beam_scanning_demo.m"><code>ch07_beam_scanning_demo.m</code></a>to observe the relationship between scanning angle and echo power curves. Focus on three things: whether the peak appears near the target angle, whether two peaks merge when two targets are close together, and how the curve changes when the beamwidth narrows.</p>
-<h3 id="sub-123">Exercise 8 (Optional): Monopulse Ratio Experiment</h3>
-<p>Run <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%B8%83%E7%AB%A0/ch07_monopulse_demo.m"><code>ch07_monopulse_demo.m</code></a>to observe the sum beam, difference beam, and $\Delta/\Sigma$ curves. Focus on how the difference channel sign changes when the target is to the left or right of center; and whether $\Delta/\Sigma$ is more stable than $\Delta$ alone when the overall echo strength varies.</p></section>
+<p>所以这部雷达的波束宽度约为 $0.86^\circ$。</p>
+<h3 id="sub-159">7.7.4 练习 4：多径效应识别</h3>
+<p>某舰载雷达跟踪一架低空飞机。根据飞机高度和距离计算，真实俯仰角应约为 $10^\circ$，但雷达测得的俯仰角经常在 $8^\circ$ 到 $9^\circ$ 附近摆动。最可能的原因是什么？</p>
+<p>A. 接收机热噪声 B. 海面反射引起的多径效应 C. 目标距离分辨率不足 D. PRF 设置过低</p>
+<p>解析：最可能是 B。低空目标和海面之间容易形成反射路径，直射回波与反射回波叠加后会改变等效到达角。噪声通常表现为较随机的抖动。距离分辨率和 PRF 主要影响距离、速度相关问题，不是这里的主要矛盾。</p>
+<h3 id="sub-160">7.7.5 练习 5：分辨力和精度的区别</h3>
+<p>判断下面说法是否正确，并说明理由。</p>
+<ol><li>角分辨力好，表示两个相近角度的目标更容易分开。</li><li>测角精度好，表示单个目标的角度估计误差更小。</li><li>如果某雷达波束宽度是 $5^\circ$，它就绝对不能把单目标角度估计到 $1^\circ$ 以内。</li><li>如果单目标测角精度达到 $0.5^\circ$，就一定能分开相距 $0.5^\circ$ 的两个目标。</li></ol>
+<p>解析：1 和 2 正确。3 不一定正确，单目标估计可以比波束宽度更细。4 不正确，两个目标能否分开主要看角分辨力和回波形状，不能用单目标测角精度替代。</p>
+<h3 id="sub-161">7.7.6 练习 6：扫描测角与单脉冲测角</h3>
+<p>判断下面说法是否正确。</p>
+<ol><li>扫描测角通常需要比较多个波束指向下的回波强度。</li><li>单脉冲测角可以用一次回波中的和通道、差通道估计偏离角。</li><li>单脉冲测角完全不需要校准。</li><li>电子扫描没有等待回波的时间限制。</li></ol>
+<p>解析：1 和 2 正确。3 错，单脉冲比值和通道一致性都需要标校。4 错，波束切换可以很快，但每个方向仍要发射、等待回波并处理数据。</p>
+<h3 id="sub-162">7.7.7 练习 7（选做）：波束扫描测角实验</h3>
+<p>如果有配套 MATLAB 附件，可以运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%B8%83%E7%AB%A0/ch07_beam_scanning_demo.m"><code>ch07_beam_scanning_demo.m</code></a>，观察扫描角度与回波功率曲线之间的关系。重点看三件事：峰值是否出现在目标角度附近，两个目标靠近时两个峰是否融合，波束宽度变窄后曲线如何变化。</p>
+<h3 id="sub-163">7.7.8 练习 8（选做）：单脉冲比实验</h3>
+<p>运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%B8%83%E7%AB%A0/ch07_monopulse_demo.m"><code>ch07_monopulse_demo.m</code></a>，观察和波束、差波束和 $\Delta/\Sigma$ 曲线。重点看目标在中心左侧和右侧时差通道符号如何变化，以及目标整体回波强弱变化时 $\Delta/\Sigma$ 是否比单独的 $\Delta$ 更稳定。</p></section>
     </article>
+    <div class="article-actions"><a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%9A%E6%B5%8B%E8%A7%92.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%B8%83%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a></div>
   </main>
 </div>
 </body>

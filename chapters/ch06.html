@@ -1,100 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Chapter 6: Target Detection | Easy Radar Signal Processing Tutorial</title>
-  <meta name="description" content="Chapter 4 converted time delays in the echo into range, and Chapter 5 converted phase changes in the echo into velocity. At this point in the processing, a common misconception arises: doesn&#x27;t a peak in the range profile or range-Doppler map indicate a target?">
+  <title>第6章 目标检测 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="第4章把回波里的时间延迟变成了距离，第5章把回波里的相位变化变成了速度。处理到这一步，距离像或者距离-速度图上已经有了峰，但这个峰不等于目标。">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch06.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
-  <link rel="stylesheet" href="../assets/site.css?v=20260617-local-fonts-nav1">
+  <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-  <script defer src="../assets/site.js?v=20260613-site-theme"></script>
-
-  <style>
-    .home-topbar .nav-terminal {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-self: end;
-    }
-    .home-topbar .github-link {
-      justify-content: center;
-      width: 40px;
-      padding: 9px;
-    }
-    .home-topbar .nav-divider {
-      display: block;
-      flex: 0 0 1px;
-      width: 1px;
-      min-width: 1px;
-      height: 24px;
-      background: rgba(13, 71, 70, 0.18);
-    }
-    .language-switcher {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      border: 0;
-      border-radius: 999px;
-      background: transparent;
-      color: #0d4746;
-      text-decoration: none;
-      flex: 0 0 auto;
-    }
-    .language-switcher:hover { color: var(--teal); background: rgba(13, 71, 70, 0.07); }
-    .language-switcher .language-icon,
-    .language-switcher .language-icon svg { width: 21px; height: 21px; }
-    .language-switcher svg {
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-  </style>
+  <script defer src="../assets/site.js?v=20260506-code-font-fix"></script>
 </head>
-<body class="article-page"><div class="read-progress" aria-hidden="true"><span></span></div>
+<body><div class="read-progress" aria-hidden="true"><span></span></div>
 <header class="article-top">
-  <nav class="topbar home-topbar" aria-label="Site Navigation">
-    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="Tutorial Icon"><span>Easy Radar Tutorial</span></a>
-    <div class="toplinks nav-primary">
-      <a class="nav-link" href="../index.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5"></path><path d="M6.5 9.5V20h4v-5.5h3V20h4V9.5"></path></svg></span><span>Home</span></a>
-      <a class="nav-link" href="../index.html#chapters"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6.5h14"></path><path d="M5 12h14"></path><path d="M5 17.5h10"></path><path d="M3 6.5h.01"></path><path d="M3 12h.01"></path><path d="M3 17.5h.01"></path></svg></span><span>Chapters</span></a>
-      <a class="nav-link active" href="ch06.html" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5A3.5 3.5 0 0 1 8 2h11.5v18H8a3.5 3.5 0 0 0-3.5 2z"></path><path d="M8 2v18"></path><path d="M11 7h5"></path><path d="M11 11h4"></path></svg></span><span>Start Reading</span></a>
-      <a class="nav-link" href="https://github.com/apple-art/easy-radar-tutorial/releases/latest"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 9 5 5 5-5"></path><path d="M5 19h14"></path></svg></span><span>Resources</span></a>
-      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>More</span></a>
-    </div>
-    <div class="nav-terminal">
-      <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span></a>
-      <span class="nav-divider" aria-hidden="true"></span>
-      <a class="language-switcher" href="ch06.zh-CN.html" aria-label="Switch to Chinese" title="中文"><span class="nav-icon language-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg></span></a>
-      <span class="nav-divider" aria-hidden="true"></span>
-      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to black background" title="Black background"><span class="nav-icon theme-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" stroke="none"></path><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg></span></button>
-    </div>
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="教程图标"><span>Easy Radar Tutorial</span></a>
+    <div class="toplinks"><a href="../index.html">首页</a><a href="ch01.html">章节</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a><a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a></div>
   </nav>
-</header>
 </header>
 <div class="article-layout">
   <aside class="sidebar">
-    <a class="back-home" href="../index.html">← Home</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">Chapter 1: What is Radar</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">Chapter 2: Signal Fundamentals</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">Chapter 3: Transmitting and Receiving Radar Signals</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">Chapter 4: Range Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">Chapter 5: Velocity Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch06.html">Chapter 6: Target Detection</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch06-s01"><a class="toc-link" href="#ch06-s01">6.1 What Does Target Detection Determine</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-79">From Detections to Decision</a><a class="subtoc-link" href="#sub-80">Two Detection Hypotheses</a><a class="subtoc-link" href="#sub-81">Threshold Detection Rule</a></div></div><div class="toc-section" data-section="ch06-s02"><a class="toc-link" href="#ch06-s02">6.2 Detection Threshold and Fixed Threshold Detection</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-82">Fixed Threshold Detection</a><a class="subtoc-link" href="#sub-83">Consequences of Threshold Levels</a><a class="subtoc-link" href="#sub-84">Background Limitations on Fixed Thresholds</a></div></div><div class="toc-section" data-section="ch06-s03"><a class="toc-link" href="#ch06-s03">6.3 False Alarms, Missed Detections, and Detection Performance</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-85">False Alarm Rate, Missed Detection Rate, and Detection Probability</a><a class="subtoc-link" href="#sub-86">Threshold Trade-offs and ROC Curves</a><a class="subtoc-link" href="#sub-87">False Alarm Constraints and SNR</a></div></div><div class="toc-section" data-section="ch06-s04"><a class="toc-link" href="#ch06-s04">6.4 Constant False Alarm Rate Detection (CFAR)</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-88">From Fixed Threshold to Adaptive Threshold</a><a class="subtoc-link" href="#sub-89">CUT, Guard Cells, and Reference Cells</a><a class="subtoc-link" href="#sub-90">CA-CFAR Computation and Limitations</a></div></div><div class="toc-section" data-section="ch06-s05"><a class="toc-link" href="#ch06-s05">6.5 Plot Aggregation: From Detection Cells to Target Plots</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-91">Why a target lights up a patch of cells</a><a class="subtoc-link" href="#sub-92">Connected regions, local peaks, and plot parameters</a></div></div><div class="toc-section" data-section="ch06-s06"><a class="toc-link" href="#ch06-s06">6.6 Exercises</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-93">Exercise 1: Fixed threshold detection</a><a class="subtoc-link" href="#sub-94">Exercise 2: Consequences of raising the threshold</a><a class="subtoc-link" href="#sub-95">Exercise 3: False alarm rate, detection probability, and miss rate</a><a class="subtoc-link" href="#sub-96">Exercise 4: Fixed threshold under varying background</a><a class="subtoc-link" href="#sub-97">Exercise 5: A simplified CA-CFAR calculation</a><a class="subtoc-link" href="#sub-98">Exercise 6: The role of guard cells</a><a class="subtoc-link" href="#sub-99">Exercise 7: CA-CFAR failure scenarios</a><a class="subtoc-link" href="#sub-100">Exercise 8: From range-Doppler map to detection mask</a><a class="subtoc-link" href="#sub-101">Exercise 9: From detection mask to plots</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">Chapter 7 Angle Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">Chapter 8 Complete MATLAB Processing Pipeline</a></div></nav>
+    <a class="back-home" href="../index.html">← 首页</a>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch06.html">第6章 目标检测</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch06-s01"><a class="toc-link" href="#ch06-s01">目标检测</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-106">6.1 目标检测要判断什么</a><a class="subtoc-link" href="#sub-107">6.1.1 从亮点到判决</a><a class="subtoc-link" href="#sub-108">6.1.2 两种检测假设</a><a class="subtoc-link" href="#sub-109">6.1.3 阈值检测规则</a><a class="subtoc-link" href="#sub-110">6.2 检测阈值与固定阈值检测</a><a class="subtoc-link" href="#sub-111">6.2.1 固定阈值检测</a><a class="subtoc-link" href="#sub-112">6.2.2 阈值高低的后果</a><a class="subtoc-link" href="#sub-113">6.2.3 背景对固定阈值的限制</a><a class="subtoc-link" href="#sub-114">6.3 虚警、漏检与检测性能</a><a class="subtoc-link" href="#sub-115">6.3.1 虚警率、漏检率与检测概率</a><a class="subtoc-link" href="#sub-116">6.3.2 阈值权衡与 ROC 曲线</a><a class="subtoc-link" href="#sub-117">6.3.3 虚警约束与信噪比</a><a class="subtoc-link" href="#sub-118">6.4 恒虚警率检测（CFAR）</a><a class="subtoc-link" href="#sub-119">6.4.1 从固定阈值到局部阈值</a><a class="subtoc-link" href="#sub-120">6.4.2 CUT、保护单元和参考单元</a><a class="subtoc-link" href="#sub-121">6.4.3 CA-CFAR 的计算与局限</a><a class="subtoc-link" href="#sub-122">6.5 点迹凝聚：从检测单元到目标点迹</a><a class="subtoc-link" href="#sub-123">6.5.1 为什么一个目标会亮起一片单元</a><a class="subtoc-link" href="#sub-124">6.5.2 连通区域、局部峰值与点迹参数</a><a class="subtoc-link" href="#sub-125">6.6 小练习</a><a class="subtoc-link" href="#sub-126">6.6.1 练习 1：固定阈值判决</a><a class="subtoc-link" href="#sub-127">6.6.2 练习 2：阈值升高后的后果</a><a class="subtoc-link" href="#sub-128">6.6.3 练习 3：虚警率、检测概率和漏检率</a><a class="subtoc-link" href="#sub-129">6.6.4 练习 4：背景变化下的固定阈值</a><a class="subtoc-link" href="#sub-130">6.6.5 练习 5：一个简化的 CA-CFAR 计算</a><a class="subtoc-link" href="#sub-131">6.6.6 练习 6：保护单元的作用</a><a class="subtoc-link" href="#sub-132">6.6.7 练习 7：CA-CFAR 的失效场景</a><a class="subtoc-link" href="#sub-133">6.6.8 练习 8：从距离-速度图到检测掩码</a><a class="subtoc-link" href="#sub-134">6.6.9 练习 9：从检测掩码到点迹</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
+    <div class="article-meta"><span>第6章</span><span>目标检测</span></div>
     <article class="prose chapter-prose">
-      <h1>Chapter 6: Target Detection</h1>
-      <section class="chapter-section" data-section="ch06-s01"><h2 id="ch06-s01" class="section-title">6.1 What Does Target Detection Determine</h2>
-<p>Chapter 4 converted time delays in the echo into range, and Chapter 5 converted phase changes in the echo into velocity. At this point in the processing, a common misconception arises: doesn't a peak in the range profile or range-Doppler map indicate a target?</p>
-<p>Real radar data is never this clean. Peaks don't come only from targets: noise raises small spikes, clutter forms large background fluctuations, and sidelobes adjacent to strong targets create structures that look like targets. If we declared a target for every bump, false alarms would be too numerous to be usable.</p>
-<p>So Chapter 6 addresses a very practical decision problem: should we trust this peak or not?</p>
-<p>Prior processing has already produced the range profile or range-Doppler map; detection performs another screening on this map: cells that pass the threshold are marked as 1, those that don't are marked as 0. The resulting binary map is called a<strong>detection mask</strong>or<strong>detection map</strong>. Only cells marked as 1 in the detection mask proceed to plot generation and target list processing.</p>
-<h3 id="sub-79">From Detections to Decision</h3>
-<p>Detection decisions are clearest when viewed through a single range profile. Suppose after matched filtering, the amplitudes of 8 range bins in one segment are</p>
+      <h1>第6章 目标检测</h1>
+      <section class="chapter-section" data-section="ch06-s01"><h2 id="ch06-s01" class="section-title">目标检测</h2>
+<p>第4章把回波里的时间延迟变成了距离，第5章把回波里的相位变化变成了速度。处理到这一步，距离像或者距离-速度图上已经有了峰，但这个峰不等于目标。</p>
+<p>真实雷达数据没有这么干净。噪声会抬出小尖峰，杂波会形成大片背景起伏，强目标旁边的旁瓣也会制造看起来像目标的结构，峰值并不只来自目标。如果看到一个凸起就认定有目标，误报会多到无法使用。</p>
+<p>第6章要解决的，就是判断眼前这个峰到底该不该信。</p>
+<p>前面的处理已经给出了距离像或距离-速度图。检测要做的，是逐格判断每个位置是否超过门限，超过的记为 1，没超过的记为 0。这张 0/1 图就是<strong>检测掩码</strong>，也叫<strong>检测图</strong>。掩码中标为 1 的格子，才会进入点迹生成和目标列表整理流程。</p>
+<h3 id="sub-106">6.1 目标检测要判断什么</h3>
+<h3 id="sub-107">6.1.1 从亮点到判决</h3>
+<p>检测判决可以从一条距离像看得最清楚。假设匹配滤波之后，某一段距离像中 8 个距离单元的幅度为</p>
 <div class="math-block">$$
 0.8,
 1.1,
@@ -105,8 +46,8 @@
 1.0,
 0.7
 $$</div>
-<p>The amplitude of the 5th bin is 4.7, much higher than the surrounding background. Such a peak typically resembles a target, because the surroundings are mostly around 1, while it suddenly rises to 4.7.</p>
-<p>Now change the data slightly:</p>
+<p>第 5 个单元的幅度是 4.7，比周围背景高出很多。这样的峰通常很像目标，因为周围大多在 1 左右，而它突然抬到了 4.7。</p>
+<p>把数据稍微换一下：</p>
 <div class="math-block">$$
 0.8,
 1.1,
@@ -117,30 +58,30 @@ $$</div>
 1.0,
 0.7
 $$</div>
-<p>The 5th bin now has only 1.6. It's still higher than its surroundings, but this difference is no longer as reliable. It could be a weak target, or it could just be noise that happened to spike once. The difficulty in detection lies in these cells that are "not obvious enough, yet can't be casually dismissed."</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_1_detection_scene_excali.png" alt="Figure 6.1 Strong targets, weak targets, and noise fluctuations in range profile" loading="lazy"><figcaption>Figure 6.1 Strong targets, weak targets, and noise fluctuations in range profile</figcaption></figure>
-<p>In Figure 6.1, strong targets are easy to identify; the boundary between weak targets and noise fluctuations is more ambiguous. The detection problem addresses another layer of task: among a pile of fluctuations, distinguishing which bumps are worth trusting and which are just background coincidentally spiking.</p>
-<p>The same applies to the range-Doppler map. Each cell corresponds to a range and a velocity; the detector doesn't reinvent range and velocity, it only asks: is this cell's energy sufficiently trustworthy relative to the background? If trustworthy, it's marked as 1 in the detection mask; if not, it remains just a fluctuation on the map.</p>
-<h3 id="sub-80">Two Detection Hypotheses</h3>
-<p>Actual receiver output cannot be completely clean. Even without targets, receiver thermal noise, ground clutter, sea clutter, sidelobes, and spectral leakage will cause some cells to have non-zero values. Therefore, the observed value in a detection cell can be understood as two cases.</p>
-<p>When no target is present:</p>
+<p>第 5 个单元现在只有 1.6。它仍然比周围高，但这个差距已经不那么可靠。它可能是一个弱目标，也可能只是噪声恰好高了一次。检测的难点在于这类“不够明显，但又不能随便忽略”的格子。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_1_detection_scene_excali.png" alt="距离像中的强目标、弱目标和噪声起伏" loading="lazy"><figcaption>距离像中的强目标、弱目标和噪声起伏</figcaption></figure>
+<p>上图里强目标很容易判断，弱目标和噪声起伏之间的边界更模糊。检测要做的就是在这些起伏里分辨，哪个凸起值得相信，哪个只是背景偶然冒高了一下。</p>
+<p>在距离-速度图上也是同一件事。每个格子对应一个距离和一个速度，检测器不重新发明这两个量，只判断这个格子的能量相对背景是否足够可信。可信的标为 1，不可信的仍然只是图上的一个起伏。</p>
+<h3 id="sub-108">6.1.2 两种检测假设</h3>
+<p>实际接收输出不可能完全干净。即使没有目标，接收机热噪声、地杂波、海杂波、旁瓣和频谱泄漏也会让某些单元出现非零值。因此，一个检测单元里的观测值可分成两种情况理解。</p>
+<p>没有目标时：</p>
 <div class="math-block">$$
-\text{Observation} = \text{Noise/Clutter}
+\text{观测值} = \text{噪声/杂波}
 $$</div>
-<p>When a target is present:</p>
+<p>有目标时：</p>
 <div class="math-block">$$
-\text{Observation} = \text{Target Echo} + \text{Noise/Clutter}
+\text{观测值} = \text{目标回波} + \text{噪声/杂波}
 $$</div>
-<p>Many textbooks formulate this as a binary hypothesis test:</p>
+<p>很多教材会把这件事写成二元假设检验：</p>
 <div class="math-block">$$
 H_0: x = n
 $$</div>
 <div class="math-block">$$
 H_1: x = s+n
 $$</div>
-<p>Here $x$ is the observation in the current cell, $n$ denotes background noise or clutter, and $s$ denotes the target signal. $H_0$ represents "background only," and $H_1$ represents "target superimposed on background."</p>
-<p>This notation looks formal, but the meaning is quite straightforward: is this value merely a background fluctuation, or is a target truly superimposed on the background?</p>
-<p>Finding only local maxima cannot answer this question. For example</p>
+<p>这里的 $x$ 是当前单元的观测值，$n$ 表示背景噪声或杂波，$s$ 表示目标信号。$H_0$ 表示“这里只有背景”，$H_1$ 表示“目标叠加在背景上”。</p>
+<p>这个写法看起来正式，含义却很直白。眼前这个数值，到底只是背景起伏，还是背景上真的叠加了目标？</p>
+<p>只找局部最大值不能回答这个问题。比如</p>
 <div class="math-block">$$
 0.7,
 1.0,
@@ -148,24 +89,24 @@ $$</div>
 1.1,
 0.9
 $$</div>
-<p>The 3rd cell is indeed higher than its neighbors, but it may not be a true target. A local maximum only indicates it is the peak within this small segment, not that it is high enough to be credible. Detection also requires a decision criterion.</p>
-<h3 id="sub-81">Threshold Detection Rule</h3>
-<p>The most basic decision criterion is a threshold. Let the amplitude of the current cell be $x$ and the threshold be $T$. If</p>
+<p>第 3 个单元确实比左右两边都高，但它未必是真目标。局部最大只说明它是这一小段里的峰，不说明它高到了足以可信的程度。检测还需要一个判断标准。</p>
+<h3 id="sub-109">6.1.3 阈值检测规则</h3>
+<p>最基础的判断标准是阈值。设当前单元的幅度为 $x$，阈值为 $T$。若</p>
 <div class="math-block">$$
 x&gt;T
 $$</div>
-<p>declare a target; if</p>
+<p>就报目标。若</p>
 <div class="math-block">$$
 x\le T
 $$</div>
-<p>do not declare a target. Written as a decision rule:</p>
+<p>就不报目标。写成判决规则为</p>
 <div class="math-block">$$
 \begin{cases}
-\text{Declare target}, &amp;amp; x &amp;gt; T \\
-\text{Declare no target}, &amp;amp; x \le T
+\text{判有目标}, &amp; x &gt; T \\
+\text{判无目标}, &amp; x \le T
 \end{cases}
 $$</div>
-<p>If we express the detector output as a function, it can be written as</p>
+<p>如果用一个函数表示检测器的输出，可以写成</p>
 <div class="math-block">$$
 \delta(x)=
 \begin{cases}
@@ -173,36 +114,37 @@ $$</div>
 0, &amp; x \le T
 \end{cases}
 $$</div>
-<p>where $\delta(x)=1$ indicates the cell is marked as a target, and $\delta(x)=0$ indicates no target is declared. Applying this decision cell-by-cell to an entire range profile or range-Doppler map yields a detection mask.</p>
-<p>This rule appears straightforward, but it already carries a cost. Set the threshold too low, and noise easily masquerades as targets; set it too high, and weak targets slip through. Fixed thresholds, CFAR, and more complex statistical detection methods all ultimately convert a continuously varying observation into a binary "detect" or "no detect" decision. The main differences lie in how the threshold is derived, how the background is estimated, and how much false alarm and missed detection one is willing to tolerate.</p></section><section class="chapter-section" data-section="ch06-s02"><h2 id="ch06-s02" class="section-title">6.2 Detection Threshold and Fixed Threshold Detection</h2>
-<p>The previous section compressed the detection problem into a single question: how large must a cell's output value be to qualify as a target? This "how large" is the threshold.</p>
-<p>The threshold appears to be just a number, yet it determines the detector's stance: whether to favor reporting liberally and miss nothing, or to remain conservative and avoid false alarms.</p>
-<h3 id="sub-82">Fixed Threshold Detection</h3>
-<p>If the background is relatively stable, start with a constant as the threshold. Suppose that during a period without targets, range cell amplitudes typically fluctuate between 0.6 and 1.4. Setting the threshold to $T=2.0$ means values exceeding 2.0 are reported as targets, and those below are not. This is fixed-threshold detection.</p>
-<p>The rule remains</p>
+<p>其中 $\delta(x)=1$ 表示该单元被标为目标，$\delta(x)=0$ 表示不报目标。对一整条距离像或一整张距离-速度图逐格执行这个判决，就会得到一张检测掩码。</p>
+<p>这个规则看上去很直白，但阈值设低了容易把噪声当成目标，设高了容易把弱目标漏掉。固定阈值、CFAR 以及更复杂的统计检测方法，最后都要把一个连续变化的观测值变成”报”或”不报”，差别主要在于阈值怎么来、背景怎么估计、愿意承担多少虚警和漏检。</p>
+<h3 id="sub-110">6.2 检测阈值与固定阈值检测</h3>
+<p>上一节已经把检测问题归结为”某个单元的输出值，超过多大才算目标”。这个”多大”就是阈值。</p>
+<p>阈值只是一个数，但它决定了检测器偏向哪一侧，是宁可多报不放过，还是宁可保守不轻易触发。</p>
+<h3 id="sub-111">6.2.1 固定阈值检测</h3>
+<p>如果背景比较稳定，先用一个常数作为阈值。假设某段时间内没有目标时，距离单元幅度大多在 0.6 到 1.4 之间波动。此时把阈值设为 $T=2.0$，超过 2.0 就报目标，没超过就不报目标。这就是固定阈值检测。</p>
+<p>规则仍然是</p>
 <div class="math-block">$$
 \begin{cases}
-\text{Declare target}, &amp;amp; x &amp;gt; T \\
-\text{Declare no target}, &amp;amp; x \le T
+\text{判有目标}, &amp; x &gt; T \\
+\text{判无目标}, &amp; x \le T
 \end{cases}
 $$</div>
-<p>where $T$ is a preset constant. If the background hovers around 1 for extended periods, fluctuations like 1.1 or 1.2 typically aren't worth reporting; a cell suddenly reaching 4 or 5 looks much more like a target. The value of a fixed threshold lies in providing a baseline ruler that makes the detection action repeatable.</p>
-<p>For example, if $T=2.0$ and a cell outputs $x=4.7$, then because</p>
+<p>其中 $T$ 是预先设定好的常数。背景若长期在 1 左右，1.1、1.2 这类起伏通常不值得报告。某个单元突然到 4 或 5，就更像目标。固定阈值的价值在于给出一把基础标尺，让检测动作先变得可重复。</p>
+<p>例如，若 $T=2.0$，某单元输出 $x=4.7$，因为</p>
 <div class="math-block">$$
 4.7&gt;2.0
 $$</div>
-<p>it is judged as a target. If a cell outputs $x=1.1$, then because</p>
+<p>所以判为有目标。若某单元输出 $x=1.1$，因为</p>
 <div class="math-block">$$
 1.1&lt;2.0
 $$</div>
-<p>it is judged as no target. Such judgments are typically uncontroversial.</p>
-<p>Trouble arises in edge regions. If a cell outputs $x=1.9$, by the rule</p>
+<p>所以判为无目标。这样的判决通常没有太多争议。</p>
+<p>麻烦出在边缘区域。若某单元输出 $x=1.9$，按规则</p>
 <div class="math-block">$$
 1.9&lt;2.0
 $$</div>
-<p>it is still judged as no target. But 1.9 is already noticeably higher than the background—it could be a weak target or merely background fluctuation. A fixed threshold compresses complex judgment into a single number; the advantage is simplicity, the cost is sensitivity in edge cases.</p>
-<h3 id="sub-83">Consequences of Threshold Levels</h3>
-<p>Lowering the threshold makes weak targets easier to detect, but noise also crosses the threshold more easily. Consider a data set with no targets present:</p>
+<p>仍然判为无目标。但 1.9 已经比背景高不少，它可能是弱目标，也可能是背景起伏。固定阈值把复杂判断压成了一个数，优点是简单，代价是边缘情况会变得敏感。</p>
+<h3 id="sub-112">6.2.2 阈值高低的后果</h3>
+<p>阈值降低，弱目标更容易被检出，但噪声也更容易越过阈值。看一组没有目标时的数据：</p>
 <div class="math-block">$$
 0.9,
 1.1,
@@ -212,21 +154,21 @@ $$</div>
 1.5,
 0.8
 $$</div>
-<p>If the threshold is $T=2.0$, this data set will not trigger an alarm. If the threshold is lowered to $T=1.3$, both 1.4 and 1.5 will trigger alarms. The problem is that, by assumption, no targets are present—the alarms are entirely caused by background fluctuations.</p>
-<p>Conversely, raising the threshold reduces false alarms, but weak targets are more easily missed. Suppose a weak target produces a cell output of $x=2.8$. When the threshold is $T=2.0$,</p>
+<p>如果阈值是 $T=2.0$，这组数据不会触发报警。若把阈值降到 $T=1.3$，其中 1.4 和 1.5 都会报警。问题在于，这里假设并没有目标，报警完全由背景起伏造成。</p>
+<p>反过来，阈值升高会减少误报，但弱目标更容易被漏掉。假设某个弱目标所在单元的输出是 $x=2.8$。当阈值为 $T=2.0$ 时，</p>
 <div class="math-block">$$
 2.8&gt;2.0
 $$</div>
-<p>it can be detected. If the threshold is raised to $T=3.5$, then</p>
+<p>它能够被检出。若把阈值提高到 $T=3.5$，则</p>
 <div class="math-block">$$
 2.8&lt;3.5
 $$</div>
-<p>it will be classified as no target.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_2_threshold_comparison_excali.png" alt="Figure 6.2 Detection results for the same data under different thresholds" loading="lazy"><figcaption>Figure 6.2 Detection results for the same data under different thresholds</figcaption></figure>
-<p>Figure 6.2 shows the results for the same data under different thresholds. With a low threshold, more cells trigger alarms, some of which may be merely background. With a high threshold, fewer cells alarm, but weak targets may also fall below the threshold. The detector faces a tradeoff from the start: be conservative or be sensitive.</p>
-<h3 id="sub-84">Background Limitations on Fixed Thresholds</h3>
-<p>A fixed threshold also assumes the background level does not vary too widely. If the background is roughly uniform across the entire map, a constant threshold may still work. In real radar maps, the background often varies with range, azimuth, velocity cell, or environmental conditions.</p>
-<p>For example, in the same range profile there are two regions. Region A has a background roughly around 1:</p>
+<p>它会被判为无目标。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_2_threshold_comparison_excali.png" alt="同一组数据在不同阈值下的检测结果" loading="lazy"><figcaption>同一组数据在不同阈值下的检测结果</figcaption></figure>
+<p>上图是同一组数据在不同阈值下的结果。阈值低时报警单元更多，其中一部分可能只是背景，阈值高时报警单元减少，弱目标也可能被挡住。这个矛盾从一开始就存在，没有办法同时兼顾。</p>
+<h3 id="sub-113">6.2.3 背景对固定阈值的限制</h3>
+<p>固定阈值还有一个前提，背景水平不能差得太远。若整张图的背景都差不多，一个常数阈值可能还能使用。真实雷达图上，背景常随距离、方位、速度单元或环境变化而变化。</p>
+<p>例如，同一条距离像中有两个区域。区域 A 背景大致在 1 左右：</p>
 <div class="math-block">$$
 0.8,
 1.0,
@@ -236,7 +178,7 @@ $$</div>
 1.0,
 0.8
 $$</div>
-<p>With a fixed threshold $T=2.0$, the 2.6 in the middle will be detected. Region B has an elevated background around 4 to 6:</p>
+<p>若固定阈值 $T=2.0$，中间的 2.6 会被检出。区域 B 的背景抬高到 4 到 6 附近：</p>
 <div class="math-block">$$
 4.2,
 4.8,
@@ -246,58 +188,60 @@ $$</div>
 4.9,
 4.4
 $$</div>
-<p>Using the same $T=2.0$, nearly the entire region will alarm. Region B does not have targets everywhere; the problem is that the threshold is below the background level in that area.</p>
-<p>If the fixed threshold is raised to 6.0to accommodate Region B, some real but weak targets in Region A may be missed. A single global constant can hardly adapt to both clean regions and clutter regions simultaneously. Fixed thresholds are suitable for building initial intuition and for simplified scenarios with stable backgrounds; when the background varies significantly, the threshold needs to adjust with the local background.</p></section><section class="chapter-section" data-section="ch06-s03"><h2 id="ch06-s03" class="section-title">6.3 False Alarms, Missed Detections, and Detection Performance</h2>
-<p>As seen in the previous section, the threshold cannot be both low and high at the same time. When the threshold is lowered, weak targets are more easily detected, but noise also crosses the threshold more easily. When the threshold is raised, false alarms decrease, but weak targets are also more easily blocked.</p>
-<p>In engineering practice, one cannot design a detector based solely on 'feels about right'; explicit metrics are needed to describe detection performance: how frequently false alarms occur, and how likely it is to miss a target.</p>
-<h3 id="sub-85">False Alarm Rate, Missed Detection Rate, and Detection Probability</h3>
-<p>These two types of errors cannot be discussed together.</p>
-<p>When the detector reports 'target present' when there is actually no target, this is called a<strong>false alarm</strong>. In a large number of no-target tests, the proportion of false alarms is called the<strong>false alarm rate</strong>, denoted as $P_{FA}$.</p>
-<p>When a target is actually present but the detector fails to report it, this is called a<strong>miss</strong>. The miss probability is commonly denoted as $P_M$. Correspondingly, when a target is actually present and the detector successfully reports it, the probability is called the<strong>detection probability</strong>, denoted as $P_D$. When a target is present, it is either detected or missed, so</p>
+<p>同样使用 $T=2.0$，几乎整片区域都会报警。区域 B 并不是到处都有目标，问题出在阈值低于那一带的背景水平。</p>
+<p>如果为了适应区域 B，把固定阈值抬到 6.0，区域 A 中一些真实但较弱的目标又可能被漏掉。一个全局常数很难同时适应干净区域和杂波区域。固定阈值适合背景稳定的简化场景，背景明显变化时就需要让阈值跟着本地背景调整。</p>
+<h3 id="sub-114">6.3 虚警、漏检与检测性能</h3>
+<p>上一节已经看到，阈值不可能同时取低又取高。降低阈值，弱目标更容易被检出，但噪声也更容易越过。提高阈值，误报会少，但弱目标也更容易漏掉。</p>
+<p>工程上不能只凭”感觉差不多”来设计检测器，需要用明确的指标描述检测性能，比如误报出现得多频繁，漏掉目标的概率有多大。</p>
+<h3 id="sub-115">6.3.1 虚警率、漏检率与检测概率</h3>
+<p>这两类错误不能混在一起讨论。</p>
+<p>在实际上没有目标时，检测器却报出了“有目标”，这叫<strong>虚警</strong>。在大量无目标测试中，虚警出现的比例称为<strong>虚警率</strong>，记作 $P_{FA}$。</p>
+<p>在实际上有目标时，检测器却没有报出来，这叫<strong>漏检</strong>，漏检概率常记作 $P_M$。与之对应，在实际上有目标时，检测器成功报出目标的概率称为<strong>检测概率</strong>，记作 $P_D$。有目标时，要么检出，要么漏检，因此</p>
 <div class="math-block">$$
 P_D = 1 - P_M
 $$</div>
-<p>Consider a counting example. A radar operates 100 times under target-free conditions, and alarms are triggered 8 times. Then the</p>
+<p>看一个计数例子。让雷达在无目标条件下工作 100 次，结果有 8 次报警，那么</p>
 <div class="math-block">$$
 P_{FA} = \frac{8}{100} = 0.08
 $$</div>
-<p>false alarm rate is 8%. Next, the radar operates 100 times under target-present conditions, successfully reporting the target 83 times and failing to report it 17 times. Then</p>
+<p>虚警率为 8%。再让雷达在有目标条件下工作 100 次，成功报出目标 83 次，没有报出 17 次，则</p>
 <div class="math-block">$$
 P_D = \frac{83}{100} = 0.83
 $$</div>
 <div class="math-block">$$
 P_M = \frac{17}{100} = 0.17
 $$</div>
-<p>These metrics decompose "detection performance" into comparable quantities. A detector may have few false alarms but many misses, or high detection rate but many false alarms. Simply saying "looks acceptable" is insufficient—at minimum, one must state what detection probability it achieves at a given false alarm level.</p>
-<h3 id="sub-86">Threshold Trade-offs and ROC Curves</h3>
-<p>Suppose background noise amplitude is mostly distributed between 0 and 2, while weak target signals superimposed on background are mostly distributed between 1 and 3. The two ranges overlap: some larger noise samples reach 1.8 or 1.9, while weaker target samples may only be 1.5 or 1.7.</p>
-<p>Whenever two sample classes overlap, no perfect decision boundary exists. Setting the threshold at 1.2 allows many targets to be detected, but many noise samples will also cross the line; setting the threshold at 2.5 reduces false alarms, but some weak targets will also be blocked.</p>
-<div class="table-wrap"><table><thead><tr><th>Threshold</th><th>Detection probability $P_D$</th><th>False alarm rate $P_{FA}$</th></tr></thead><tbody><tr><td>1.2</td><td>0.97</td><td>0.22</td></tr><tr><td>1.8</td><td>0.88</td><td>0.08</td></tr><tr><td>2.5</td><td>0.65</td><td>0.01</td></tr></tbody></table></div>
-<p>The table shows that when the threshold is set to 1.2, detection probability is high but false alarm rate is also high; when the threshold is set to 2.5, false alarm rate is low but detection probability also drops; a threshold of 1.8 lies in the middle. Such tables are very useful in engineering because they present the tradeoff between "sensitivity" and "reliability" in a single view.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_3_distribution_tradeoff_excali.png" alt="Figure 6.3 Threshold tradeoff when noise samples and target samples overlap" loading="lazy"><figcaption>Figure 6.3 Threshold tradeoff when noise samples and target samples overlap</figcaption></figure>
-<p>Figure 6.3 illustrates this dilemma using two distributions. The blue region represents background noise, and the orange region represents the output after a target is superimposed on the background. Moving the threshold left allows more targets to exceed it, but also more noise; moving it right reduces false crossings by noise, but also makes weaker targets easier to miss.</p>
-<p>Connecting the $(P_{FA}, P_D)$ points corresponding to different thresholds produces the ROC curve.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_4_roc_curve_excali.png" alt="Figure 6.4 Tradeoff curve between detection probability and false alarm rate" loading="lazy"><figcaption>Figure 6.4 Tradeoff curve between detection probability and false alarm rate</figcaption></figure>
-<p>The ROC curve plots false alarm rate on the horizontal axis and detection probability on the vertical axis. A curve closer to the upper left indicates that high detection probability can be maintained even at low false alarm rates. When starting out, there's no need to derive the statistical origins of the ROC—focus first on reading it: the same detector operating at different thresholds moves along the curve; achieving higher $P_D$ typically requires accepting higher $P_{FA}$.</p>
-<h3 id="sub-87">False Alarm Constraints and SNR</h3>
-<p>Real systems often begin by specifying an acceptable false alarm level. For example, allowing on average only 1 false alarm per 1000 target-free cells, or ensuring the number of false alarms in each range-Doppler map doesn't overwhelm downstream processing. With such requirements established, the threshold is then selected accordingly.</p>
-<p>This is the idea behind "designing the threshold based on false alarm rate." Complete detection theory further discusses the Neyman-Pearson criterion: maximizing detection probability under a given false alarm rate constraint. This book retains that background but does not develop the likelihood ratio test derivation.</p>
-<p>Another quantity affecting detection difficulty is <strong>signal-to-noise ratio</strong> (Signal-to-Noise Ratio, SNR). In power form it can be written as</p>
+<p>这些指标把“检测效果好不好”拆成了可以比较的量。一个检测器可能虚警少但漏检多，也可能检出率高但虚警多。只说“看起来还行”不够，至少要说明它在哪个虚警水平下达到怎样的检测概率。</p>
+<h3 id="sub-116">6.3.2 阈值权衡与 ROC 曲线</h3>
+<p>假设背景噪声的幅度大多分布在 0 到 2 之间，弱目标叠加背景后的输出大多分布在 1 到 3 之间。两个范围有重叠，一些较大的噪声样本会到 1.8、1.9，较弱的目标样本也可能只有 1.5、1.7。</p>
+<p>只要两类样本有重叠，就不存在一条完美分界线。阈值设在 1.2，很多目标能检出，但不少噪声样本也会越线。阈值设在 2.5，虚警会少，但一些弱目标也会被挡住。</p>
+<div class="table-wrap"><table><thead><tr><th>阈值</th><th>检测概率 $P_D$</th><th>虚警率 $P_{FA}$</th></tr></thead><tbody><tr><td>1.2</td><td>0.97</td><td>0.22</td></tr><tr><td>1.8</td><td>0.88</td><td>0.08</td></tr><tr><td>2.5</td><td>0.65</td><td>0.01</td></tr></tbody></table></div>
+<p>从表中可以看到，阈值取 1.2 时检测概率高，虚警率也高。阈值取 2.5 时虚警率低，检测概率也降下来。阈值取 1.8 处在中间位置。这类表格在工程上很有用，它把不同阈值下虚警率和检测概率的对应关系直接摆出来，方便权衡。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_3_distribution_tradeoff_excali.png" alt="噪声样本和目标样本重叠时的阈值权衡" loading="lazy"><figcaption>噪声样本和目标样本重叠时的阈值权衡</figcaption></figure>
+<p>上图用两个分布展示了这个矛盾。蓝色区域代表背景噪声，橙色区域代表目标叠加背景后的输出。阈值往左移，更多目标越过阈值，更多噪声也越过阈值。阈值往右移，噪声越线变少，弱目标也更容易被漏掉。</p>
+<p>把不同阈值对应的 $(P_{FA},P_D)$ 点连起来，就得到 ROC 曲线。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_4_roc_curve_excali.png" alt="检测概率和虚警率之间的权衡曲线" loading="lazy"><figcaption>检测概率和虚警率之间的权衡曲线</figcaption></figure>
+<p>ROC 曲线的横轴是虚警率，纵轴是检测概率。曲线越靠左上，说明在较低虚警率下仍能保持较高检测概率。同一个检测器在不同阈值下会沿着曲线移动，想要更高的 $P_D$，通常要接受更高的 $P_{FA}$。</p>
+<h3 id="sub-117">6.3.3 虚警约束与信噪比</h3>
+<p>实际系统常常先规定一个可以接受的虚警水平。例如，每 1000 个无目标单元平均只允许 1 个虚警，或者每一帧距离-速度图中虚警数量不能多到淹没后端处理。有了这样的要求，再去选择阈值。</p>
+<p>这就是“按虚警率设计阈值”的思路。完整的检测理论会进一步讨论 Neyman-Pearson 准则：在给定虚警率约束下尽量提高检测概率。本书只保留这个背景，不展开似然比检验推导。</p>
+<p>另一个影响检测难度的量是<strong>信噪比</strong>（Signal-to-Noise Ratio, 信噪比）。功率形式下可以写成</p>
 <div class="math-block">$$
-\text{SNR}=\frac{P_s}{P_n}
+\text{信噪比}=\frac{P_s}{P_n}
 $$</div>
-<p>where $P_s$ is the target signal power and $P_n$ is the noise power. When SNR is high, target samples and background samples separate more easily; when SNR is low, the two classes overlap more, and the same threshold more readily produces both false alarms and missed detections.</p>
-<p>The threshold makes the decision; SNR determines how difficult that decision is. If the target itself is weak and the background is strong, no amount of threshold adjustment can eliminate all errors. What a detector can do is maximize detection capability at an acceptable false alarm level.</p>
-<p>A fixed threshold imposes this tradeoff on a single global value. If the background across the entire map is stable, this value can work; if the background rises or falls in different regions, the same threshold will be too low in some places and too high in others. CFAR is designed precisely for this situation.</p></section><section class="chapter-section" data-section="ch06-s04"><h2 id="ch06-s04" class="section-title">6.4 Constant False Alarm Rate Detection (CFAR)</h2>
-<p>When discussing thresholds in previous sections, there has been a hidden assumption: the background is roughly stable. Only under this assumption does a fixed threshold work like a universal ruler that can be applied anywhere with roughly consistent results.</p>
-<p>Real environments are rarely like this. Clutter may be stronger at close range, the noise floor may be lower at long range, terrain, sea waves, or rain cells may exist in certain directions, and fluctuation levels in different regions of the range-Doppler map can vary dramatically. A fixed threshold easily produces this result: too high in quiet regions, too low in noisy regions.</p>
-<h3 id="sub-88">From Fixed Threshold to Adaptive Threshold</h3>
-<p>CFAR stands for Constant False Alarm Rate, commonly translated as<strong>constant false alarm rate</strong>. Its starting point is to change the threshold from a hard-coded constant to a quantity that automatically adapts based on the surrounding background.</p>
-<p>Look again at the two regions from before. Region A has a background around 1, and the center value of 2.6 does stand out considerably; Region B has a background around 5, and the center value of 5.8 is not prominent. If a fixed threshold $T=2.0$ is used, Region B will trigger many alarms. If each position first examines the nearby background and then sets the threshold to some multiple of that background, Regions A and B will receive different thresholds.</p>
-<p>This process can be summarized in three steps: first estimate the background level near the current cell, then leave headroom according to the target false alarm rate, and finally compare the current cell against this local threshold.</p>
-<p>On a one-dimensional range profile, it appears as a sliding window; on a two-dimensional range-Doppler map, it appears as a neighborhood window surrounding a given cell. The following uses a one-dimensional window for illustration, as it makes the roles of the CUT, guard cells, and reference cells easiest to see.</p>
-<h3 id="sub-89">CUT, Guard Cells, and Reference Cells</h3>
-<p>The current cell being judged is called the<strong>Cell Under Test</strong>, commonly written as CUT (Cell Under Test). Suppose a sequence of data is</p>
+<p>其中 $P_s$ 是目标信号功率，$P_n$ 是噪声功率。信噪比高时，目标样本和背景样本更容易分开。信噪比低时，两类样本重叠更多，同样的阈值更容易同时带来虚警和漏检。</p>
+<p>阈值负责做判决，信噪比 决定这个判决有多难。若目标本身很弱、背景又强，阈值再怎么调，也不可能把所有错误消掉。检测器能做的是在可接受的虚警水平下尽量提高检出能力。</p>
+<p>固定阈值把这个取舍压在一个全局数值上。若整张图背景稳定，这个数还可以工作。若背景在不同区域抬高或降低，同一个阈值就会在某些地方过低，在另一些地方过高。CFAR 正是为这种情况准备的。</p>
+<h3 id="sub-118">6.4 恒虚警率检测（CFAR）</h3>
+<p>前面几节讨论阈值时，一直默认背景大致稳定。只有在这个前提下，固定阈值才像一把通用尺子，放到哪里都差不多能用。</p>
+<p>真实环境往往不是这样。近距离可能杂波更强，远距离噪声底可能更低，某些方位上有地物、海浪或雨区，距离-速度图不同区域的起伏水平也可能完全不同。这时固定阈值容易在安静区域偏高，在嘈杂区域又偏低。</p>
+<h3 id="sub-119">6.4.1 从固定阈值到局部阈值</h3>
+<p>CFAR 是 Constant False Alarm Rate 的缩写，通常译为<strong>恒虚警率</strong>。它的出发点是把阈值从写死的常数，改成根据周围背景自动调整的量。</p>
+<p>仍然看前面的两个区域。区域 A 背景在 1 左右，中间 2.6 确实高出不少。区域 B 背景在 5 左右，中间 5.8 并不突出。如果用固定阈值 $T=2.0$，区域 B 会大量报警。若每个位置都先看附近背景，再把阈值设成背景的若干倍，区域 A 和区域 B 就会得到不同阈值。</p>
+<p>具体做法是先估计当前单元附近的背景水平，按目标虚警率留出余量，再把当前单元与这个局部阈值比较。</p>
+<p>在一维距离像上，它表现为滑动窗口。在二维距离-速度图上，它表现为围绕某个格子的邻域窗口。下面用一维窗口说明，因为它最容易看清 CUT、保护单元和参考单元的作用。</p>
+<h3 id="sub-120">6.4.2 CUT、保护单元和参考单元</h3>
+<p>要判断的当前单元称为<strong>被检测单元</strong>，常写成 CUT（Cell Under Test）。假设一串数据为</p>
 <div class="math-block">$$
 1.0,
 1.1,
@@ -307,43 +251,43 @@ $$</div>
 1.0,
 1.1
 $$</div>
-<p>The center value of 3.2 is the CUT. If the surrounding 6 cells are used to estimate the background, the mean is</p>
+<p>中间的 3.2 是 CUT。若用周围 6 个单元估计背景，平均值为</p>
 <div class="math-block">$$
 \hat P_n=\frac{1.0+1.1+0.9+1.2+1.0+1.1}{6}=1.05
 $$</div>
-<p>If the threshold is set to 3 times the background estimate, then</p>
+<p>如果阈值取背景估计的 3 倍，则</p>
 <div class="math-block">$$
 T=3\times1.05=3.15
 $$</div>
-<p>The CUT is 3.2, satisfying</p>
+<p>CUT 为 3.2，满足</p>
 <div class="math-block">$$
 3.2&gt;3.15
 $$</div>
-<p>so it is judged as a target. This example already contains the main actions of CFAR: local background estimation, local threshold generation, and local decision making.</p>
-<p>In real processing, cells immediately adjacent to the CUT cannot be used for background estimation. Target responses usually don't land in just one cell; mainlobe edges and sidelobes may affect nearby cells. If these cells participate in averaging, the background estimate will be elevated by target energy, the threshold will rise accordingly, and weak targets become more likely to be missed.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_5_guard_cells_why_excali.png" alt="Figure 6.5 Why cells immediately adjacent to the CUT cannot directly participate in background estimation" loading="lazy"><figcaption>Figure 6.5 Why cells immediately adjacent to the CUT cannot directly participate in background estimation</figcaption></figure>
-<p>Therefore, on both sides of the CUT, there will be<strong>Guard Cells</strong>(Guard Cells). Guard cells do not participate in background estimation; they only serve to separate the CUT from the reference region. A set of cells farther away are called<strong>Reference Cells</strong>(Reference Cells), used to estimate the local background.</p>
-<p>The window for one-dimensional CA-CFAR can be written as</p>
+<p>于是判为目标。CFAR 的核心动作在上面已经完整走了一遍：从 CUT 附近的参考单元估计背景，乘以系数得到局部阈值，再比较 CUT 和阈值。</p>
+<p>真实处理中，紧挨着 CUT 的单元不能用于背景估计。目标响应通常不只落在一个格子上，主瓣边缘和旁瓣可能影响附近单元。若这些单元参与平均，背景估计会被目标能量抬高，阈值随之变高，弱目标反而更容易被漏掉。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_5_guard_cells_why_excali.png" alt="为什么紧邻 CUT 的单元不能直接参与背景估计" loading="lazy"><figcaption>为什么紧邻 CUT 的单元不能直接参与背景估计</figcaption></figure>
+<p>因此，CUT 两侧会留出<strong>保护单元</strong>（Guard Cells）。保护单元不参与背景估计，只负责隔开 CUT 和参考区域。更远处的一批单元称为<strong>参考单元</strong>（Reference Cells），用来估计局部背景。</p>
+<p>一维 CA-CFAR 的窗口可以写成</p>
 <div class="math-block">$$
-\text{Reference} \quad \text{Reference} \quad \text{Guard} \quad \boxed{\text{CUT}} \quad \text{Guard} \quad \text{Reference} \quad \text{Reference}
+\text{参考} \quad \text{参考} \quad \text{保护} \quad \boxed{\text{CUT}} \quad \text{保护} \quad \text{参考} \quad \text{参考}
 $$</div>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_6_cfar_window_excali.png" alt="Figure 6.6 Structure of reference cells, guard cells, and CUT in one-dimensional CA-CFAR" loading="lazy"><figcaption>Figure 6.6 Structure of reference cells, guard cells, and CUT in one-dimensional CA-CFAR</figcaption></figure>
-<p>Guard cells answer "which locations may already be affected by the target and are unsuitable for background estimation"; reference cells answer "how high the background is in this region". Once these two roles are clarified, the CFAR window structure becomes straightforward.</p>
-<h3 id="sub-90">CA-CFAR Computation and Limitations</h3>
-<p>The most basic type of CFAR is CA-CFAR, where CA stands for Cell Averaging. It estimates the background power or amplitude using the average of the reference cells, then multiplies by a threshold factor to form a local threshold.</p>
-<p>In power form, this can be written as</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_6_cfar_window_excali.png" alt="一维 CA-CFAR 的参考单元、保护单元和 CUT 结构" loading="lazy"><figcaption>一维 CA-CFAR 的参考单元、保护单元和 CUT 结构</figcaption></figure>
+<p>保护单元的作用是隔开目标可能影响的区域，防止目标能量污染背景估计。参考单元用来估计这一带背景有多高。角色分开，CFAR 的窗口结构就清楚了。</p>
+<h3 id="sub-121">6.4.3 CA-CFAR 的计算与局限</h3>
+<p>最基础的一类 CFAR 是 CA-CFAR，CA 表示 Cell Averaging，即单元平均。它用参考单元的平均值估计背景功率或幅度，再乘以阈值系数，形成局部阈值。</p>
+<p>功率形式下可以写成</p>
 <div class="math-block">$$
 T=\alpha\hat P_n
 $$</div>
-<p>where $\hat P_n$ is the local background estimated from the reference cells, and $\alpha$ is the threshold factor. Then compare</p>
+<p>其中 $\hat P_n$ 是参考单元估计出的局部背景，$\alpha$ 是阈值系数。然后比较</p>
 <div class="math-block">$$
 \begin{cases}
-\text{Detect target}, &amp;amp; P_{CUT} &amp;gt; T \\
-\text{No target}, &amp;amp; P_{CUT} \le T
+\text{判有目标}, &amp; P_{CUT} &gt; T \\
+\text{判无目标}, &amp; P_{CUT} \le T
 \end{cases}
 $$</div>
-<p>$\alpha$ cannot be omitted. If the threshold only equals the background average, slightly higher fluctuations in the background can easily cross the line, resulting in many false alarms. $\alpha$ provides a safety margin: the larger $\alpha$ is, the higher the threshold, the fewer false alarms, but weak targets also become harder to detect. The rigorous relationship between $\alpha$ and $P_{FA}$ requires assuming a background distribution, which this book does not derive in detail.</p>
-<p>Consider a simplified calculation. The CUT power is 12, and the reference cell powers on both sides are</p>
+<p>$\alpha$ 不能省。若阈值只等于背景平均值，背景中稍高一点的起伏就很容易越线，虚警会很多。$\alpha$ 越大，阈值越高，虚警越少，弱目标也越难检出，它正是用来留出这份安全余量的。严格的 $\alpha$ 与 $P_{FA}$ 关系需要假设背景分布，本书不展开推导。</p>
+<p>看一个简化计算。CUT 的功率为 12，两侧参考单元功率为</p>
 <div class="math-block">$$
 3,
 4,
@@ -352,86 +296,88 @@ $$</div>
 3,
 5
 $$</div>
-<p>The reference cell average is</p>
+<p>参考单元平均值为</p>
 <div class="math-block">$$
 \hat P_n=\frac{3+4+5+4+3+5}{6}=4
 $$</div>
-<p>If $\alpha=2$, then</p>
+<p>若 $\alpha=2$，则</p>
 <div class="math-block">$$
 T=\alpha\hat P_n=2\times4=8
 $$</div>
-<p>Since</p>
+<p>因为</p>
 <div class="math-block">$$
 12&gt;8
 $$</div>
-<p>the CUT is declared as a target.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_7_fixed_vs_cfar_excali.png" alt="Figure 6.7 Comparison of fixed threshold and CFAR in non-uniform background" loading="lazy"><figcaption>Figure 6.7 Comparison of fixed threshold and CFAR in non-uniform background</figcaption></figure>
-<p>Figure 6.7 compares fixed threshold and CFAR on the same range profile with non-uniform background. The fixed threshold is a horizontal line that easily produces consecutive false alarms when the background rises; the CFAR threshold follows local background variations, providing different thresholds in different regions.</p>
-<p>CA-CFAR also has limitations. It assumes reference cells represent the local background. If another strong target contaminates the reference cells, the average will be elevated and weak targets may be missed; if the window straddles a clutter edge with high background on one side and low on the other, simple averaging may not be appropriate; when targets are dense, reference cells can hardly maintain pure background.</p>
-<p>These limitations do not overturn the CFAR framework. The CUT, guard cells, and reference cells still exist; the change mainly occurs in how to estimate background using reference cells.</p>
-<p>One common variant is <strong>GO-CFAR</strong>, where GO stands for Greatest Of. It computes the reference cells on the left and right sides of the CUT separately—calculating an average on the left and another on the right—then takes the larger of the two as the background estimate. This approach is conservative: if the window straddles a clutter edge, the high-background side raises the threshold, reducing false alarms near clutter edges. The cost is that the threshold may be too high, making weak targets near high-clutter regions more easily missed.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_8_go_cfar_excali.png" alt="Figure 6.8 GO-CFAR takes the larger background estimate at clutter edges" loading="lazy"><figcaption>Figure 6.8 GO-CFAR takes the larger background estimate at clutter edges</figcaption></figure>
-<p>Another common variant is <strong>OS-CFAR</strong>, where OS stands for Ordered Statistic. It first sorts the reference cell values in ascending order, then selects the value at a certain rank position as the background estimate. The advantage is that one or two exceptionally strong reference cells do not elevate the threshold as much as averaging would, so OS-CFAR is commonly used when targets are dense and the reference window is easily contaminated by other targets. The cost is an additional rank position parameter; choosing a higher position makes detection more conservative, while choosing a lower position may lead to more false alarms.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_9_os_cfar_excali.png" alt="Figure 6.9 OS-CFAR sorts reference cells and selects a rank value" loading="lazy"><figcaption>Figure 6.9 OS-CFAR sorts reference cells and selects a rank value</figcaption></figure>
-<p>Therefore, CA-CFAR is suitable for introductory scenarios with relatively uniform backgrounds; GO-CFAR emphasizes suppressing false alarms at clutter edges; OS-CFAR emphasizes maintaining stable background estimation under multi-target or outlier contamination. They address different problems, but all do the same thing: first estimate the background around the CUT, then compare the current cell against a local threshold.</p></section><section class="chapter-section" data-section="ch06-s05"><h2 id="ch06-s05" class="section-title">6.5 Plot Aggregation: From Detection Cells to Target Plots</h2>
-<p>After making cell-by-cell decisions with a fixed threshold or CFAR, the system obtains a detection mask: which range cells and velocity cells passed the detection threshold. But each 1 in this binary map does not necessarily represent an independent target.</p>
-<p>If reported cell by cell, the same car, aircraft, or rain cluster could be split into multiple targets. Here we first understand a plot as a candidate target record; plot clustering handles the post-detection consolidation work: merging or filtering adjacent alarms to form target plots that are easier for downstream processing to use.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_10_point_consolidation_excali.png" alt="Figure 6.10 From range-velocity response to detection mask, then to plots" loading="lazy"><figcaption>Figure 6.10 From range-velocity response to detection mask, then to plots</figcaption></figure>
-<p>Figure 6.10 shows these three layers together: the range-velocity map preserves continuously varying response magnitude; the detection mask retains only positions above threshold; plot clustering then consolidates adjacent alarms into a small number of candidate target records.</p>
-<h3 id="sub-91">Why a target lights up a patch of cells</h3>
-<p>An ideal point target can be thought of as falling into only one range-velocity cell; actual range-velocity maps are often wider. The mainlobe after pulse compression has width, the spectral peak after FFT also has width, and windowing functions, sidelobes, target extent, and grid position all cause energy to spread to nearby cells. As long as nearby cells also exceed the threshold, they will all become 1 in the detection mask.</p>
-<p>For example, the detection result in a local range-velocity region is:</p>
-<div class="table-wrap"><table><thead><tr><th>Velocity bin / Range bin</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th></tr></thead><tbody><tr><td>+2</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>+1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr></tbody></table></div>
-<p>These 5 detection cells are very likely from the same target's response, not 5 targets arranged in a cross pattern. Without clustering, the target list would be filled with duplicate alarms, interfering with subsequent display, track processing, and manual interpretation.</p>
-<p>Therefore, the first step after detection is to see whether adjacent alarms belong to the same candidate region, then decide how to report them.</p>
-<h3 id="sub-92">Connected regions, local peaks, and plot parameters</h3>
-<p>An intuitive approach is to first find<strong>connected regions</strong>. In a1D range profile, adjacent range cells that are consecutively 1 can be treated as a group; in a 2D range-velocity map, detection cells adjacent in range or velocity direction can also be grouped together. In engineering implementation, 4-connectivity or 8-connectivity can be used; at the introductory stage, just grasp one point: alarms that are next to each other are first treated as a candidate target region.</p>
-<p>After finding a region, a representative position must be selected. A simple rule is to take the cell with the maximum original magnitude or power as the peak point of this region. For the cross-shaped region above, if the strongest response appears at range bin 14, velocity bin +1, the plot position can be recorded as this cell, along with magnitude, SNR, region size, and other information.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_11_region_peak_excali.png" alt="Figure 6.11 Connected regions and peak point selection" loading="lazy"><figcaption>Figure 6.11 Connected regions and peak point selection</figcaption></figure>
-<p>Figure 6.11 The left side shows adjacent alarms in the detection mask, while the right side places the original response magnitudes back into the same region. The strongest cell within the region is selected as the peak point, and its position becomes the representative position for this plot.</p>
-<p>Some systems do not explicitly find connected regions first, but instead perform<strong>local peak filtering</strong>: a detection cell is retained only if it appears more peak-like than neighboring cells in both the range and velocity directions. This approach is not contradictory to the connected-region method. Both aim to avoid repeatedly reporting multiple alarms from the vicinity of the same target.</p>
-<p>In radar, this type of detection report is commonly called a<strong>plot</strong>. This name can be understood by breaking it down: after clustering, it manifests as a representative position in the current frame of data, hence it is a "point"; this point comes from a single observation and is the detection record left by the target in this frame, hence called a "trace." A plot emphasizes the candidate target position left by a single-frame observation.</p>
-<p>A plot typically records its range bin, velocity bin, converted physical range and radial velocity, and also records the amplitude or SNR to indicate how strong this plot is. Real systems may also record fields such as target region width, beam number, timestamp, etc.</p>
-<p>Plot clustering also involves trade-offs. If clustering is too aggressive, two targets that are close in range or velocity may be merged into a single plot; if clustering is too weak, one target may be split into multiple plots. Therefore, clustering rules must be considered together with range resolution, velocity resolution, CFAR window, and target scenarios.</p>
-<p>Plots are only single-frame detection results, not yet tracks. Tracks require associating plots across multiple frames and then estimating target motion state. In the processing chain of this chapter, the range-velocity map produces response magnitudes, detection produces the detection mask, and plot clustering organizes adjacent alarms into target plots.</p></section><section class="chapter-section" data-section="ch06-s06"><h2 id="ch06-s06" class="section-title">6.6 Exercises</h2>
-<h3 id="sub-93">Exercise 1: Fixed threshold detection</h3>
-<p>A range bin outputs amplitude $x=2.7$, and the fixed threshold is $T=2.0$. Should this cell be judged as target present or target absent?</p>
-<p>Solution: Compare the current cell with the threshold. Because</p>
+<p>所以 CUT 被判为目标。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_7_fixed_vs_cfar_excali.png" alt="固定阈值与 CFAR 在不均匀背景下的对比" loading="lazy"><figcaption>固定阈值与 CFAR 在不均匀背景下的对比</figcaption></figure>
+<p>上图把固定阈值和 CFAR 放在同一条背景不均匀的距离像上比较。固定阈值是一条水平线，背景抬高后容易产生连续误报。CFAR 阈值跟随局部背景变化，在不同区域给出不同门槛。</p>
+<p>CA-CFAR 也有局限。它默认参考单元能代表本地背景。若参考单元里混进另一个强目标，平均值会被抬高，当前弱目标可能被漏掉。若窗口跨过杂波边缘，一侧背景高、一侧背景低，简单平均也不一定合适。目标密集时，参考单元很难保持”纯背景”。</p>
+<p>这些局限不会推翻 CFAR 的框架。CUT、保护单元和参考单元仍然存在，变化主要发生在“怎样用参考单元估计背景”这一步。</p>
+<p>一种常见变体是 <strong>GO-CFAR</strong>，GO 表示 Greatest Of。它把 CUT 左右两侧的参考单元分开计算，例如左侧求一个平均值，右侧再求一个平均值，最后取两者中较大的那个作为背景估计。这种做法偏保守。如果窗口正好跨过杂波边缘，高背景一侧会把阈值抬起来，减少杂波边缘附近的误报。代价是阈值可能偏高，靠近高杂波区域的弱目标更容易漏掉。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_8_go_cfar_excali.png" alt="GO-CFAR 在杂波边缘取较大一侧背景估计" loading="lazy"><figcaption>GO-CFAR 在杂波边缘取较大一侧背景估计</figcaption></figure>
+<p>另一种常见变体是 <strong>OS-CFAR</strong>，OS 表示 Ordered Statistic，即有序统计。它先把参考单元的数值从小到大排序，再选其中某个排名位置的值作为背景估计。这样做的好处是，一两个特别强的参考单元不容易像平均值那样把阈值整体拉高，所以 OS-CFAR 常用于目标较密集、参考窗口容易被其他目标污染的情况。它的代价是多了一个”排名位置”参数。位置选得偏高，检测会更保守，选得偏低，又可能带来更多虚警。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_9_os_cfar_excali.png" alt="OS-CFAR 对参考单元排序后选取排名值" loading="lazy"><figcaption>OS-CFAR 对参考单元排序后选取排名值</figcaption></figure>
+<p>CA-CFAR 适合背景比较均匀的场景，GO-CFAR 在窗口跨过杂波边缘时更稳一些，OS-CFAR 则在参考单元里混有强目标时表现更好。三者解决的侧重点不同，基本框架却是一样的：先估计 CUT 附近的背景，再用局部阈值做判决。</p>
+<h3 id="sub-122">6.5 点迹凝聚：从检测单元到目标点迹</h3>
+<p>固定阈值或 CFAR 逐格做判决后，系统得到的是一张检测掩码，它标记了哪些距离单元和速度单元通过了检测门限。但这张二值图里的每一个 1，并不一定都代表一个独立目标。</p>
+<p>如果逐格上报，同一辆车、同一架飞机或同一片雨区可能被拆成好几个目标。点迹凝聚做的就是把相邻报警合并、筛选，整理成后续处理能用的目标点迹记录。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_10_point_consolidation_excali.png" alt="从距离-速度响应到检测掩码，再到点迹" loading="lazy"><figcaption>从距离-速度响应到检测掩码，再到点迹</figcaption></figure>
+<p>上图把这三层关系放在一起：距离-速度图保存连续变化的响应强度，检测掩码只保留过门限的位置，点迹凝聚再把相邻报警整理成少量候选目标记录。</p>
+<h3 id="sub-123">6.5.1 为什么一个目标会亮起一片单元</h3>
+<p>理想点目标可以想成只落在一个距离-速度单元里，实际距离-速度图往往更宽。脉冲压缩后的主瓣有宽度，FFT 后的谱峰也有宽度，窗函数、旁瓣、目标尺寸和网格位置都会让能量扩散到附近单元。只要附近单元也超过阈值，它们就会在检测掩码中一起变成 1。</p>
+<p>例如某个局部距离-速度区域的检测结果为：</p>
+<div class="table-wrap"><table><thead><tr><th>速度单元 / 距离单元</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th></tr></thead><tbody><tr><td>+2</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>+1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr></tbody></table></div>
+<p>这 5 个检测单元很可能来自同一个目标的响应，而不是 5 个目标排成十字形。若不做凝聚，目标列表会被重复报警填满，后面的显示、航迹处理和人工判读都会被干扰。</p>
+<p>因此，检测后的第一步是先看相邻报警是否属于同一片候选区域，再决定怎样上报。</p>
+<h3 id="sub-124">6.5.2 连通区域、局部峰值与点迹参数</h3>
+<p>一种直观做法是先找<strong>连通区域</strong>。在一维距离像里，相邻距离单元连续为 1，可以看成一组。在二维距离-速度图里，距离方向或速度方向相邻的检测单元，也可以归为同一组。工程实现时可以采用 4 邻域或 8 邻域。入门阶段只需要记住，彼此挨在一起的报警先按一片候选目标区域来处理。</p>
+<p>找到一片区域后，还要选出代表位置。简单规则是取原始幅度或功率最大的单元，作为这片区域的峰值点。以上面的十字形区域为例，若最强响应出现在距离单元 14、速度单元 +1，就可以把点迹位置记为这个格子，再附带幅度、信噪比、区域大小等信息。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_11_region_peak_excali.png" alt="连通区域与峰值点选择" loading="lazy"><figcaption>连通区域与峰值点选择</figcaption></figure>
+<p>上图左图表示检测掩码里的相邻报警，右图把原始响应强度放回同一片区域中。区域内最强的格子被选为峰值点，它的位置就成为这条点迹的代表位置。</p>
+<p>有些系统不先显式找连通区域，而是要求一个检测单元在距离方向和速度方向上都比邻近单元更像峰值，才保留下来。这就是<strong>局部峰值筛选</strong>。这个思路和连通区域法并不矛盾，二者都在避免同一个目标附近的多个报警被重复上报。</p>
+<p>雷达里常把这类检测报告称为<strong>点迹</strong>。凝聚之后它在这一帧里表现为一个代表位置，所以是”点”。这个点来自一次观测，是目标在这一帧留下的检测记录，所以叫”迹”。点迹是单帧观测留下的候选目标位置。</p>
+<p>一条点迹通常会记录它所在的距离单元、速度单元、换算后的物理距离和径向速度，也会记录幅度或信噪比，用来表示这条点迹有多强。实际系统还可能记录目标区域的宽度、所在波束、时间戳等字段。</p>
+<p>点迹凝聚也会带来取舍。凝聚太强，距离或速度很接近的两个目标可能被合成一个点迹。凝聚太弱，一个目标又可能被拆成多个点迹。因此，凝聚规则要和距离分辨率、速度分辨率、CFAR 窗口以及目标场景一起考虑。</p>
+<p>点迹是单帧检测结果，不是航迹。航迹需要在多帧之间把点迹关联起来，再估计目标运动状态。</p>
+<h3 id="sub-125">6.6 小练习</h3>
+<h3 id="sub-126">6.6.1 练习 1：固定阈值判决</h3>
+<p>某距离单元输出幅度为 $x=2.7$，固定阈值取 $T=2.0$。该单元应判为有目标还是无目标？</p>
+<p>解析：比较当前单元和阈值。因为</p>
 <div class="math-block">$$
 2.7&gt;2.0
 $$</div>
-<p>target present is declared. This exercise corresponds to the detector's first action: converting continuous values into discrete decisions.</p>
-<h3 id="sub-94">Exercise 2: Consequences of raising the threshold</h3>
-<p>A weak target's cell outputs $x=2.4$. How does the detection result change when the threshold is raised from $T=2.0$ to $T=2.8$?</p>
-<p>Solution: When $T=2.0$,</p>
+<p>所以判为有目标。这个练习对应检测器的第一步动作：把连续数值变成离散判决。</p>
+<h3 id="sub-127">6.6.2 练习 2：阈值升高后的后果</h3>
+<p>某弱目标所在单元输出为 $x=2.4$。当阈值从 $T=2.0$ 提高到 $T=2.8$ 时，检测结果如何变化？</p>
+<p>解析：当 $T=2.0$ 时，</p>
 <div class="math-block">$$
 2.4&gt;2.0
 $$</div>
-<p>The cell is determined to contain a target. After raising the threshold to $T=2.8$,</p>
+<p>该单元被判为有目标。阈值提高到 $T=2.8$ 后，</p>
 <div class="math-block">$$
 2.4&lt;2.8
 $$</div>
-<p>the result changes to no target detected. Increasing the threshold reduces some false alarms but also makes weak targets easier to miss.</p>
-<h3 id="sub-95">Exercise 3: False alarm rate, detection probability, and miss rate</h3>
-<p>A detector reports 6 false alarms in 200 target-free tests; it successfully detects 129 out of 150 target-present tests. Find $P_{FA}$, $P_D$, and $P_M$.</p>
-<p>Solution: The false alarm rate is</p>
+<p>结果变成判为无目标。阈值升高会减少一部分虚警，也会让弱目标更容易漏掉。</p>
+<h3 id="sub-128">6.6.3 练习 3：虚警率、检测概率和漏检率</h3>
+<p>某检测器在 200 次无目标测试中误报 6 次，在 150 次有目标测试中成功检测到 129 次。求 $P_{FA}$、$P_D$ 和 $P_M$。</p>
+<p>解析：虚警率为</p>
 <div class="math-block">$$
 P_{FA}=\frac{6}{200}=0.03
 $$</div>
-<p>The detection probability is</p>
+<p>检测概率为</p>
 <div class="math-block">$$
 P_D=\frac{129}{150}=0.86
 $$</div>
-<p>The miss probability is</p>
+<p>漏检率为</p>
 <div class="math-block">$$
 P_M=1-P_D=1-0.86=0.14
 $$</div>
-<p>Therefore, the false alarm rate is 3%, the detection probability is 86%, and the miss probability is 14%.</p>
-<h3 id="sub-96">Exercise 4: Fixed threshold under varying background</h3>
-<p>In the same range profile, the background in region A fluctuates around 1, while the background in region B fluctuates around 5. If a fixed threshold $T=3$ is uniformly applied, what differences will occur between the two regions?</p>
-<p>Solution: In region A, the threshold of 3 is well above the background, so false alarms will be minimal—only significantly elevated peaks will trigger detection. In region B, the background already fluctuates around 5, so the threshold of 3 falls below much of the background variation, triggering many false alarms. A fixed threshold assumes the background is roughly uniform across the entire scene; when the background is non-uniform, performance becomes imbalanced.</p>
-<h3 id="sub-97">Exercise 5: A simplified CA-CFAR calculation</h3>
-<p>In a one-dimensional range profile, the Cell Under Test (CUT) has a power of 12. The reference cell powers are</p>
+<p>因此，虚警率为 3%，检测概率为 86%，漏检率为 14%。</p>
+<h3 id="sub-129">6.6.4 练习 4：背景变化下的固定阈值</h3>
+<p>在同一幅距离像中，区域 A 的背景大致在 1 左右波动，区域 B 的背景大致在 5 左右波动。若统一使用固定阈值 $T=3$，两个区域会出现什么差异？</p>
+<p>解析：在区域 A 中，阈值 3 高于背景不少，虚警不会太多，只有明显高出的峰值才会触发。在区域 B 中，背景本来就在 5 左右，阈值 3 低于大量背景起伏，会触发许多误报。固定阈值默认整个场景背景差不多，背景不均匀时就会失衡。</p>
+<h3 id="sub-130">6.6.5 练习 5：一个简化的 CA-CFAR 计算</h3>
+<p>某一维距离像中，待检测单元 CUT 的功率为 12。两侧参考单元功率为</p>
 <div class="math-block">$$
 3,
 4,
@@ -440,37 +386,38 @@ $$</div>
 3,
 5
 $$</div>
-<p>Guard cells are skipped and do not participate in the calculation. If the threshold factor is $\alpha=2$, is this cell determined to be a target?</p>
-<p>Solution: First calculate the reference cell average:</p>
+<p>保护单元已经跳过，不参与计算。若阈值系数取 $\alpha=2$，该单元是否判为目标？</p>
+<p>解析：先计算参考单元平均值：</p>
 <div class="math-block">$$
 \hat P_n=\frac{3+4+5+4+3+5}{6}=4
 $$</div>
-<p>The local threshold is</p>
+<p>局部阈值为</p>
 <div class="math-block">$$
 T=\alpha\hat P_n=2\times4=8
 $$</div>
-<p>Finally, compare the CUT with the threshold:</p>
+<p>最后比较 CUT 与阈值：</p>
 <div class="math-block">$$
 12&gt;8
 $$</div>
-<p>Therefore, this cell is determined to contain a target.</p>
-<h3 id="sub-98">Exercise 6: The role of guard cells</h3>
-<p>What problems might occur if cells immediately adjacent to the CUT are also included in the reference cell average?</p>
-<p>Explanation: If a target is indeed present near the CUT, energy from the target's mainlobe edges or sidelobes may leak into adjacent cells. Using these cells to estimate the background would raise the background average, and the threshold would rise accordingly. A weak target that should have been detected might then fall below the threshold. Guard cells are used to reduce this contamination of the background estimate by target energy.</p>
-<h3 id="sub-99">Exercise 7: CA-CFAR failure scenarios</h3>
-<p>Imagine two strong targets are very close together, or reference cells on one side fall within a strong clutter region. What difficulties might simple CA-CFAR encounter?</p>
-<p>Explanation: CA-CFAR relies on reference cells to estimate the local background. When two strong targets are close together, reference cells may contain another target, raising the average; when the window crosses a clutter edge, reference cells on one side cannot represent the background on the other side. Both situations cause the threshold to deviate from the true background near the current CUT, potentially leading to missed detections or false alarms. This is why variants like GO-CFAR and OS-CFAR have been developed in practice.</p>
-<h3 id="sub-100">Exercise 8: From range-Doppler map to detection mask</h3>
-<p>Assuming a range-velocity map has been obtained in Chapter 5, describe how to use a fixed threshold or simplified CA-CFAR to obtain a detection mask, and explain what a1 in the mask represents.</p>
-<p>Explanation: The fixed threshold approach compares the amplitude or power at each cell in the range-velocity map: positions exceeding the threshold are set to 1, otherwise to 0. The simplified CA-CFAR approach processes each cell as a CUT, leaves guard cells around the CUT, uses reference cells to estimate the local background and generate a local threshold, then compares the CUT against the threshold.</p>
-<p>A1 in the detection mask indicates that the cell has passed the detection threshold and can be treated as a candidate target for further processing. It is not yet a complete target list; the cell indices still need to be converted to range and velocity coordinates, and plot clustering must handle issues like merging adjacent cells and peak selection.</p>
-<h3 id="sub-101">Exercise 9: From detection mask to plots</h3>
-<p>A local detection mask is shown below:</p>
-<div class="table-wrap"><table><thead><tr><th>Row / Column</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody><tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>3</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr></tbody></table></div>
-<p>If plot clustering is performed based on adjacent cell connectivity, roughly how many plots will this mask form? If the original amplitude is highest at row 2, column 3 in the upper-left region, how can its representative position be selected?</p>
-<p>Explanation: The 4 ones in the upper-left are adjacent to each other and should first be treated as one candidate region; the 1 in the lower-right is separate and should be treated as another region. Therefore, this local mask roughly forms 2 plots.</p>
-<p>If row 2, column 3 has the highest amplitude in the upper-left region, this cell can be taken as the peak point of that region, and the plot position is set to its corresponding range bin and velocity bin. If the system also stores the original amplitude, SNR, or region size, these quantities can also be written into the plot record. This exercise corresponds to the basic operations of plot clustering: first group adjacent detections into candidate regions, then select a representative point for each region.</p></section>
+<p>所以该单元判为有目标。</p>
+<h3 id="sub-131">6.6.6 练习 6：保护单元的作用</h3>
+<p>如果把紧挨着 CUT 的单元也放进参考单元平均里，可能出现什么问题？</p>
+<p>解析：若 CUT 附近确实有目标，目标主瓣边缘或旁瓣能量可能泄漏到相邻单元。把这些单元拿去估计背景，会抬高背景平均值，阈值也会随之升高。原本应该检出的弱目标，可能因此落到阈值以下。保护单元用来减少这种目标能量对背景估计的污染。</p>
+<h3 id="sub-132">6.6.7 练习 7：CA-CFAR 的失效场景</h3>
+<p>设想两个强目标距离很近，或者某一侧参考单元落在很强的杂波区内。简单 CA-CFAR 可能遇到什么困难？</p>
+<p>解析：CA-CFAR 依赖参考单元估计本地背景。两个强目标靠得很近时，参考单元里可能混入另一个目标，平均值被抬高。窗口跨过杂波边缘时，一侧参考单元不能代表另一侧背景。两种情况都会让阈值偏离当前 CUT 附近的真实背景，可能造成漏检或虚警。这也是工程上发展 GO-CFAR、OS-CFAR 等变体的原因。</p>
+<h3 id="sub-133">6.6.8 练习 8：从距离-速度图到检测掩码</h3>
+<p>假设第5章已经得到一张距离-速度图。请描述如何用固定阈值或简化 CA-CFAR 得到检测掩码，并说明掩码中的 1 表示什么。</p>
+<p>解析：固定阈值做法是逐格比较距离-速度图中的幅度或功率：超过阈值的位置置为 1，否则置为 0。简化 CA-CFAR 做法是逐格选取 CUT，在 CUT 周围留出保护单元，再用参考单元估计局部背景，生成局部阈值，最后比较 CUT 与阈值。</p>
+<p>检测掩码中的 1 表示该格子通过了检测门限，可以作为候选目标继续处理。它还不是完整目标列表，还需要把格子索引换成距离、速度坐标，并通过点迹凝聚处理相邻格子的合并、峰值选择等问题。</p>
+<h3 id="sub-134">6.6.9 练习 9：从检测掩码到点迹</h3>
+<p>某个局部检测掩码如下：</p>
+<div class="table-wrap"><table><thead><tr><th>行号 / 列号</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody><tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>3</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr></tbody></table></div>
+<p>若按相邻单元连通来做点迹凝聚，这个掩码大致会形成几条点迹？如果左上方那片区域中第 2 行第 3 列的原始幅度最大，可以怎样选它的代表位置？</p>
+<p>解析：左上方的 4 个 1 彼此相邻，应先看成一个候选区域。右下角的 1 与它们分开，应看成另一片区域。因此，这个局部掩码大致形成 2 条点迹。</p>
+<p>左上方区域若第 2 行第 3 列幅度最大，可以把这个格子作为该区域的峰值点，点迹位置就取它对应的距离单元和速度单元。若系统还保存原始幅度、信噪比或区域大小，这些量也可以一起写入点迹记录。这个练习对应点迹凝聚的基本动作：先把相邻报警归成候选区域，再为每片区域选一个代表点。</p></section>
     </article>
+    <div class="article-actions"><a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a></div>
   </main>
 </div>
 </body>

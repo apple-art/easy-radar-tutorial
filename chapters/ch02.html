@@ -1,290 +1,228 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Chapter 2: Signal Fundamentals | Easy Radar Signal Processing Tutorial</title>
-  <meta name="description" content="Chapter 1 explained how radar can extract target information from echoes. What a real receiver first obtains is a voltage curve that fluctuates over time; range, velocity, and detection results must all be calculated from this curve.">
+  <title>第2章 信号基础 | 易懂的雷达信号处理教程</title>
+  <meta name="description" content="第1章说雷达能从回波里读出目标信息。真实接收机最先拿到的，是一段随时间起伏的电压曲线，距离、速度和检测结果都要从这条曲线继续算出来。读这条曲线，要先弄清振幅和频率怎么描述，频谱怎么看，采样会丢掉什么信息，以及为什么雷达数据常写成复数 I/Q...">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch02.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
-  <link rel="stylesheet" href="../assets/site.css?v=20260617-local-fonts-nav1">
+  <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-  <script defer src="../assets/site.js?v=20260613-site-theme"></script>
-
-  <style>
-    .home-topbar .nav-terminal {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-self: end;
-    }
-    .home-topbar .github-link {
-      justify-content: center;
-      width: 40px;
-      padding: 9px;
-    }
-    .home-topbar .nav-divider {
-      display: block;
-      flex: 0 0 1px;
-      width: 1px;
-      min-width: 1px;
-      height: 24px;
-      background: rgba(13, 71, 70, 0.18);
-    }
-    .language-switcher {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      border: 0;
-      border-radius: 999px;
-      background: transparent;
-      color: #0d4746;
-      text-decoration: none;
-      flex: 0 0 auto;
-    }
-    .language-switcher:hover { color: var(--teal); background: rgba(13, 71, 70, 0.07); }
-    .language-switcher .language-icon,
-    .language-switcher .language-icon svg { width: 21px; height: 21px; }
-    .language-switcher svg {
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-  </style>
+  <script defer src="../assets/site.js?v=20260506-code-font-fix"></script>
 </head>
-<body class="article-page"><div class="read-progress" aria-hidden="true"><span></span></div>
+<body><div class="read-progress" aria-hidden="true"><span></span></div>
 <header class="article-top">
-  <nav class="topbar home-topbar" aria-label="Site Navigation">
-    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="Tutorial Icon"><span>Easy Radar Tutorial</span></a>
-    <div class="toplinks nav-primary">
-      <a class="nav-link" href="../index.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5"></path><path d="M6.5 9.5V20h4v-5.5h3V20h4V9.5"></path></svg></span><span>Home</span></a>
-      <a class="nav-link" href="../index.html#chapters"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6.5h14"></path><path d="M5 12h14"></path><path d="M5 17.5h10"></path><path d="M3 6.5h.01"></path><path d="M3 12h.01"></path><path d="M3 17.5h.01"></path></svg></span><span>Chapters</span></a>
-      <a class="nav-link active" href="ch02.html" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5A3.5 3.5 0 0 1 8 2h11.5v18H8a3.5 3.5 0 0 0-3.5 2z"></path><path d="M8 2v18"></path><path d="M11 7h5"></path><path d="M11 11h4"></path></svg></span><span>Start Reading</span></a>
-      <a class="nav-link" href="https://github.com/apple-art/easy-radar-tutorial/releases/latest"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 9 5 5 5-5"></path><path d="M5 19h14"></path></svg></span><span>Resources</span></a>
-      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>More</span></a>
-    </div>
-    <div class="nav-terminal">
-      <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span></a>
-      <span class="nav-divider" aria-hidden="true"></span>
-      <a class="language-switcher" href="ch02.zh-CN.html" aria-label="Switch to Chinese" title="中文"><span class="nav-icon language-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg></span></a>
-      <span class="nav-divider" aria-hidden="true"></span>
-      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to black background" title="Black background"><span class="nav-icon theme-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" stroke="none"></path><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg></span></button>
-    </div>
+  <nav class="topbar compact">
+    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="教程图标"><span>Easy Radar Tutorial</span></a>
+    <div class="toplinks"><a href="../index.html">首页</a><a href="ch01.html">章节</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a><a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a></div>
   </nav>
 </header>
 <div class="article-layout">
   <aside class="sidebar">
-    <a class="back-home" href="../index.html">← Home</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">Chapter 1: What is Radar</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch02.html">Chapter 2: Signal Fundamentals</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch02-s01"><a class="toc-link" href="#ch02-s01">2.1 What is a Signal</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-6">Signals and Sine Waves</a><a class="subtoc-link" href="#sub-7">Frequency and Wavelength</a><a class="subtoc-link" href="#sub-8">Composite Signals</a></div></div><div class="toc-section" data-section="ch02-s02"><a class="toc-link" href="#ch02-s02">2.2 Time Domain and Frequency Domain</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-9">Time Domain and Frequency Domain</a><a class="subtoc-link" href="#sub-10">Fourier Transform and FFT</a><a class="subtoc-link" href="#sub-11">Frequency Resolution</a></div></div><div class="toc-section" data-section="ch02-s03"><a class="toc-link" href="#ch02-s03">2.3 Sampling Theorem</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-12">Sampling Rate and Nyquist Frequency</a><a class="subtoc-link" href="#sub-13">Sampling and Aliasing</a><a class="subtoc-link" href="#sub-14">ADC Sampling Data</a></div></div><div class="toc-section" data-section="ch02-s04"><a class="toc-link" href="#ch02-s04">2.4 Complex Numbers, Phase, and I/Q Data</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-15">Phase Information</a><a class="subtoc-link" href="#sub-16">Complex Numbers and I/Q Components</a><a class="subtoc-link" href="#sub-17">Origin of I/Q Data</a></div></div><div class="toc-section" data-section="ch02-s05"><a class="toc-link" href="#ch02-s05">2.5 Practice Problems</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-18">Frequency and Period</a><a class="subtoc-link" href="#sub-19">Spectrum Reading</a><a class="subtoc-link" href="#sub-20">Aliasing Detection</a><a class="subtoc-link" href="#sub-21">Frequency Resolution</a><a class="subtoc-link" href="#sub-22">I/Q Amplitude and Phase</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">Chapter 3 Radar Signal Transmission and Reception</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">Chapter 4 Range Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">Chapter 5 Velocity Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">Chapter 6 Target Detection</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">Chapter 7 Angle Measurement</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">Chapter 8 Complete MATLAB Processing Pipeline</a></div></nav>
+    <a class="back-home" href="../index.html">← 首页</a>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch02.html">第2章 信号基础</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch02-s01"><a class="toc-link" href="#ch02-s01">信号基础</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-9">2.1 什么是信号</a><a class="subtoc-link" href="#sub-10">2.1.1 信号与正弦波</a><a class="subtoc-link" href="#sub-11">2.1.2 频率、波长与雷达应用</a><a class="subtoc-link" href="#sub-12">2.1.3 复合信号与频率成分</a><a class="subtoc-link" href="#sub-13">2.2 时域与频域</a><a class="subtoc-link" href="#sub-14">2.2.1 时域描述与频域描述</a><a class="subtoc-link" href="#sub-15">2.2.2 从时域到频域</a><a class="subtoc-link" href="#sub-16">2.2.3 傅里叶变换与 FFT</a><a class="subtoc-link" href="#sub-17">2.2.4 频率分辨率</a><a class="subtoc-link" href="#sub-18">2.3 采样定理</a><a class="subtoc-link" href="#sub-19">2.3.1 采样率与奈奎斯特频率</a><a class="subtoc-link" href="#sub-20">2.3.2 采样不足与混叠</a><a class="subtoc-link" href="#sub-21">2.3.3 ADC 与采样数据</a><a class="subtoc-link" href="#sub-22">2.4 复数、相位与I/Q数据</a><a class="subtoc-link" href="#sub-23">2.4.1 相位信息</a><a class="subtoc-link" href="#sub-24">2.4.2 复数表示与 I/Q 分量</a><a class="subtoc-link" href="#sub-25">2.4.3 I/Q 数据的来源</a><a class="subtoc-link" href="#sub-26">2.5 小练习</a><a class="subtoc-link" href="#sub-27">2.5.1 练习 1：频率与周期的换算</a><a class="subtoc-link" href="#sub-28">2.5.2 练习 2：从频谱读信息</a><a class="subtoc-link" href="#sub-29">2.5.3 练习 3：混叠判断</a><a class="subtoc-link" href="#sub-30">2.5.4 练习 4：频率分辨率</a><a class="subtoc-link" href="#sub-31">2.5.5 练习 5：I/Q 样本的幅度与相位</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
+    <div class="article-meta"><span>第2章</span><span>信号基础</span></div>
     <article class="prose chapter-prose">
-      <h1>Chapter 2: Signal Fundamentals</h1>
-      <section class="chapter-section" data-section="ch02-s01"><h2 id="ch02-s01" class="section-title">2.1 What is a Signal</h2>
-<p>Chapter 1 explained how radar can extract target information from echoes. What a real receiver first obtains is a voltage curve that fluctuates over time; range, velocity, and detection results must all be calculated from this curve.</p>
-<p>This chapter teaches you how to read this curve: how to describe amplitude and frequency, how to interpret spectra, what information sampling loses, and why radar data is often represented as complex I/Q.</p>
-<h3 id="sub-6">Signals and Sine Waves</h3>
-<p>The voltage curve recorded by a radar receiver is a signal. A thermometer reading is a single number, but a record of temperature changing over time is a signal. What signals have in common is: the value changes continuously, and the change itself carries information.</p>
-<p>The most commonly used signal form in engineering is the sine wave. Let's start with the simplest notation:</p>
+      <h1>第2章 信号基础</h1>
+      <section class="chapter-section" data-section="ch02-s01"><h2 id="ch02-s01" class="section-title">信号基础</h2>
+<p>第1章说雷达能从回波里读出目标信息。真实接收机最先拿到的，是一段随时间起伏的电压曲线，距离、速度和检测结果都要从这条曲线继续算出来。读这条曲线，要先弄清振幅和频率怎么描述，频谱怎么看，采样会丢掉什么信息，以及为什么雷达数据常写成复数 I/Q。</p>
+<h3 id="sub-9">2.1 什么是信号</h3>
+<h3 id="sub-10">2.1.1 信号与正弦波</h3>
+<p>雷达接收机记录下来的电压曲线，就是一段信号。温度计读数是一个数，但温度随时间变化的记录就是信号。信号的共同点是值在持续变化，变化本身携带信息。</p>
+<p>工程里最常用的信号形式是正弦波，最简单的数学形式是</p>
 <div class="math-block">$$
 s(t) = A \sin(2\pi f t)
 $$</div>
-<p>The formula has two parameters:<strong>amplitude</strong> $A$ and<strong>frequency</strong> $f$. The $2\pi$ comes from "one complete cycle corresponds to $2\pi$ radians," so $2\pi f t$ represents the total phase accumulated in $t$ seconds.</p>
-<p>Amplitude $A$ describes the signal strength, i.e., the maximum distance the waveform deviates from zero, typically measured in volts (V). Under the same conditions, a larger amplitude usually means a stronger signal.</p>
-<p>Frequency $f$ describes how many complete oscillations occur per second, measured in hertz (Hz). The reciprocal of frequency is the<strong>period</strong> $T = 1/f$, which represents the time required to complete one full oscillation.</p>
-<p>Figure 2.1 shows three sine waves at 2 Hz, 5 Hz, and 10 Hz. The 2 Hz waveform completes only two oscillations in 1 second, with period $T = 0.5$ s, appearing smooth. The 10 Hz wave packs 10 oscillations into the same 1 second, appearing much denser. Higher frequency means more oscillations "packed into" the same time interval.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_1_sinusoids_excali.png" alt="Figure 2.1 Sine waves at three frequencies" loading="lazy"><figcaption>Figure 2.1 Sine waves at three frequencies</figcaption></figure>
-<h3 id="sub-7">Frequency and Wavelength</h3>
-<p>When electromagnetic waves propagate through space, the distance between adjacent peaks is called the<strong>wavelength</strong> $\lambda$, which relates to frequency by:</p>
+<p>$s(t)$ 里有两个参数，<strong>振幅</strong> $A$ 和<strong>频率</strong> $f$。$2\pi$ 来自”一个完整周期对应 $2\pi$ 弧度”，$2\pi f t$ 就是 $t$ 秒内走过的总相位。</p>
+<p>振幅 $A$ 描述信号的强弱，即波形偏离零点的最大距离，单位通常是伏特（V）。振幅越大，信号越强。</p>
+<p>频率 $f$ 描述信号每秒完整起伏的次数，单位是赫兹（Hz）。频率的倒数是<strong>周期</strong> $T = 1/f$，表示完成一次完整起伏所需的时间。</p>
+<p>下图画出了 2 Hz、5 Hz、10 Hz 三条正弦波。2 Hz 的波形在 1 秒内只完成两次起伏，周期 $T = 0.5$ s，波形舒缓。10 Hz 在同样的 1 秒里挤进 10 次起伏，波形密得多。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_1_sinusoids_excali.png" alt="三种频率的正弦波" loading="lazy"><figcaption>三种频率的正弦波</figcaption></figure>
+<h3 id="sub-11">2.1.2 频率、波长与雷达应用</h3>
+<p>电磁波在空间传播时，相邻两个波峰之间的距离叫<strong>波长</strong> $\lambda$，它和频率的关系是：</p>
 <div class="math-block">$$
 \lambda = \frac{c}{f}
 $$</div>
-<p>$c \approx 3\times10^8$ m/s is the speed of light. Frequency describes how many oscillations occur per second, while wavelength describes the spatial distance between adjacent peaks; higher frequency means shorter wavelength. Figure 2.2 illustrates this spatial distance.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_2_wavelength_visualization_excali.png" alt="Figure 2.2 Electromagnetic wave wavelength diagram" loading="lazy"><figcaption>Figure 2.2 Electromagnetic wave wavelength diagram</figcaption></figure>
-<p>Wavelength will appear in velocity formulas later. When a target moves, the echo frequency shifts slightly, and radar can use this frequency difference to measure velocity.</p>
-<h3 id="sub-8">Composite Signals</h3>
-<p>Real echoes are rarely single sine waves and often contain multiple frequency components. Let's start with a simplified example using three sine waves.</p>
-<p>Figure 2.3 plots three sine waves together: 3 Hz (amplitude 1.0), 7 Hz (amplitude 0.6), and 15 Hz (amplitude 0.3). The three thin lines are the individual components, and the thick red line is their composite signal. The composite signal fluctuates irregularly, and it's nearly impossible to guess by eye alone that it's composed of three frequencies.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_3_composite_excali.png" alt="Figure 2.3 Three sine waves and their superposition" loading="lazy"><figcaption>Figure 2.3 Three sine waves and their superposition</figcaption></figure>
-<p>A radar echo can first be read as a signal that varies with time: amplitude, frequency, and wavelength are the most fundamental readings.</p>
-</section><section class="chapter-section" data-section="ch02-s02"><h2 id="ch02-s02" class="section-title">2.2 Time Domain and Frequency Domain</h2>
-<p>The same signal can be described in two ways.</p>
-<p><strong>Time Domain</strong>is the most familiar perspective: the horizontal axis is time, the vertical axis is the signal value. Electrocardiograms, audio waveforms, curves on an oscilloscope screen—all are time-domain representations.</p>
-<p><strong>Frequency Domain</strong>takes a different angle: the horizontal axis is frequency, the vertical axis is the intensity of that frequency component. It shows which frequencies are present in the signal and their relative proportions.</p>
-<p>Which perspective to choose depends on what question you want to answer. If you want to know the voltage at a particular moment, look at the time domain; if you want to know which frequencies are mixed in the signal, look at the frequency domain.</p>
-<h3 id="sub-9">Time Domain and Frequency Domain</h3>
-<p>The four-panel figure below shows the correspondence between time domain and frequency domain side by side.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_4_spectrum_excali.png" alt="Figure 2.4 Correspondence between time domain and frequency domain" loading="lazy"><figcaption>Figure 2.4 Correspondence between time domain and frequency domain</figcaption></figure>
-<p>First look at the top row. The upper left shows the time-domain waveforms of three components, each with a different color and rhythm—at this stage they're still distinguishable. The upper right is the composite signal after adding them together, chaotic and disordered.</p>
-<p>Now look at the bottom row. The lower left is the frequency domain of a single 3 Hz sine wave: energy is mainly concentrated around 3 Hz, with height corresponding to amplitude 1.0. When FFT processes finite-length data in practice, there may be some spread around the main frequency, but the most prominent peak remains near 3 Hz.</p>
-<p>The lower right is the frequency domain of the composite signal: three vertical lines stand at 3, 7, and 15 Hz, with heights of exactly 1.0, 0.6, and 0.3. That chaotic waveform in the time domain reveals its structure in the frequency domain.</p>
-<h3 id="sub-10">Fourier Transform and FFT</h3>
-<p>The tool used to compute the frequency spectrum from the time-domain waveform is called the<strong>Fourier Transform</strong>(Fourier Transform). Conversely, restoring the time-domain waveform from the spectrum is called the inverse Fourier transform.</p>
-<p>The Fourier transform is somewhat like a prism separating light: white light appears as one color, but when separated you can see different color components; a waveform appears chaotic, but after transformation you can see different frequency components.</p>
-<p>In actual computation, a discrete version is used, called<strong>Fast Fourier Transform</strong>(FFT, Fast Fourier Transform). FFT outputs a set of complex number results, each result corresponding to a frequency bin. When plotting a spectrum, the magnitude of these results is typically taken to represent the intensity of the corresponding frequency component.</p>
-<p>FFT itself only gives bin indices like "0th, 1st, 2nd..." To convert the indices to actual frequencies, you need to know the sampling rate and the number of points.</p>
-<p>Assume the sampling rate is $f_s$ and the FFT size is $N$. Without additional zero-padding, the observation time corresponding to $N$ samples is:</p>
+<p>$c \approx 3\times10^8$ m/s 是光速。频率越高，波长越短。图 2.2 画出了这个空间距离。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_2_wavelength_visualization_excali.png" alt="电磁波波长示意图" loading="lazy"><figcaption>电磁波波长示意图</figcaption></figure>
+<p>波长会进入速度计算。目标运动时，回波频率会产生轻微偏移，雷达可以用这个频率差测量速度。</p>
+<h3 id="sub-12">2.1.3 复合信号与频率成分</h3>
+<p>真实回波很少是单一的正弦波，常会混着多个频率成分。先用三个正弦波看一个简化例子。</p>
+<p>上图把 3 Hz（振幅 1.0）、7 Hz（振幅 0.6）、15 Hz（振幅 0.3）三个正弦波画在一起。三条细线是各自的分量，红色粗线是它们相加后的复合信号。复合信号忽高忽低，仅凭肉眼几乎猜不出它由三个频率合成。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_3_composite_excali.png" alt="三个正弦波及其叠加" loading="lazy"><figcaption>三个正弦波及其叠加</figcaption></figure>
+<p>这样的复合信号，怎么看出里面藏了哪些频率？这就需要频域分析。</p>
+<h3 id="sub-13">2.2 时域与频域</h3>
+<h3 id="sub-14">2.2.1 时域描述与频域描述</h3>
+<p>同一个信号可以用两种方式描述。<strong>时域</strong>是我们最熟悉的视角，横轴是时间，纵轴是信号的值。心电图、录音波形、示波器屏幕上的曲线，都是时域表示。</p>
+<p><strong>频域</strong>换了一个角度，横轴是频率，纵轴是该频率成分的强度。它显示信号里有哪些频率，各占多大比重。</p>
+<h3 id="sub-15">2.2.2 从时域到频域</h3>
+<p>下面这张四宫格图把时域和频域的对应关系摆在一起。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_4_spectrum_excali.png" alt="时域与频域的对应关系" loading="lazy"><figcaption>时域与频域的对应关系</figcaption></figure>
+<p>先看上面一行。左上是三条分量各自的时域波形，颜色不同，节奏不同，这一步还分得清楚。右上是它们相加后的复合信号，和图 2.3 一样，杂乱无章。</p>
+<p>再看下面一行。左下是单独一个 3 Hz 正弦波的频域：能量主要集中在 3 Hz 附近，高度对应振幅 1.0。实际 FFT 处理有限长数据时，主频率附近可能会有一些扩展，但最突出的峰仍在 3 Hz 附近。</p>
+<p>右下是复合信号的频域：三根竖线分别立在 3、7、15 Hz 的位置，高度正好是 1.0、0.6、0.3。上面时域里那条杂乱的波形，到了频域里三个分量的频率和强度全部暴露出来。</p>
+<h3 id="sub-16">2.2.3 傅里叶变换与 FFT</h3>
+<p>从时域波形计算频域频谱的工具是<strong>傅里叶变换</strong>（Fourier Transform）。反过来，从频谱还原时域波形，叫傅里叶逆变换。</p>
+<p>傅里叶变换有点像棱镜分光。白光分开后能看到不同颜色，一段杂乱波形变换后能看到各频率成分。</p>
+<p>实际计算中用的是离散版本，叫<strong>快速傅里叶变换</strong>（FFT，Fast Fourier Transform）。FFT 输出的是一组复数结果，每个结果对应一个频率格子（bin）。画频谱图时，通常取这些结果的幅度，表示对应频率成分的强度。</p>
+<p>FFT 本身只给出“第 0 个、第 1 个、第 2 个……”这样的格子编号。要把编号换成实际频率，需要知道采样率和点数。</p>
+<p>假设采样率是 $f_s$，FFT 点数是 $N$。如果没有额外补零，$N$ 个采样点对应的观测时间是：</p>
 <div class="math-block">$$
 T_{\text{obs}} = \frac{N}{f_s}
 $$</div>
-<p>For example, if the sampling rate is 1000 Hz and 1000 points are taken, the observation time is 1 second. The longer the observation time, the finer the frequency bins; the frequency spacing between adjacent bins is:</p>
+<p>比如采样率是 1000 Hz，取了 1000 个点，观测时间就是 1 秒。观测时间越长，频率格子越细，相邻两个 bin 的频率间隔是：</p>
 <div class="math-block">$$
 \Delta f = \frac{f_s}{N}
 $$</div>
-<p>In this example, $\Delta f = 1000/1000 = 1$ Hz. The frequency corresponding to the $k$-th bin is $k \cdot \Delta f$. The horizontal axis of the FFT plot needs to be interpreted from the sampling rate and number of points.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_5_fft_bins_axis_excali.png" alt="Figure 2.5 FFT bins and frequency axis" loading="lazy"><figcaption>Figure 2.5 FFT bins and frequency axis</figcaption></figure>
-<p>Figure 2.5 shows the correspondence between time-domain samples and frequency-domain bins together. On the left is a sequence of sample points, on the right are the FFT frequency bins. Once the sampling rate and number of points are determined, the frequency axis can be labeled according to $\Delta f=f_s/N$.</p>
-<h3 id="sub-11">Frequency Resolution</h3>
-<p>The $\Delta f$ mentioned earlier is the spacing of frequency bins. When reading a spectrum, another more practical question arises: can two real spectral lines that are very close together be distinguished? This capability is usually called<strong>Frequency Resolution</strong>, primarily determined by the observation time $T_{\text{obs}}$:</p>
+<p>在这个例子里，$\Delta f = 1000/1000 = 1$ Hz。第 $k$ 个 bin 对应的频率就是 $k \cdot \Delta f$。FFT 图的横轴需要由采样率和点数解释出来。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_5_fft_bins_axis_excali.png" alt="FFT bin 与频率轴" loading="lazy"><figcaption>FFT bin 与频率轴</figcaption></figure>
+<p>上图把时域采样和频域 bin 的对应关系放在一起。左边是一串采样点，右边是 FFT 后的频率 bin。只要采样率和点数确定，频率轴就能按 $\Delta f=f_s/N$ 标出来。</p>
+<h3 id="sub-17">2.2.4 频率分辨率</h3>
+<p>前面说的 $\Delta f$ 是频率格子的间隔。读频谱时还有一个更实际的问题：两根靠得很近的真实谱线，能不能分开看见？这个能力叫<strong>频率分辨率</strong>，由观测时间 $T_{\text{obs}}$ 决定：</p>
 <div class="math-block">$$
 \Delta f_{\text{res}} \approx \frac{1}{T_{\text{obs}}}
 $$</div>
-<p>Observing for 1 second allows resolving differences of about 1 Hz; observing for 0.1 second only allows resolving differences of about 10 Hz. The longer the observation time, the smaller the frequency separation that can be resolved.</p>
-<p>Zero-padding can make the FFT output more points, reduce the bin spacing, and make the spectrum plot look finer; but it cannot separate two real frequency components that are inherently inseparable. True frequency resolution capability is primarily determined by observation time.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_6_frequency_resolution_excali.png" alt="Figure 2.6 Observation time, zero-padding, and frequency resolution" loading="lazy"><figcaption>Figure 2.6 Observation time, zero-padding, and frequency resolution</figcaption></figure>
-<p>In Figure 2.6, the first two rows have the same observation time, and zero-padding only makes the spectral curve finer; in the third row, after the observation time increases, the two closely spaced frequency peaks separate.</p>
-<p>The time domain shows voltage changing with time, the frequency domain shows frequency components; FFT is a common tool for transforming sampled data into the frequency domain.</p>
-</section><section class="chapter-section" data-section="ch02-s03"><h2 id="ch02-s03" class="section-title">2.3 Sampling Theorem</h2>
-<p>The sinusoids, superposition, and spectra discussed earlier were all described in a "continuous-time" framework: the signal has a value at every instant. But computers cannot process continuous signals. Computers can only store numbers, one at a time, not infinitely many.</p>
-<p>To make computers process signals, continuous signals must be converted into a sequence of discrete values—this process is called<strong>sampling</strong>。</p>
-<h3 id="sub-12">Sampling Rate and Nyquist Frequency</h3>
-<p>Sampling means taking a point at fixed time intervals, recording the signal value at that moment, and discarding all other moments. The question is: with so much information discarded, can the original signal still be recovered?</p>
-<p>How many points are taken per second is the<strong>sampling rate</strong> $f_s$, in Hz. The higher the sampling rate, the more accurate the reconstruction, but storage and transmission have costs. So what is the minimum required?</p>
-<p>Assume the signal's highest frequency is 10 Hz, meaning it completes at most 10 full oscillations per second. To capture this oscillation, sampling must occur at least twice per cycle; the sample points don't necessarily land exactly on peaks or troughs, but the sampling rate must be high enough. So the sampling rate must be at least 20 Hz.</p>
-<p>The sampling theorem (also called the Nyquist-Shannon theorem) expresses this requirement as:</p>
+<p>观测 1 秒，大约能分辨 1 Hz 的差异。观测 0.1 秒，大约只能分辨 10 Hz 的差异。观测时间越长，能分辨的频率间距越小。</p>
+<p>零填充（zero-padding）可以让 FFT 输出更多点，频谱图更细腻，但不能把两根本来分不开的频率分量分开。频率分辨能力由观测时间决定。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_6_frequency_resolution_excali.png" alt="观测时间、零填充与频率分辨率" loading="lazy"><figcaption>观测时间、零填充与频率分辨率</figcaption></figure>
+<p>上图中，前两行观测时间相同，零填充只让频谱曲线更细。第三行观测时间变长后，两个靠近的频率峰才分开。</p>
+<h3 id="sub-18">2.3 采样定理</h3>
+<p>前两节讨论的正弦波、叠加、频谱，都是在连续时间框架下说的，信号在每一个时刻都有值。但计算机没法处理连续信号，只能存一串离散数字。</p>
+<h3 id="sub-19">2.3.1 采样率与奈奎斯特频率</h3>
+<p>要让计算机处理信号，必须把连续信号变成一串离散的数值，这个过程叫<strong>采样</strong>。采样就是每隔固定时间取一个点，记录下那一刻的信号值，其余时刻全部丢弃。丢了那么多信息，还能还原出原来的信号吗？</p>
+<p>每秒取多少个点，就是<strong>采样率</strong> $f_s$，单位 Hz。采样率越高，还原越准确，但存储和传输都有成本。那最低需要多高？</p>
+<p>假设信号最高频率是 10 Hz，意味着它每秒最多完成 10 次完整起伏。要捕捉这个起伏，每个周期内至少要采两次样。采样点不必恰好落在波峰或波谷，但频率得够，所以采样率至少要 20 Hz。</p>
+<p>这个条件就是<strong>采样定理</strong>（也叫奈奎斯特-香农定理）：</p>
 <div class="math-block">$$
 f_s &gt; 2 f_{\max}
 $$</div>
-<p>$f_{\max}$ is the highest frequency component contained in the signal. Under ideal band-limited conditions, as long as the sampling rate is strictly greater than twice the maximum frequency, the signal can be completely reconstructed. Real systems must also account for noise, filter roll-off, and sampling clock errors, so engineering practice typically includes a margin.</p>
-<p>This boundary at $f_s / 2$ has a specific name, called the<strong>Nyquist frequency</strong>. A sampling rate of 1000 Hz corresponds to a Nyquist frequency of 500 Hz, meaning this sampling rate can correctly capture signal components below 500 Hz.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_7_nyquist_boundary_excali.png" alt="Figure 2.7 Sampling Frequency and Nyquist Frequency Boundary" loading="lazy"><figcaption>Figure 2.7 Sampling Frequency and Nyquist Frequency Boundary</figcaption></figure>
-<p>Figure 2.7 illustrates this condition on the frequency axis. The green region represents the frequency range that can be unambiguously represented at the current sampling rate; components exceeding $f_s/2$ will fold back, and the frequency they exhibit after sampling is no longer the original true frequency.</p>
-<h3 id="sub-13">Sampling and Aliasing</h3>
-<p>Figure 2.8 shows an experiment with three different sampling rates applied to a 10 Hz sine wave. The gray line is the original signal, orange dots are the sampling points, and the blue dashed line is the waveform reconstructed from the sampling points.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_8_aliasing_excali.png" alt="Figure 2.8 Sampling Theorem and Aliasing Demonstration" loading="lazy"><figcaption>Figure 2.8 Sampling Theorem and Aliasing Demonstration</figcaption></figure>
-<p>First row, 40 Hz sampling ($f_s = 4f$). Far exceeds the Nyquist criterion, the orange sampling points are sufficiently dense, and the blue reconstructed waveform nearly perfectly overlaps with the gray original signal.</p>
-<p>Second row, 20 Hz sampling ($f_s = 2f$). Right at the critical boundary. In this example, the sampling points happen to fall exactly at the zero-crossings of the sine wave, resulting in a reconstructed zero line. This is a special case where the sampling starting point aligns precisely with the signal phase; the problem is that $f_s=2f$ has no margin, and practical systems cannot rely on this boundary condition. Therefore, the strict condition is written as $f_s&gt;2f_{\max}$, and engineering practice adds additional margin.</p>
-<p>Third row, 12 Hz sampling ($f_s &lt; 2f$). The sampling rate is below the Nyquist requirement, causing<strong>aliasing</strong>: observe the blue dashed line, the reconstructed waveform is no longer 10 Hz, but has become a slowly oscillating 2 Hz low-frequency signal. The original high-frequency signal is 'disguised' as a non-existent low-frequency signal.</p>
-<p>Why does it become 2 Hz? In this example, the signal frequency falls between $f_s/2$ and $f_s$, and the apparent frequency after aliasing can be calculated using the following folding relationship:</p>
+<p>$f_{\max}$ 是信号中包含的最高频率分量。在理想带限条件下，采样率只要严格大于最高频率的两倍，信号就能被完整还原。真实系统还要考虑噪声、滤波器滚降和采样时钟误差，所以工程上通常会留余量。</p>
+<p>$f_s / 2$ 叫<strong>奈奎斯特频率</strong>。采样率 1000 Hz 对应的奈奎斯特频率是 500 Hz，也就是说这个采样率最多能正确捕捉 500 Hz 以下的信号成分。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_7_nyquist_boundary_excali.png" alt="采样频率与奈奎斯特频率边界" loading="lazy"><figcaption>采样频率与奈奎斯特频率边界</figcaption></figure>
+<p>上图把这个条件画在频率轴上。绿色区域表示在当前采样率下可以无歧义表示的频率范围，超过 $f_s/2$ 的成分会折叠回来，采样后表现出的频率就不再是原来的真实频率。</p>
+<h3 id="sub-20">2.3.2 采样不足与混叠</h3>
+<p>下图对一个 10 Hz 正弦波做了三种采样率的实验。灰色线是原始信号，橙色圆点是采样点，蓝色虚线是从采样点重建出来的波形。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_8_aliasing_excali.png" alt="采样定理与混叠演示" loading="lazy"><figcaption>采样定理与混叠演示</figcaption></figure>
+<p>第一行，40 Hz 采样（$f_s = 4f$）。远超奈奎斯特条件，橙色采样点足够密，蓝色重建波形和灰色原始信号几乎完全重合。</p>
+<p>第二行，20 Hz 采样（$f_s = 2f$）。刚好踩在临界线上。这个例子里，采样点恰好每次都落在正弦波的零点上，重建出来的是一条零线。这是采样起点与信号相位刚好对齐的特殊情况。$f_s=2f$ 本身没有余量，实际系统不能依赖这个边界，所以严格条件通常写成 $f_s&gt;2f_{\max}$，工程上还会继续留余量。</p>
+<p>第三行，12 Hz 采样（$f_s &lt; 2f$）。采样率低于奈奎斯特要求，就会发生<strong>混叠</strong>（aliasing）。看蓝色虚线，重建出来的波形不再是 10 Hz，而变成了一个缓慢起伏的 2 Hz 低频信号。原始的高频信号被”伪装”成了一个不存在的低频信号。</p>
+<p>为什么会变成 2 Hz？在这个例子里，信号频率落在 $f_s/2$ 到 $f_s$ 之间，混叠后的表观频率是</p>
 <div class="math-block">$$
 f_{\text{alias}} = f_s - f_{\text{signal}} = 12 - 10 = 2\,\text{Hz}
 $$</div>
-<p>Higher frequencies undergo multiple folds, but the intuition is the same: components exceeding the Nyquist frequency are folded back into the low-frequency region.</p>
-<p>Once aliasing occurs, it is irreversible. You cannot distinguish from the existing sampled data whether that 2 Hz is a 'real 2 Hz signal' or an 'illusion of 10 Hz aliased down.' This is why the sampling rate must satisfy the Nyquist criterion, and filters are often used before sampling to block excessively high frequency components.</p>
-<h3 id="sub-14">ADC Sampling Data</h3>
-<p>In a radar receiver, there is a key component called an<strong>analog-to-digital converter</strong>(ADC, Analog-to-Digital Converter), whose job is to sample the echo signal—converting continuous analog voltage into discrete digital sequences for subsequent digital signal processors.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_9_adc_pipeline_excali.png" alt="Figure 2.9 ADC converts continuous voltage into digital sequence" loading="lazy"><figcaption>Figure 2.9 ADC converts continuous voltage into digital sequence</figcaption></figure>
-<p>Figure 2.9 shows only the ADC's role in this section: on the left is continuously varying analog voltage, in the middle the ADC samples at a fixed rate and quantizes, on the right it becomes a string of numbers. The subsequent FFT, filtering, and detection all process these numbers.</p>
-<p>The ADC sampling rate directly affects how much bandwidth the radar can process. If the equivalent bandwidth is 50 MHz, the sampling rate typically needs to be at least 100 MHz or higher, coordinated with front-end filtering and downconversion design. Higher sampling rates make ADCs more expensive and power-hungry, so engineering requires careful tradeoffs.</p>
-<p>The sampling theorem provides a baseline: components above the Nyquist frequency will fold back into the low-frequency range, and after aliasing it becomes very difficult to distinguish their sources.</p>
-</section><section class="chapter-section" data-section="ch02-s04"><h2 id="ch02-s04" class="section-title">2.4 Complex Numbers, Phase, and I/Q Data</h2>
-<p>The sine waves discussed in previous sections are all real signals: amplitude can be positive or negative, but always real. In radar signal processing, we also encounter complex data.</p>
-<p>Why do we need complex numbers? The key is phase.</p>
-<h3 id="sub-15">Phase Information</h3>
-<p>If we write the sine wave's "starting point" into the formula as well, it becomes:</p>
+<p>更高的频率会经过多次折叠，原理一样，超过奈奎斯特频率的成分会被折回到低频区。</p>
+<p>混叠一旦发生就无法挽回，没办法从已有的采样数据中分辨那个 2 Hz 到底是真的 2 Hz 信号，还是 10 Hz 被混叠下来的假象。所以采样率必须满足奈奎斯特条件，采样前也常用滤波器先挡掉过高的频率成分。</p>
+<h3 id="sub-21">2.3.3 ADC 与采样数据</h3>
+<p>雷达接收机里的<strong>模数转换器</strong>（ADC，Analog-to-Digital Converter）把连续的模拟电压变成离散的数字序列，交给后续的数字信号处理器。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_9_adc_pipeline_excali.png" alt="ADC 将连续电压变成数字序列" loading="lazy"><figcaption>ADC 将连续电压变成数字序列</figcaption></figure>
+<p>上图只画 ADC 的输入和输出。左边是连续变化的模拟电压，中间的 ADC 按固定采样率取点并量化，右边变成一串数字。FFT、滤波、检测处理的都是这些数字。</p>
+<p>ADC 的采样率影响雷达能处理多大带宽的信号。如果等效带宽是 50 MHz，采样率通常至少要在 100 MHz 以上，并配合前端滤波和下变频设计。采样率越高，ADC 往往越贵，功耗也越大，所以工程上要做好平衡。</p>
+<h3 id="sub-22">2.4 复数、相位与I/Q数据</h3>
+<p>前面几节讨论的正弦波都是实数信号，振幅可以是正，可以是负，但都是实数。雷达信号处理里还会遇到复数数据。为什么需要复数？</p>
+<h3 id="sub-23">2.4.1 相位信息</h3>
+<p>把正弦波的起点也写进公式，就是</p>
 <div class="math-block">$$
 s(t) = A \sin(2\pi f t + \varphi)
 $$</div>
-<p>The additional $\varphi$ here is<strong>phase</strong>. Phase describes the sine wave's "starting point" or "position in its cycle". Two sine waves with the same frequency and amplitude will be offset if their starting points differ.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_10_phase_shift_excali.png" alt="Figure 2.10 Phase difference of same-frequency, same-amplitude signals" loading="lazy"><figcaption>Figure 2.10 Phase difference of same-frequency, same-amplitude signals</figcaption></figure>
-<p>The two curves in Figure 2.10 have identical frequency and amplitude, only their starting points are offset. Phase is used to record this offset amount.</p>
-<p>Phase is very important in radar. When we discuss velocity measurement later, you'll see that moving targets cause the echo's phase to rotate over time, and the rotation rate corresponds to the target's velocity. If only amplitude is recorded, phase information is lost, and velocity cannot be measured.</p>
-<h3 id="sub-16">Complex Numbers and I/Q Components</h3>
-<p>Complex numbers can simultaneously record amplitude and phase. A complex sample can be written as:</p>
+<p>这里多出来的 $\varphi$ 就是<strong>相位</strong>。相位描述的是正弦波的“起点”或者说“转到哪里”。两个频率相同、振幅相同的正弦波，如果起点不同，波形就会错开。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_10_phase_shift_excali.png" alt="同频同幅信号的相位差" loading="lazy"><figcaption>同频同幅信号的相位差</figcaption></figure>
+<p>上图中两条曲线频率和振幅都一样，只是起点错开了。相位就是用来记录这种错开的量。</p>
+<p>相位关系到速度测量。运动目标的回波相位会随时间旋转，旋转的快慢对应目标的速度。如果只记录振幅，相位信息就丢了，速度也就测不出来。</p>
+<h3 id="sub-24">2.4.2 复数表示与 I/Q 分量</h3>
+<p>复数可以同时记录幅度和相位。一个复数样本写作</p>
 <div class="math-block">$$
 s = I + jQ
 $$</div>
-<p>$I$ and $Q$ are two real numbers, $j$ is the imaginary unit. $I$ is called<strong>in-phase component</strong>(In-phase), $Q$ is called<strong>quadrature component</strong>(Quadrature). The two real numbers together form a complex sample.</p>
-<p>This complex number can also be plotted on a plane. The horizontal axis represents $I$, the vertical axis represents $Q$, and the sample corresponds to a point on the plane, or an arrow from the origin to that point.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_11_iq_complex_plane_excali.png" alt="Figure 2.11 I/Q and Complex Phase" loading="lazy"><figcaption>Figure 2.11 I/Q and Complex Phase</figcaption></figure>
-<p>In Figure 2.11, the length of the blue arrow represents amplitude, and the angle the arrow makes with the horizontal axis represents phase. $I$ and $Q$ are two coordinates of the same complex sample and cannot be interpreted as two independent ordinary curves.</p>
-<p>Let's look at a specific numerical example. Suppose an echo sample point has I/Q values $I=3$ and $Q=4$; the corresponding complex number is</p>
+<p>$I$ 和 $Q$ 是两个实数，$j$ 是虚数单位。$I$ 叫<strong>同相分量</strong>（In-phase），$Q$ 叫<strong>正交分量</strong>（Quadrature）。两个实数合起来，构成一个复数样本。</p>
+<p>这个复数也可以画在平面上。横轴放 $I$，纵轴放 $Q$，样本就对应平面上的一个点，或者从原点指向这个点的一根箭头。</p>
+<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_11_iq_complex_plane_excali.png" alt="I/Q 与复数相位" loading="lazy"><figcaption>I/Q 与复数相位</figcaption></figure>
+<p>上图中，蓝色箭头的长度表示幅度，箭头相对横轴转过的角度表示相位。$I$ 和 $Q$ 是同一个复数样本的两个坐标，不是两条独立的曲线。</p>
+<p>先看一个具体数值。假设某个回波采样点的 I/Q 值是 $I=3$、$Q=4$，它对应的复数就是</p>
 <div class="math-block">$$
 s = 3 + j4
 $$</div>
-<p>In radar data, $I=3$ and $Q=4$ describe the same echo sample point. From these two numbers, we can calculate the amplitude $A=\sqrt{3^2+4^2}=5$ and phase $\varphi=\operatorname{atan2}(4,3)\approx 53^\circ$. If only the amplitude 5 is saved, both $3+j4$ and $3-j4$ reduce to just "same intensity"; retaining I/Q allows subsequent processing to distinguish their phase directions. Velocity estimation, coherent integration, and other processing rely on precisely these phase differences.</p>
-<p>To calculate amplitude from $I$ and $Q$, use the Pythagorean theorem:</p>
+<p>在雷达数据里，$I=3$、$Q=4$ 描述的是同一个回波采样点。由这两个数可以算出幅度 $A=\sqrt{3^2+4^2}=5$，相位 $\varphi=\operatorname{atan2}(4,3)\approx 53^\circ$。如果只保存幅度 5，$3+j4$ 和 $3-j4$ 就只剩下”强度一样”，保留 I/Q 后，速度估计、相干积累等处理才能区分这些相位方向。</p>
+<p>从 $I$、$Q$ 算幅度用勾股定理：</p>
 <div class="math-block">$$
 A = \sqrt{I^2 + Q^2}
 $$</div>
-<p>Phase is typically calculated using $\operatorname{atan2}(Q,I)$, which distinguishes between different quadrants. The same sample can also be written in polar form:</p>
+<p>相位通常用 $\operatorname{atan2}(Q,I)$ 计算，它能区分不同象限。也可以把同一个样本写成极坐标形式：</p>
 <div class="math-block">$$
 s = A e^{j\varphi}
 $$</div>
-<p>$A$ is the amplitude and $\varphi$ is the phase. The rectangular form $I+jQ$ and polar form $Ae^{j\varphi}$ are simply two ways of writing the same complex number.</p>
-<h3 id="sub-17">Origin of I/Q Data</h3>
-<p>Radar receivers typically output I/Q data on two channels. The<strong>quadrature demodulation</strong>process can be understood by first looking at the result: the receiver uses two reference signals with a 90° phase difference to separately process the same echo, with one channel yielding $I$ and the other yielding $Q$.</p>
-<p>This section does not expand on the circuit details of mixers and low-pass filters; it suffices to remember that I/Q comes from the receiver's demodulation and sampling chain and is used to preserve the echo's amplitude and phase.</p>
-<p>I/Q is a very common storage format in radar data. A complex sample can simultaneously record amplitude and phase, which will be used in subsequent range processing, velocity processing, and matched filtering.</p>
-<p>I/Q samples use two numbers to store amplitude and phase, with phase being used in velocity processing later.</p>
-</section><section class="chapter-section" data-section="ch02-s05"><h2 id="ch02-s05" class="section-title">2.5 Practice Problems</h2>
-<p>This section reviews several basic concepts from this chapter through exercises: frequency and period, spectrum readings, aliasing determination, frequency resolution, and the amplitude and phase of I/Q samples.</p>
-<h3 id="sub-18">Frequency and Period</h3>
-<p>A sinusoidal signal has a period of $T = 0.02$ s. What is its frequency?</p>
-<p><strong>Solution:</strong> From $f = 1/T$, we obtain</p>
+<p>$A$ 是幅度，$\varphi$ 是相位。直角坐标形式 $I+jQ$ 和极坐标形式 $Ae^{j\varphi}$ 只是同一个复数的两种写法。</p>
+<h3 id="sub-25">2.4.3 I/Q 数据的来源</h3>
+<p>雷达接收机通常会输出 I/Q 两路数据。<strong>正交解调</strong>用两路相差 90° 的参考信号分别处理同一个回波，一路得到 $I$，另一路得到 $Q$。混频器和低通滤波器的电路细节暂不展开。I/Q 来自接收机的解调与采样链路，用来保留回波的幅度和相位。</p>
+<p>I/Q 是雷达数据里很常见的保存方式。一个复数样本可以同时记幅度和相位，距离处理、速度处理和匹配滤波都会用到。</p>
+<h3 id="sub-26">2.5 小练习</h3>
+<p>本节配套 MATLAB 脚本为 <code>第二版/matlab/第二章/ch02_exercise_signals.m</code>。它对应练习 2 到练习 5，可以用来检查频谱峰值、混叠位置、频率分辨率和 I/Q 样本的幅度相位。</p>
+<h3 id="sub-27">2.5.1 练习 1：频率与周期的换算</h3>
+<p>一个正弦信号的周期是 $T = 0.02$ s，它的频率是多少？</p>
+<p><strong>解析：</strong> 由 $f = 1/T$ 可得</p>
 <div class="math-block">$$
 f = \frac{1}{0.02} = 50\,\text{Hz}
 $$</div>
-<h3 id="sub-19">Spectrum Reading</h3>
-<p>A signal's spectrum has two spectral lines: one at 100 Hz with height 3 V, and another at 250 Hz with height 1 V.</p>
-<p>(a) Write the time-domain expression for this signal (ignoring phase).</p>
-<p>(b) If this signal is to be sampled, what is the minimum required sampling rate?</p>
-<p><strong>Solution:</strong> Each spectral line in the frequency spectrum corresponds to a sinusoidal component, so the time-domain signal can be written as</p>
+<h3 id="sub-28">2.5.2 练习 2：从频谱读信息</h3>
+<p>某信号的频谱图上有两根谱线：一根在 100 Hz 处，高度 3 V，另一根在 250 Hz 处，高度 1 V。</p>
+<p>（a）写出这个信号的时域表达式（忽略相位）。</p>
+<p>（b）如果要对这个信号采样，采样率至少要多高？</p>
+<p><strong>解析：</strong> 频谱中的每一根谱线都对应一个正弦分量，因此时域信号可以写成</p>
 <div class="math-block">$$
 s(t) = 3\sin(2\pi \cdot 100 \cdot t) + 1\sin(2\pi \cdot 250 \cdot t)
 $$</div>
-<p>The highest frequency component in this signal is 250 Hz. According to the sampling theorem, the sampling rate must satisfy</p>
+<p>这个信号的最高频率分量是 250 Hz。根据采样定理，采样率必须满足</p>
 <div class="math-block">$$
 f_s &gt; 2f_{\max} = 2 \times 250 = 500\,\text{Hz}
 $$</div>
-<p>Therefore, the sampling rate must be at least greater than 500 Hz.</p>
-<h3 id="sub-20">Aliasing Detection</h3>
-<p>You sample a signal at 800 Hz. The signal contains three frequency components: 100 Hz, 300 Hz, and 500 Hz. Which components will experience aliasing? What frequencies will they appear as after aliasing?</p>
-<p><strong>Solution:</strong> The Nyquist frequency corresponding to an 800 Hz sampling rate is</p>
+<p>因此采样率至少要大于 500 Hz。</p>
+<p>要画这个频谱，运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0/ch02_exercise_signals.m"><code>ch02_exercise_signals.m</code></a> 中”练习 2：从频谱读信息”的部分，观察 100 Hz 和 250 Hz 两根谱线的位置和高度。</p>
+<h3 id="sub-29">2.5.3 练习 3：混叠判断</h3>
+<p>你用 800 Hz 的采样率对一个信号采样。信号里包含三个频率分量：100 Hz、300 Hz、500 Hz。哪些分量会发生混叠？混叠后会表现为什么频率？</p>
+<p><strong>解析：</strong> 800 Hz 采样率对应的奈奎斯特频率为</p>
 <div class="math-block">$$
 \frac{f_s}{2} = 400\,\text{Hz}
 $$</div>
-<p>Therefore, both 100 Hz and 300 Hz are below 400 Hz and will not alias; 500 Hz is above 400 Hz and will alias. The apparent frequency after aliasing is</p>
+<p>因此，100 Hz 和 300 Hz 都低于 400 Hz，不会发生混叠。500 Hz 高于 400 Hz，会发生混叠。混叠后的表观频率为</p>
 <div class="math-block">$$
 f_{\text{alias}} = f_s - f_{\text{signal}} = 800 - 500 = 300\,\text{Hz}
 $$</div>
-<p>In other words, the 500 Hz component will fold back to 300 Hz and coincide with the existing 300 Hz component.</p>
-<h3 id="sub-21">Frequency Resolution</h3>
-<p>A radar continuously observes a target for 0.05 seconds. The target echo may contain two Doppler frequency components: 1000 Hz and 1015 Hz. Can these two components be separated in the frequency spectrum? If not, what is the minimum observation time required?</p>
-<p><strong>Solution:</strong> The frequency resolution is approximately</p>
+<p>也就是说，500 Hz 分量会折叠到 300 Hz 处，并和原本就存在的 300 Hz 分量重合。</p>
+<p>可运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0/ch02_exercise_signals.m"><code>ch02_exercise_signals.m</code></a> 中“练习 3：混叠判断”的部分，观察 500 Hz 分量怎样折叠到 300 Hz。</p>
+<h3 id="sub-30">2.5.4 练习 4：频率分辨率</h3>
+<p>雷达对一个目标连续观测了 0.05 秒。目标回波中可能包含两个多普勒频率分量：1000 Hz 和 1015 Hz。这两个分量在频谱上能分开吗？如果不能，至少需要观测多长时间？</p>
+<p><strong>解析：</strong> 频率分辨率近似为</p>
 <div class="math-block">$$
 \Delta f = \frac{1}{T_{\text{obs}}}
 $$</div>
-<p>Substituting the observation time $T_{\text{obs}} = 0.05$ s, we get</p>
+<p>代入观测时间 $T_{\text{obs}} = 0.05$ s，得到</p>
 <div class="math-block">$$
 \Delta f = \frac{1}{0.05} = 20\,\text{Hz}
 $$</div>
-<p>The two frequency components differ by only 15 Hz, which is less than 20 Hz, so they cannot be separated with the current observation time.</p>
-<p>To resolve a 15 Hz difference, we need to satisfy</p>
+<p>而两个频率分量只相差 15 Hz，小于 20 Hz，因此在当前观测时间下分不开。</p>
+<p>如果要把 15 Hz 的差别分辨出来，就需要满足</p>
 <div class="math-block">$$
 T_{\text{obs}} \ge \frac{1}{15} \approx 0.067\,\text{s}
 $$</div>
-<p>This means an observation time of at least approximately 67 ms is required.</p>
-<h3 id="sub-22">I/Q Amplitude and Phase</h3>
-<p>A complex sample point is $s = 3 + j4$. What is its magnitude? What is its phase approximately?</p>
-<p><strong>Solution:</strong> The magnitude is</p>
+<p>也就是至少需要大约 67 ms 的观测时间。</p>
+<p>可运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0/ch02_exercise_signals.m"><code>ch02_exercise_signals.m</code></a> 中“练习 4：频率分辨率”的部分，对比 50 ms 和 80 ms 观测时间下两个频率峰的分离情况。</p>
+<h3 id="sub-31">2.5.5 练习 5：I/Q 样本的幅度与相位</h3>
+<p>某个复数采样点为 $s = 3 + j4$。它的幅度是多少？相位大约是多少？</p>
+<p><strong>解析：</strong> 幅度为</p>
 <div class="math-block">$$
 A = \sqrt{I^2 + Q^2} = \sqrt{3^2 + 4^2} = 5
 $$</div>
-<p>The phase is</p>
+<p>相位为</p>
 <div class="math-block">$$
 \varphi = \operatorname{atan2}(4,3) \approx 53.1^\circ \approx 0.93\,\text{rad}
 $$</div>
-<p>This sample can be understood as an arrow in the I/Q plane with length 5, rotated approximately $53.1^\circ$ from the I axis.</p>
-</section>
+<p>这个样本可以理解成 I/Q 平面上一根长度为 5、相对 I 轴转过约 $53.1^\circ$ 的箭头。</p>
+<p>可运行 <a class="inline-code-link" href="https://github.com/apple-art/easy-radar-tutorial/blob/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0/ch02_exercise_signals.m"><code>ch02_exercise_signals.m</code></a> 中“练习 5：I/Q 样本的幅度与相位”的部分，查看命令行计算结果和 I/Q 平面上的箭头。</p></section>
     </article>
+    <div class="article-actions"><a class="btn" href="../pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E4%BF%A1%E5%8F%B7%E5%9F%BA%E7%A1%80.pdf">本章 PDF</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab/%E7%AC%AC%E4%BA%8C%E7%AB%A0">本章 MATLAB</a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a></div>
   </main>
 </div>
 </body>

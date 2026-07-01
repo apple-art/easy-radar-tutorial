@@ -4,97 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>首页 | 易懂的雷达信号处理教程</title>
-  <meta name="description" content="易懂的雷达信号处理教程——面向工程师和在校学生，从直觉出发讲透 LFM 信号、脉冲压缩、匹配滤波、距离测量、速度测量、CFAR 目标检测与角度估计，配手绘风格插图与 MATLAB 实战脚本，8 章 38 节循序渐进。">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="易懂的雷达信号处理教程">
-  <meta property="og:title" content="易懂的雷达信号处理教程">
-  <meta property="og:description" content="易懂的雷达信号处理教程——面向工程师和在校学生，从直觉出发讲透 LFM 信号、脉冲压缩、匹配滤波、距离测量、速度测量、CFAR 目标检测与角度估计，配手绘风格插图与 MATLAB 实战脚本，8 章 38 节循序渐进。">
-  <meta property="og:url" content="https://apple-art.github.io/easy-radar-tutorial/index.html">
-  <meta property="og:image" content="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_7_radar_applications_expansion.png">
-  <meta property="og:image" content="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_7_fixed_vs_cfar_excali.png">
-  <meta property="og:image" content="https://apple-art.github.io/easy-radar-tutorial/design/fig6_11_region_peak_excali.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="易懂的雷达信号处理教程">
-  <meta name="twitter:description" content="易懂的雷达信号处理教程——面向工程师和在校学生，从直觉出发讲透 LFM 信号、脉冲压缩、匹配滤波、距离测量、速度测量、CFAR 目标检测与角度估计，配手绘风格插图与 MATLAB 实战脚本，8 章 38 节循序渐进。">
-  <meta name="twitter:image" content="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_7_radar_applications_expansion.png">
+  <meta name="description" content="一本从直觉出发的雷达信号处理入门教程。">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/index.html">
   <link rel="icon" href="design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <meta name="keywords" content="雷达信号处理,雷达信号处理入门,雷达信号处理基础,雷达原理,雷达教程,脉冲压缩,匹配滤波,LFM信号,线性调频信号,CFAR检测,多普勒效应,FMCW雷达,波束形成,测距测速,目标检测,雷达测角,数字信号处理,雷达系统,SAR成像,合成孔径雷达,雷达自学,雷达入门教程,信号处理教程,MATLAB雷达,radar signal processing,radar tutorial,pulse compression,matched filter,CFAR,Doppler processing,beamforming,radar basics">
-  <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
-  <link rel="preload" as="image" href="design/cover/radar-book-cover-portrait.webp" type="image/webp" fetchpriority="high">
-  <link rel="stylesheet" href="assets/home-page.css?v=20260617-local-fonts">
-  <script defer src="assets/home-page.js?v=20260615-home-split-fix1"></script>
-
-  <style>
-    .home-topbar .nav-terminal {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-self: end;
-    }
-    .home-topbar .github-link {
-      justify-content: center;
-      width: 40px;
-      padding: 9px;
-    }
-    .home-topbar .nav-divider {
-      display: block;
-      flex: 0 0 1px;
-      width: 1px;
-      min-width: 1px;
-      height: 24px;
-      background: rgba(13, 71, 70, 0.18);
-    }
-    .language-switcher,
-    .theme-toggle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      border: 0;
-      border-radius: 999px;
-      background: transparent;
-      color: #0d4746;
-      text-decoration: none;
-      flex: 0 0 auto;
-      cursor: pointer;
-    }
-    .language-switcher:hover,
-    .theme-toggle:hover { color: var(--teal); background: rgba(13, 71, 70, 0.07); }
-    .language-switcher .language-icon,
-    .language-switcher .language-icon svg,
-    .theme-toggle .theme-icon,
-    .theme-toggle .theme-icon svg { width: 21px; height: 21px; }
-    .language-switcher svg,
-    .theme-toggle svg {
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/site.css?v=20260506-code-font-fix">
+  <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="assets/site.js?v=20260506-code-font-fix"></script>
 </head>
-<body class="home-page"><div class="read-progress" aria-hidden="true"><span></span></div>
+<body><div class="read-progress" aria-hidden="true"><span></span></div>
 <header class="hero">
-  <nav class="topbar home-topbar" aria-label="站点导航">
+  <nav class="topbar">
     <a class="brand" href="./"><img src="design/icon-concepts/logo-mark-light.svg" alt="教程图标"><span>Easy Radar Tutorial</span></a>
-    <div class="toplinks nav-primary">
-      <a class="nav-link active" href="index.zh-CN.html" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5"></path><path d="M6.5 9.5V20h4v-5.5h3V20h4V9.5"></path></svg></span><span>首页</span></a>
-      <a class="nav-link" href="#chapters"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6.5h14"></path><path d="M5 12h14"></path><path d="M5 17.5h10"></path><path d="M3 6.5h.01"></path><path d="M3 12h.01"></path><path d="M3 17.5h.01"></path></svg></span><span>章节导航</span></a>
-      <a class="nav-link" href="chapters/ch01.zh-CN.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5A3.5 3.5 0 0 1 8 2h11.5v18H8a3.5 3.5 0 0 0-3.5 2z"></path><path d="M8 2v18"></path><path d="M11 7h5"></path><path d="M11 11h4"></path></svg></span><span>开始阅读</span></a>
-      <a class="nav-link" href="https://github.com/apple-art/easy-radar-tutorial/releases/latest"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 9 5 5 5-5"></path><path d="M5 19h14"></path></svg></span><span>配套资源</span></a>
-      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>查看更多</span></a>
-    </div>
-    <div class="nav-terminal">
-      <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span></a>
-      <span class="nav-divider" aria-hidden="true"></span>
-      <a class="language-switcher" href="index.html" aria-label="切换到英文" title="English"><span class="nav-icon language-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg></span></a>
-      <span class="nav-divider" aria-hidden="true"></span>
-      <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到黑色背景" title="黑色背景"><span class="nav-icon theme-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" stroke="none"></path><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg></span></button>
-    </div>
+    <div class="toplinks"><a href="index.html">首页</a><a href="chapters/ch01.html">章节</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a><a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a></div>
   </nav>
   <div class="hero-shell reveal">
     <div class="hero-banner">
@@ -114,25 +36,15 @@
         <div><span class="process-icon spectrum"></span><strong>距离谱</strong></div><i></i>
         <div><span class="process-icon detection"></span><strong>检测与估计</strong></div>
       </div>
-      <figure class="hero-cover" aria-label="教程封面">
-        <img class="book-cover-img" src="design/cover/radar-book-cover-portrait.webp" alt="《易懂的雷达信号处理》封面" width="680" height="1020" decoding="async" fetchpriority="high">
-      </figure>
       <div class="hero-copy">
         <div class="hero-mark"><img src="design/icon-concepts/logo-mark-light.svg" alt="项目图标"><span class="eyebrow">从原理到实践 · 真正易懂的雷达信号处理</span></div>
         <h1>易懂的雷达信号处理教程</h1>
         <p>面向学生与工程师</p>
+        <div class="hero-actions"><a class="btn primary" href="chapters/ch01.html"><span>开始阅读</span></a><a class="btn" href="#chapters"><span>浏览章节</span></a><a class="btn ghost" href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab"><span>MATLAB 代码</span></a><a class="btn" href="https://github.com/apple-art/easy-radar-tutorial/releases/latest"><span>下载资料包</span></a></div>
         <div class="hero-proof" aria-label="教程概览">
           <div class="hero-stat"><strong>8</strong><span>个章节</span></div>
-          <div class="hero-stat"><strong>38</strong><span>个小节</span></div>
+          <div class="hero-stat"><strong>8</strong><span>篇整章稿</span></div>
           <div class="hero-stat"><strong>20</strong><span>个脚本</span></div>
-        </div>
-        <div class="hero-social-cards">
-          <a class="github-star-card" href="https://github.com/apple-art/easy-radar-tutorial" data-github-repo="apple-art/easy-radar-tutorial" aria-label="GitHub Stars 23">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z"></path></svg>Star</span><strong data-github-star-count>23</strong>
-          </a>
-          <a class="zhihu-column-card" href="https://www.zhihu.com/column/c_2025369741573800586" aria-label="知乎专栏">
-            <span><svg viewBox="0 0 200 91" aria-hidden="true"><path fill="currentColor" d="M53.29 80.035l7.32.002 2.41 8.24 13.128-8.24h15.477v-67.98H53.29v67.978zm7.79-60.598h22.756v53.22h-8.73l-8.718 5.473-1.587-5.46-3.72-.012v-53.22zM46.818 43.162h-16.35c.545-8.467.687-16.12.687-22.955h15.987s.615-7.05-2.68-6.97H16.807c1.09-4.1 2.46-8.332 4.1-12.708 0 0-7.523 0-10.085 6.74-1.06 2.78-4.128 13.48-9.592 24.41 1.84-.2 7.927-.37 11.512-6.94.66-1.84.785-2.08 1.605-4.54h9.02c0 3.28-.374 20.9-.526 22.95H6.51c-3.67 0-4.863 7.38-4.863 7.38H22.14C20.765 66.11 13.385 79.24 0 89.62c6.403 1.828 12.784-.29 15.937-3.094 0 0 7.182-6.53 11.12-21.64L43.92 85.18s2.473-8.402-.388-12.496c-2.37-2.788-8.768-10.33-11.496-13.064l-4.57 3.627c1.363-4.368 2.183-8.61 2.46-12.71H49.19s-.027-7.38-2.372-7.38zm128.752-.502c6.51-8.013 14.054-18.302 14.054-18.302s-5.827-4.625-8.556-1.27c-1.874 2.548-11.51 15.063-11.51 15.063l6.012 4.51zm-46.903-18.462c-2.814-2.577-8.096.667-8.096.667s12.35 17.2 12.85 17.953l6.08-4.29s-8.02-11.752-10.83-14.33zM199.99 46.5c-6.18 0-40.908.292-40.953.292v-31.56c1.503 0 3.882-.124 7.14-.376 12.773-.753 21.914-1.25 27.427-1.504 0 0 3.817-8.496-.185-10.45-.96-.37-7.24 1.43-7.24 1.43s-51.63 5.153-72.61 5.64c.5 2.756 2.38 5.336 4.93 6.11 4.16 1.087 7.09.53 15.36.277 7.76-.5 13.65-.76 17.66-.76v31.19h-41.71s.88 6.97 7.97 7.14h33.73v22.16c0 4.364-3.498 6.87-7.65 6.6-4.4.034-8.15-.36-13.027-.566.623 1.24 1.977 4.496 6.035 6.824 3.087 1.502 5.054 2.053 7.95 2.053 9.16 0 14.61-5.3 14.61-13.97V53.93h38.02c3.29 0 4.27-7.43 4.27-7.43z"/></svg>知乎</span><strong>专栏</strong>
-          </a>
         </div>
       </div>
     </div>
@@ -140,92 +52,58 @@
 </header>
 <main>
   <section id="chapters" class="chapters">
-    <div class="section-head section-head-centered reveal">
-      <span class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5A3.5 3.5 0 0 1 8 2h11.5v18H8a3.5 3.5 0 0 0-3.5 2z"></path><path d="M8 2v18"></path><path d="M11 7h5"></path><path d="M11 11h4"></path><path d="M11 15h5"></path></svg></span>
-      <h2 class="chapter-nav-title">章节导航</h2>
-    </div>
-    <div class="chapter-grid"><a class="chapter-card reveal" href="chapters/ch01.zh-CN.html" aria-label="阅读第1章 雷达是什么">
-      <div class="chapter-body"><div class="chapter-kicker"><span>第1章</span></div><h3>雷达是什么</h3></div>
-      <figure class="chapter-art"><img src="design/chapter-cards-ai/ch01-excalidraw.webp" alt="" width="362" height="392" loading="lazy" decoding="async"></figure>
-    </a><a class="chapter-card reveal" href="chapters/ch02.zh-CN.html" aria-label="阅读第2章 信号基础">
-      <div class="chapter-body"><div class="chapter-kicker"><span>第2章</span></div><h3>信号基础</h3></div>
-      <figure class="chapter-art"><img src="design/chapter-cards-ai/ch02-excalidraw.webp" alt="" width="360" height="392" loading="lazy" decoding="async"></figure>
-    </a><a class="chapter-card reveal" href="chapters/ch03.zh-CN.html" aria-label="阅读第3章 雷达信号的收发">
-      <div class="chapter-body"><div class="chapter-kicker"><span>第3章</span></div><h3>雷达信号的收发</h3></div>
-      <figure class="chapter-art"><img src="design/chapter-cards-ai/ch03-excalidraw.webp" alt="" width="420" height="420" loading="lazy" decoding="async"></figure>
-    </a><a class="chapter-card reveal" href="chapters/ch04.zh-CN.html" aria-label="阅读第4章 距离测量">
-      <div class="chapter-body"><div class="chapter-kicker"><span>第4章</span></div><h3>距离测量</h3></div>
-      <figure class="chapter-art"><img src="design/chapter-cards-ai/ch04-excalidraw.webp" alt="" width="420" height="420" loading="lazy" decoding="async"></figure>
-    </a><a class="chapter-card reveal" href="chapters/ch05.zh-CN.html" aria-label="阅读第5章 速度测量">
-      <div class="chapter-body"><div class="chapter-kicker"><span>第5章</span></div><h3>速度测量</h3></div>
-      <figure class="chapter-art"><img src="design/chapter-cards-ai/ch05-excalidraw.webp" alt="" width="362" height="372" loading="lazy" decoding="async"></figure>
-    </a><a class="chapter-card reveal" href="chapters/ch06.zh-CN.html" aria-label="阅读第6章 目标检测">
-      <div class="chapter-body"><div class="chapter-kicker"><span>第6章</span></div><h3>目标检测</h3></div>
-      <figure class="chapter-art"><img src="design/chapter-cards-ai/ch06-excalidraw.webp" alt="" width="360" height="372" loading="lazy" decoding="async"></figure>
-    </a><a class="chapter-card reveal" href="chapters/ch07.zh-CN.html" aria-label="阅读第7章 角度测量">
-      <div class="chapter-body"><div class="chapter-kicker"><span>第7章</span></div><h3>角度测量</h3></div>
-      <figure class="chapter-art"><img src="design/chapter-cards-ai/ch07-excalidraw.webp" alt="" width="420" height="420" loading="lazy" decoding="async"></figure>
-    </a><a class="chapter-card reveal" href="chapters/ch08.zh-CN.html" aria-label="阅读第8章 完整 MATLAB 处理流程">
-      <div class="chapter-body"><div class="chapter-kicker"><span>第8章</span></div><h3>完整 MATLAB 处理流程</h3></div>
-      <figure class="chapter-art"><img src="design/chapter-cards-ai/ch08-excalidraw.webp" alt="" width="362" height="372" loading="lazy" decoding="async"></figure>
-    </a></div>
+    <div class="section-head reveal"><p class="eyebrow">Read online</p><h2>在线章节</h2></div>
+    <div class="chapter-grid"><article class="chapter-card reveal">
+      <div class="chapter-kicker"><span>第1章</span></div>
+      <h3>雷达是什么</h3>
+      <figure class="chapter-art"><img src="design/chapter-cards/ch01-card-refined.png" alt="雷达是什么" loading="lazy"></figure>
+      <div class="chapter-actions"><a class="btn primary" href="chapters/ch01.html">网页阅读</a><a class="btn" href="pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E9%9B%B7%E8%BE%BE%E6%98%AF%E4%BB%80%E4%B9%88.pdf">阅读 PDF</a></div>
+    </article><article class="chapter-card reveal">
+      <div class="chapter-kicker"><span>第2章</span></div>
+      <h3>信号基础</h3>
+      <figure class="chapter-art"><img src="design/chapter-cards/ch02-card-refined.png" alt="信号基础" loading="lazy"></figure>
+      <div class="chapter-actions"><a class="btn primary" href="chapters/ch02.html">网页阅读</a><a class="btn" href="pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E4%BF%A1%E5%8F%B7%E5%9F%BA%E7%A1%80.pdf">阅读 PDF</a></div>
+    </article><article class="chapter-card reveal">
+      <div class="chapter-kicker"><span>第3章</span></div>
+      <h3>雷达信号的生成与接收</h3>
+      <figure class="chapter-art"><img src="design/chapter-cards/ch03-card-refined.png" alt="雷达信号的生成与接收" loading="lazy"></figure>
+      <div class="chapter-actions"><a class="btn primary" href="chapters/ch03.html">网页阅读</a><a class="btn" href="pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E6%8E%A5%E6%94%B6.pdf">阅读 PDF</a></div>
+    </article><article class="chapter-card reveal">
+      <div class="chapter-kicker"><span>第4章</span></div>
+      <h3>距离测量</h3>
+      <figure class="chapter-art"><img src="design/chapter-cards/ch04-card-transparent.png" alt="距离测量" loading="lazy"></figure>
+      <div class="chapter-actions"><a class="btn primary" href="chapters/ch04.html">网页阅读</a><a class="btn" href="pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E8%B7%9D%E7%A6%BB%E6%B5%8B%E9%87%8F.pdf">阅读 PDF</a></div>
+    </article><article class="chapter-card reveal">
+      <div class="chapter-kicker"><span>第5章</span></div>
+      <h3>速度测量</h3>
+      <figure class="chapter-art"><img src="design/chapter-cards/ch05-card-transparent.png" alt="速度测量" loading="lazy"></figure>
+      <div class="chapter-actions"><a class="btn primary" href="chapters/ch05.html">网页阅读</a><a class="btn" href="pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E9%80%9F%E5%BA%A6%E6%B5%8B%E9%87%8F.pdf">阅读 PDF</a></div>
+    </article><article class="chapter-card reveal">
+      <div class="chapter-kicker"><span>第6章</span></div>
+      <h3>目标检测</h3>
+      <figure class="chapter-art"><img src="design/chapter-cards/ch06-card-transparent.png" alt="目标检测" loading="lazy"></figure>
+      <div class="chapter-actions"><a class="btn primary" href="chapters/ch06.html">网页阅读</a><a class="btn" href="pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B.pdf">阅读 PDF</a></div>
+    </article><article class="chapter-card reveal">
+      <div class="chapter-kicker"><span>第7章</span></div>
+      <h3>测角</h3>
+      <figure class="chapter-art"><img src="design/chapter-cards/ch07-card-transparent.png" alt="测角" loading="lazy"></figure>
+      <div class="chapter-actions"><a class="btn primary" href="chapters/ch07.html">网页阅读</a><a class="btn" href="pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%9A%E6%B5%8B%E8%A7%92.pdf">阅读 PDF</a></div>
+    </article><article class="chapter-card reveal">
+      <div class="chapter-kicker"><span>第8章</span></div>
+      <h3>完整处理流程</h3>
+      <figure class="chapter-art"><img src="design/chapter-cards/ch08-card-transparent.png" alt="完整处理流程" loading="lazy"></figure>
+      <div class="chapter-actions"><a class="btn primary" href="chapters/ch08.html">网页阅读</a><a class="btn" href="pdf/%E6%98%93%E6%87%82%E7%9A%84%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%9A%E5%AE%8C%E6%95%B4MATLAB%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.pdf">阅读 PDF</a></div>
+    </article></div>
   </section>
-  <section class="features-section reveal" aria-labelledby="features-title">
-    <!-- 优势1: 认知曲线 -->
-    <div class="feature-showcase feature-curve">
-      <div class="feature-content">
-        <h3>丝滑的认知曲线</h3>
-        <p>拆分难点，合理编排知识分布，引导读者慢慢理解</p>
-      </div>
-      <div class="feature-visual">
-        <div id="curve-chart" style="width: 100%; height: 360px;"></div>
-      </div>
+  <section class="author-card reveal" aria-labelledby="author-card-title">
+    <div class="section-head author-card-copy">
+      <h2 id="author-card-title">作者名片</h2>
+      <p>如果这套教程对你有帮助，可以通过这张名片找到我。</p>
     </div>
-
-    <!-- 优势2: 配图易懂 -->
-    <div class="feature-figures-section">
-      <div class="feature-figures-header">
-        <h3>配图易懂</h3>
-        <p>手绘风格，直观呈现</p>
-      </div>
-      <div class="figures-grid">
-        <img src="design/fig1_4_radar_origin_visibility_problem.webp" alt="雷达起源可见性问题" width="1080" height="720" loading="lazy" decoding="async">
-        <img src="design/fig6_11_region_peak_excali.webp" alt="配图示例" width="1080" height="720" loading="lazy" decoding="async">
-      </div>
-    </div>
-
-    <!-- 优势3: 定位清晰 -->
-    <div class="feature-showcase feature-target">
-      <div class="feature-visual">
-        <img src="design/feature-target.webp" alt="目标读者定位" width="720" height="720" loading="lazy" decoding="async">
-      </div>
-      <div class="feature-content">
-        <h3>定位清晰</h3>
-        <p>专为工程师和在校学生设计。不追求大而全的体系，只聚焦信号处理入门阶段真正需要的内容。避免过早引入高阶概念，让初学者能够稳步建立基础认知，而不是被复杂的数学推导和系统细节淹没。</p>
-      </div>
-    </div>
-  </section>
-  <section class="author-card reveal">
     <figure class="personal-card-frame">
-      <img src="design/personal-card/athens-card-minimal-2-hd.webp" alt="唐承乾个人名片" width="1100" height="628" loading="lazy" decoding="async">
+      <img src="design/personal-card/athens-card-minimal-2-hd.png" alt="唐承乾个人名片" loading="lazy">
     </figure>
-    <button class="appreciation-btn" id="appreciationBtn" aria-label="赞赏">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-      <span>赞赏</span>
-    </button>
-  <p style="font-size:0.72rem;color:#bbb;margin:0.4rem 0 0;line-height:1.7;">本教程涵盖雷达信号处理基础、雷达信号处理入门、雷达原理入门<br>脉冲压缩、匹配滤波、LFM线性调频信号、CFAR恒虚警检测<br>多普勒测速、FMCW雷达、波束形成与测角<br>适合在校学生与工程师自学。</p>
   </section>
-
-  <!-- 赞赏弹窗 -->
-  <div class="appreciation-modal" id="appreciationModal" aria-hidden="true">
-    <div class="modal-overlay"></div>
-    <div class="modal-content">
-      <button class="modal-close" id="modalClose" aria-label="关闭">
-        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
-      <img src="design/wechat-appreciation.webp" alt="微信赞赏码" width="720" height="720" loading="lazy" decoding="async">
-    </div>
-  </div>
 </main>
 <footer class="site-footer"><p>© 唐承乾. 本仓库内容按 LICENSE 中的条款发布。</p><p><a href="https://github.com/apple-art/easy-radar-tutorial">GitHub 仓库</a> · <a href="LICENSE">LICENSE</a></p></footer>
 </body>
