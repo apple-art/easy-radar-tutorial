@@ -212,6 +212,12 @@ body.home-page .zhihu-column-card span {
   background: rgba(0, 0, 0, 0.04);
 }
 
+body.home-page .curve-fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 html[data-home-theme="dark"] body.home-page .home-topbar {
   background: rgba(6, 6, 6, 0.82);
   border-color: rgba(255, 255, 255, 0.16);

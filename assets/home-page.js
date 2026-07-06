@@ -99,6 +99,41 @@
   let chart = null;
   let loading = false;
 
+  function renderFallbackChart(){
+    const isZh = document.documentElement.lang.toLowerCase().startsWith('zh');
+    chartDom.innerHTML = `
+      <svg class="curve-fallback" viewBox="0 0 720 360" role="img" aria-label="${isZh ? '认知曲线对比图' : 'Learning curve comparison'}">
+        <defs>
+          <linearGradient id="easyCurveFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="rgba(135, 182, 162, 0.34)"/>
+            <stop offset="1" stop-color="rgba(135, 182, 162, 0.04)"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="720" height="360" rx="18" fill="#fffdf7"/>
+        <g stroke="#e8e2d8" stroke-dasharray="7 9" stroke-width="1">
+          <path d="M92 80H648"/><path d="M92 132H648"/><path d="M92 184H648"/><path d="M92 236H648"/><path d="M92 288H648"/>
+        </g>
+        <g fill="#4a5751" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="700">
+          <text x="104" y="320">${isZh ? '第1章' : 'Ch. 1'}</text><text x="230" y="320">${isZh ? '第2章' : 'Ch. 2'}</text><text x="356" y="320">${isZh ? '第3章' : 'Ch. 3'}</text><text x="482" y="320">${isZh ? '第4章' : 'Ch. 4'}</text><text x="608" y="320">${isZh ? '第5章' : 'Ch. 5'}</text>
+          <text x="34" y="62" transform="rotate(-90 34 62)">${isZh ? '认知难度' : 'Difficulty'}</text>
+        </g>
+        <path d="M118 285 C190 270 218 250 244 230 C292 196 318 177 370 150 C448 112 506 95 622 82 L622 288 L118 288Z" fill="url(#easyCurveFill)"/>
+        <path d="M118 285 C190 270 218 250 244 230 C292 196 318 177 370 150 C448 112 506 95 622 82" fill="none" stroke="#87b6a2" stroke-width="5" stroke-linecap="round"/>
+        <path d="M118 285 C206 275 238 262 272 242 C334 205 342 88 402 82 C482 74 548 76 622 72" fill="none" stroke="#d97757" stroke-width="5" stroke-linecap="round"/>
+        <g fill="#87b6a2" stroke="#fff" stroke-width="4">
+          <circle cx="118" cy="285" r="8"/><circle cx="244" cy="230" r="8"/><circle cx="370" cy="150" r="8"/><circle cx="496" cy="98" r="8"/><circle cx="622" cy="82" r="8"/>
+        </g>
+        <g fill="#d97757" stroke="#fff" stroke-width="4">
+          <circle cx="118" cy="285" r="8"/><circle cx="244" cy="242" r="8"/><circle cx="370" cy="82" r="8"/><circle cx="496" cy="78" r="8"/><circle cx="622" cy="72" r="8"/>
+        </g>
+        <g font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="800">
+          <circle cx="474" cy="40" r="6" fill="#87b6a2"/><text x="490" y="45" fill="#4a5751">${isZh ? '本教程' : 'This tutorial'}</text>
+          <circle cx="578" cy="40" r="6" fill="#d97757"/><text x="594" y="45" fill="#4a5751">${isZh ? '传统教材' : 'Traditional'}</text>
+        </g>
+      </svg>
+    `;
+  }
+
   function initChart(){
     if(chart || typeof echarts === 'undefined') return;
 
@@ -175,6 +210,8 @@
     script.onload = initChart;
     document.head.appendChild(script);
   }
+
+  renderFallbackChart();
 
   if('IntersectionObserver' in window){
     const observer = new IntersectionObserver(entries => {

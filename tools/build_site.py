@@ -596,9 +596,6 @@ class SiteBuilder:
         return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", repl, markdown_text)
 
     def write_pages(self) -> None:
-        index_html = self.render_index()
-        (self.output_root / "index.html").write_text(index_html, encoding="utf-8")
-        (self.output_root / "index.zh-CN.html").write_text(index_html, encoding="utf-8")
         (self.output_root / ".nojekyll").write_text("", encoding="utf-8")
         renderer = MarkdownRenderer(self.matlab_files_by_name)
         for chapter in self.chapters:
