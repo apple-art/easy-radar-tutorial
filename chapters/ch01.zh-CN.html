@@ -5,24 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>第1章 雷达是什么 | 易懂的雷达信号处理教程</title>
   <meta name="description" content="打开天气预报，常能看到一张彩色的降雨回波图。它来自天气雷达，雷达向天空发射电磁波，再把云团和雨滴反射回来的回波整理成图。机场旁边缓慢旋转的监视天线、高速路口的测速设备、汽车前保险杠里的毫米波模块，同样是主动发出电磁波，接收目标反射回来的回波...">
-  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch01.html">
+  <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch01.zh-CN.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-400-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-700-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-400-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-700-normal.woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/local-fonts-latin.css?v=20260709-font-opt">
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-sans-sc-chinese-simplified-400-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-serif-sc-chinese-simplified-400-normal.woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/local-fonts-cjk.css?v=20260709-font-opt">
+
+  <link rel="stylesheet" href="../assets/site.css?v=20260709-font-opt">
+  <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <script defer src="../assets/site.js?v=20260506-code-font-fix"></script>
 </head>
-<body><div class="read-progress" aria-hidden="true"><span></span></div>
+<body class="article-page"><div class="read-progress" aria-hidden="true"><span></span></div>
 <header class="article-top">
-  <nav class="topbar compact">
-    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="教程图标"><span>Easy Radar Tutorial</span></a>
-    <div class="toplinks"><a href="../index.html">首页</a><a href="ch01.html">章节</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/matlab">MATLAB</a><a href="https://github.com/apple-art/easy-radar-tutorial/tree/main/pdf">PDF</a><a href="https://github.com/apple-art/easy-radar-tutorial">GitHub</a></div>
+  <nav class="topbar home-topbar" aria-label="主导航">
+    <a class="brand" href="../index.zh-CN.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="Logo"><span>Easy Radar Tutorial</span></a>
+    <div class="toplinks nav-primary">
+      <a class="nav-link" href="../index.zh-CN.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5"></path><path d="M6.5 9.5V20h4v-5.5h3V20h4V9.5"></path></svg></span><span>首页</span></a>
+      <a class="nav-link" href="../index.zh-CN.html#chapters"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6.5h14"></path><path d="M5 12h14"></path><path d="M5 17.5h10"></path><path d="M3 6.5h.01"></path><path d="M3 12h.01"></path><path d="M3 17.5h.01"></path></svg></span><span>章节</span></a>
+      <a class="nav-link active" href="ch01.zh-CN.html" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5A3.5 3.5 0 0 1 8 2h11.5v18H8a3.5 3.5 0 0 0-3.5 2z"></path><path d="M8 2v18"></path><path d="M11 7h5"></path><path d="M11 11h4"></path></svg></span><span>开始阅读</span></a>
+      <a class="nav-link" href="https://github.com/apple-art/easy-radar-tutorial/releases/latest"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 9 5 5 5-5"></path><path d="M5 19h14"></path></svg></span><span>下载</span></a>
+      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>更多</span></a>
+    </div>
+    <div class="nav-terminal">
+      <a class="nav-link github-link" href="https://github.com/apple-art/easy-radar-tutorial" aria-label="GitHub" title="GitHub"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span></a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <a class="language-switcher" href="ch01.html" aria-label="切换到英文" title="English"><span class="nav-icon language-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg></span></a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到黑色背景" title="黑色背景"><span class="nav-icon theme-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" stroke="none"></path><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg></span></button>
+    </div>
   </nav>
 </header>
 <div class="article-layout">
   <aside class="sidebar">
-    <a class="back-home" href="../index.html">← 首页</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link active" href="ch01.html">第1章 雷达是什么</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch01-s01"><a class="toc-link" href="#ch01-s01">雷达是什么</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-1">1.1 电磁波与回波探测</a><a class="subtoc-link" href="#sub-2">1.2 回波中的距离、速度与方向信息</a><a class="subtoc-link" href="#sub-3">1.2.1 距离测量</a><a class="subtoc-link" href="#sub-4">1.2.2 速度测量</a><a class="subtoc-link" href="#sub-5">1.3 雷达的起源</a><a class="subtoc-link" href="#sub-6">1.4 雷达的发展与应用扩展</a><a class="subtoc-link" href="#sub-7">1.5 为什么雷达离不开信号处理</a><a class="subtoc-link" href="#sub-8">1.6 本书的处理链路</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.html">第8章 完整处理流程</a></div></nav>
+    <a class="back-home" href="../index.zh-CN.html">← 首页</a>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link active" href="ch01.zh-CN.html">第1章 雷达是什么</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch01-s01"><a class="toc-link" href="#ch01-s01">雷达是什么</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-1">1.1 电磁波与回波探测</a><a class="subtoc-link" href="#sub-2">1.2 回波中的距离、速度与方向信息</a><a class="subtoc-link" href="#sub-3">1.2.1 距离测量</a><a class="subtoc-link" href="#sub-4">1.2.2 速度测量</a><a class="subtoc-link" href="#sub-5">1.3 雷达的起源</a><a class="subtoc-link" href="#sub-6">1.4 雷达的发展与应用扩展</a><a class="subtoc-link" href="#sub-7">1.5 为什么雷达离不开信号处理</a><a class="subtoc-link" href="#sub-8">1.6 本书的处理链路</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.zh-CN.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.zh-CN.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.zh-CN.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.zh-CN.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第1章</span><span>雷达是什么</span></div>

@@ -1,4 +1,4 @@
-@import url("local-fonts.css");
+/* Fonts are linked from HTML (local-fonts-latin.css / local-fonts-cjk.css). */
 
 :root {
   --ink: #17211d;
@@ -19,8 +19,9 @@
   --shadow: 0 28px 90px rgba(47, 39, 28, 0.14);
   --shadow-soft: 0 16px 48px rgba(47, 39, 28, 0.1);
   --mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
-  --serif: "Newsreader", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
-  --sans: "Inter", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  /* Latin first; CJK faces only apply after local-fonts-cjk.css is loaded on zh-CN pages. */
+  --serif: "Newsreader", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", Georgia, "Times New Roman", serif;
+  --sans: "Inter", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 118px; background: #fff; }
@@ -2323,6 +2324,7 @@ body:has(.article-layout)::after {
   width: 100%;
   min-height: calc(100vh - 64px);
   margin: 0;
+  padding-top: 78px;
   display: grid;
   grid-template-columns: 286px minmax(0, 1fr);
   gap: 0;
@@ -2714,6 +2716,16 @@ body.article-page .theme-toggle:hover {
 }
 body.article-page .home-topbar .nav-divider {
   background: rgba(0, 0, 0, 0.2);
+}
+@media (max-width: 920px) {
+  body.article-page .article-layout {
+    padding-top: 126px;
+  }
+}
+@media (max-width: 560px) {
+  body.article-page .article-layout {
+    padding-top: 120px;
+  }
 }
 html[data-home-theme="dark"] body.home-page .home-topbar {
   background: rgba(6, 6, 6, 0.82);

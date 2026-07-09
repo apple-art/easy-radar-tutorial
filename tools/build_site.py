@@ -534,7 +534,7 @@ class SiteBuilder:
                     "cn": chapter_cn,
                     "label": chapter_label,
                     "title": chapter_title,
-                    "href": f"chapters/{chapter_slug}.html",
+                    "href": f"chapters/{chapter_slug}.zh-CN.html",
                     "sections": sections,
                     "pdf": self.pdf_by_chapter.get(chapter_cn),
                     "matlab": self.matlab_by_chapter.get(chapter_cn),
@@ -558,7 +558,7 @@ class SiteBuilder:
                     "cn": chapter_cn,
                     "label": chapter_label,
                     "title": chapter_title,
-                    "href": f"chapters/{chapter_slug}.html",
+                    "href": f"chapters/{chapter_slug}.zh-CN.html",
                     "sections": [
                         {
                             "path": path,
@@ -600,7 +600,8 @@ class SiteBuilder:
         renderer = MarkdownRenderer(self.matlab_files_by_name)
         for chapter in self.chapters:
             chapter_html = self.render_chapter(chapter, renderer)
-            (self.chapter_out / f"{chapter['slug']}.html").write_text(chapter_html, encoding="utf-8")
+            # English .html chapter pages are maintained as translated static pages.
+            # Rebuilds from the Chinese manuscript must not overwrite them.
             (self.chapter_out / f"{chapter['slug']}.zh-CN.html").write_text(chapter_html, encoding="utf-8")
 
     def render_index(self) -> str:
@@ -701,7 +702,7 @@ class SiteBuilder:
         for item in self.chapters:
             chapter_link = (
                 f'<a class="chapter-toc-link{" active" if item["slug"] == chapter["slug"] else ""}" '
-                f'href="{html_attr(url_path(item["slug"] + ".html"))}">{html.escape(item["label"])} {html.escape(item["title"])}</a>'
+                f'href="{html_attr(url_path(item["slug"] + ".zh-CN.html"))}">{html.escape(item["label"])} {html.escape(item["title"])}</a>'
             )
             if item["slug"] == chapter["slug"]:
                 subsection_links = []
@@ -726,14 +727,27 @@ class SiteBuilder:
             actions.append(f'<a class="btn ghost" href="{html_attr(github_tree_url(chapter["matlab"]))}">本章 MATLAB</a>')
         body = f"""
 <header class="article-top">
-  <nav class="topbar compact">
-    <a class="brand" href="../index.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="教程图标"><span>Easy Radar Tutorial</span></a>
-    <div class="toplinks"><a href="../index.html">首页</a><a href="ch01.html">章节</a><a href="{html_attr(github_tree_url('matlab'))}">MATLAB</a><a href="{html_attr(github_tree_url('pdf'))}">PDF</a><a href="{html_attr(GITHUB_URL)}">GitHub</a></div>
+  <nav class="topbar home-topbar" aria-label="主导航">
+    <a class="brand" href="../index.zh-CN.html"><img src="../design/icon-concepts/logo-mark-light.svg" alt="Logo"><span>Easy Radar Tutorial</span></a>
+    <div class="toplinks nav-primary">
+      <a class="nav-link" href="../index.zh-CN.html"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5"></path><path d="M6.5 9.5V20h4v-5.5h3V20h4V9.5"></path></svg></span><span>首页</span></a>
+      <a class="nav-link" href="../index.zh-CN.html#chapters"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6.5h14"></path><path d="M5 12h14"></path><path d="M5 17.5h10"></path><path d="M3 6.5h.01"></path><path d="M3 12h.01"></path><path d="M3 17.5h.01"></path></svg></span><span>章节</span></a>
+      <a class="nav-link active" href="ch01.zh-CN.html" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 5.5A3.5 3.5 0 0 1 8 2h11.5v18H8a3.5 3.5 0 0 0-3.5 2z"></path><path d="M8 2v18"></path><path d="M11 7h5"></path><path d="M11 11h4"></path></svg></span><span>开始阅读</span></a>
+      <a class="nav-link" href="{html_attr(GITHUB_URL + '/releases/latest')}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7 9 5 5 5-5"></path><path d="M5 19h14"></path></svg></span><span>下载</span></a>
+      <a class="nav-link" href="https://tangcq.com/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 10.4 8.2 5 10l5.4 1.8L12 17l1.6-5.2L19 10l-5.4-1.8Z"></path><path d="M19 15.5 18.2 18 16 19l2.2 1 .8 2.5.8-2.5 2.2-1-2.2-1Z"></path></svg></span><span>更多</span></a>
+    </div>
+    <div class="nav-terminal">
+      <a class="nav-link github-link" href="{html_attr(GITHUB_URL)}" aria-label="GitHub" title="GitHub"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.6 1.4-4.6-2.4-6.4-2.9"></path><path d="M15 22v-3.8c0-1 .1-1.4-.5-2 2.9-.3 5.9-1.4 5.9-6.4 0-1.4-.5-2.6-1.3-3.5.1-.4.6-1.8-.2-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C6.2 2.4 5.1 2.8 5.1 2.8c-.8 1.7-.3 3.1-.2 3.5-.8.9-1.3 2.1-1.3 3.5 0 5 3 6.1 5.9 6.4-.4.4-.7.9-.8 1.7"></path></svg></span></a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <a class="language-switcher" href="{html_attr(chapter["slug"] + ".html")}" aria-label="切换到英文" title="English"><span class="nav-icon language-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg></span></a>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到黑色背景" title="黑色背景"><span class="nav-icon theme-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" stroke="none"></path><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg></span></button>
+    </div>
   </nav>
 </header>
 <div class="article-layout">
   <aside class="sidebar">
-    <a class="back-home" href="../index.html">← 首页</a>
+    <a class="back-home" href="../index.zh-CN.html">← 首页</a>
     <nav class="book-toc">{sidebar}</nav>
   </aside>
   <main class="article-main reveal">
@@ -752,6 +766,7 @@ class SiteBuilder:
     def shell(self, title: str, body: str, canonical_path: str, description: str) -> str:
         depth = "../" if canonical_path.startswith("chapters/") else ""
         canonical = SITE_URL.rstrip("/") + "/" + canonical_path.lstrip("/")
+        body_class = ' class="article-page"' if canonical_path.startswith("chapters/") else ""
         return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -762,11 +777,12 @@ class SiteBuilder:
   <link rel="canonical" href="{html_attr(canonical)}">
   <link rel="icon" href="{depth}design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
   <link rel="stylesheet" href="{depth}assets/site.css?v={ASSET_VERSION}">
+  <script>try{{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}}catch(_){{}}</script>
   <script>window.MathJax = {{ tex: {{ inlineMath: [['$', '$'], ['\\\\(', '\\\\)']], displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']] }}, svg: {{ fontCache: 'global' }} }};</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <script defer src="{depth}assets/site.js?v={ASSET_VERSION}"></script>
 </head>
-<body><div class="read-progress" aria-hidden="true"><span></span></div>{body}</body>
+<body{body_class}><div class="read-progress" aria-hidden="true"><span></span></div>{body}</body>
 </html>
 """
 

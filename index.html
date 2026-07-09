@@ -10,19 +10,25 @@
   <meta property="og:title" content="Easy Radar Tutorial">
   <meta property="og:description" content="A beginner-friendly radar signal processing tutorial covering radar basics, pulse compression, matched filtering, Doppler processing, beamforming, and CFAR detection. Includes LFM waveforms, range-Doppler maps, false alarm rate control, FMCW radar principles, and practical MATLAB implementations across 8 chapters and 38 sections.">
   <meta property="og:url" content="https://apple-art.github.io/easy-radar-tutorial/index.html">
-  <meta property="og:image" content="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_7_radar_applications_expansion.png">
-  <meta property="og:image" content="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig6_7_fixed_vs_cfar_excali.png">
-  <meta property="og:image" content="https://apple-art.github.io/easy-radar-tutorial/design/fig6_11_region_peak_excali.png">
+  <meta property="og:image" content="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/en/fig1_7_radar_applications_expansion.png">
+  <meta property="og:image" content="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/en/fig6_7_fixed_vs_cfar_excali.png">
+  <meta property="og:image" content="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/en/fig6_11_region_peak_excali.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Easy Radar Tutorial">
   <meta name="twitter:description" content="A beginner-friendly radar signal processing tutorial covering radar basics, pulse compression, matched filtering, Doppler processing, beamforming, and CFAR detection. Includes LFM waveforms, range-Doppler maps, false alarm rate control, FMCW radar principles, and practical MATLAB implementations across 8 chapters and 38 sections.">
-  <meta name="twitter:image" content="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_7_radar_applications_expansion.png">
+  <meta name="twitter:image" content="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/en/home_cover.webp">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/index.html">
   <link rel="icon" href="design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
   <meta name="keywords" content="radar signal processing,radar tutorial,pulse compression,matched filter,range resolution,Doppler processing,beamforming,LFM chirp,range-Doppler map,CFAR detection,FMCW radar,phased array,antenna array signal processing,SAR imaging,radar equation,waveform design,detection theory,target tracking,MATLAB code,radar basics">
   <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
-  <link rel="preload" as="image" href="design/cover/radar-book-cover-portrait.webp" type="image/webp" fetchpriority="high">
-  <link rel="stylesheet" href="assets/home-page.css?v=20260615-home-split-fix1">
+  <link rel="preload" as="image" href="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/en/home_cover.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-latin-400-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-latin-700-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/newsreader-latin-400-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/newsreader-latin-700-normal.woff2" crossorigin>
+  <link rel="stylesheet" href="assets/local-fonts-latin.css?v=20260709-font-opt">
+
+  <link rel="stylesheet" href="assets/home-page.css?v=20260709-font-opt">
   <script defer src="assets/home-page.js?v=20260615-home-split-fix1"></script>
 
   <style>
@@ -113,7 +119,7 @@
         <div><span class="process-icon detection"></span><strong>CFAR Detection</strong></div>
       </div>
       <figure class="hero-cover" aria-label="Book cover">
-        <img class="book-cover-img" src="design/cover/radar-book-cover-portrait.webp" alt="Easy Radar Tutorial book cover" width="680" height="1020" decoding="async" fetchpriority="high">
+        <img class="book-cover-img" src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/en/home_cover.webp" alt="Easy Radar Tutorial book cover" width="680" height="1020" decoding="async" fetchpriority="high">
       </figure>
       <div class="hero-copy">
         <div class="hero-mark"><img src="design/icon-concepts/logo-mark-light.svg" alt="Logo"><span class="eyebrow">Signal Processing · Radar Systems</span></div>
@@ -186,15 +192,15 @@
         <p>High-quality diagrams for intuitive understanding</p>
       </div>
       <div class="figures-grid">
-        <img src="design/fig1_4_radar_origin_visibility_problem.webp" alt="Radar origin and visibility problem diagram" width="1080" height="720" loading="eager" decoding="async">
-        <img src="design/fig6_11_region_peak_excali.webp" alt="Region peak detection diagram" width="1080" height="720" loading="eager" decoding="async">
+        <img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/en/fig1_4_radar_origin_visibility_problem.png" alt="Radar origin and visibility problem diagram" width="1080" height="720" loading="eager" decoding="async">
+        <img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/en/fig6_11_region_peak_excali.png" alt="Region peak detection diagram" width="1080" height="720" loading="eager" decoding="async">
       </div>
     </div>
 
     <!-- Feature 3: Target Audience -->
     <div class="feature-showcase feature-target">
       <div class="feature-visual">
-        <img src="design/feature-target.webp" alt="Target audience illustration" width="720" height="720" loading="eager" decoding="async">
+        <img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/en/home_feature_target.webp" alt="Target audience illustration" width="720" height="720" loading="eager" decoding="async">
       </div>
       <div class="feature-content">
         <h3>Who This Is For</h3>

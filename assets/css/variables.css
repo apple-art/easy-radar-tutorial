@@ -1,5 +1,7 @@
-/* CSS Variables */
-@import url("../local-fonts.css");
+/* CSS Variables
+ * Fonts are loaded from each HTML page (latin always; CJK only on zh-CN)
+ * so English pages do not wait for multi-MB Noto files.
+ */
 
 :root {
   --ink: #17211d;
@@ -20,6 +22,7 @@
   --shadow: 0 28px 90px rgba(47, 39, 28, 0.14);
   --shadow-soft: 0 16px 48px rgba(47, 39, 28, 0.1);
   --mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
-  --serif: "Newsreader", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
-  --sans: "Inter", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  /* Latin first; CJK faces only apply after local-fonts-cjk.css is loaded on zh-CN pages. */
+  --serif: "Newsreader", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", Georgia, "Times New Roman", serif;
+  --sans: "Inter", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
