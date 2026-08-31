@@ -7,16 +7,7 @@
   <meta name="description" content="前面几章把雷达处理链拆开讲过，第 3 章把多发脉冲的 I/Q 样本排成 rx_matrix，第 4 章在快时间上做距离处理，第 5 章在慢时间上做 Doppler 处理，第 6 章把距离-速度图上的响应筛成检测结果，第 7 章说明方向信息怎...">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch08.zh-CN.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-700-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-700-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/local-fonts-latin.css?v=20260709-font-opt">
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-sans-sc-chinese-simplified-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-serif-sc-chinese-simplified-400-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/local-fonts-cjk.css?v=20260709-font-opt">
-
-  <link rel="stylesheet" href="../assets/site.css?v=20260709-font-opt">
+  <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -45,7 +36,7 @@
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.zh-CN.html">← 首页</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.zh-CN.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.zh-CN.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.zh-CN.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.zh-CN.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch08.zh-CN.html">第8章 完整处理流程</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch08-s01"><a class="toc-link" href="#ch08-s01">完整 MATLAB 处理流程</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-164">8.1 仿真条件</a><a class="subtoc-link" href="#sub-165">8.2 从回波矩阵到目标表</a><a class="subtoc-link" href="#sub-166">8.3 回波矩阵的生成</a><a class="subtoc-link" href="#sub-167">场景参数怎样进入回波</a><a class="subtoc-link" href="#sub-168">`rx_matrix` 的行和列</a><a class="subtoc-link" href="#sub-169">8.4 距离压缩得到 `range_data`</a><a class="subtoc-link" href="#sub-170">沿快时间做匹配滤波</a><a class="subtoc-link" href="#sub-171">距离轴和群延迟修正</a><a class="subtoc-link" href="#sub-172">8.5 Doppler 处理得到 `rd_map`</a><a class="subtoc-link" href="#sub-173">沿慢时间做 FFT</a><a class="subtoc-link" href="#sub-174">速度轴和 `fftshift`</a><a class="subtoc-link" href="#sub-175">8.6 从 `rd_map` 到 `det_mask`</a><a class="subtoc-link" href="#sub-176">固定阈值先跑通</a><a class="subtoc-link" href="#sub-177">检测掩码的常见误读</a><a class="subtoc-link" href="#sub-178">8.7 从检测掩码到目标表</a><a class="subtoc-link" href="#sub-179">索引到物理量的换算</a><a class="subtoc-link" href="#sub-180">目标表的组织</a><a class="subtoc-link" href="#sub-181">8.8 参数变化练习</a></div></div></div></div></nav>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.zh-CN.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.zh-CN.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.zh-CN.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.zh-CN.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch08.zh-CN.html">第8章 完整处理流程</a><div class="chapter-subtoc"><div class="toc-section" data-section="sub-164"><a class="toc-link" href="#sub-164">8.1 仿真条件</a></div><div class="toc-section" data-section="sub-165"><a class="toc-link" href="#sub-165">8.2 从回波矩阵到目标表</a></div><div class="toc-section" data-section="sub-166"><a class="toc-link" href="#sub-166">8.3 回波矩阵的生成</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-167">场景参数怎样进入回波</a><a class="subtoc-link" href="#sub-168">`rx_matrix` 的行和列</a></div></div><div class="toc-section" data-section="sub-169"><a class="toc-link" href="#sub-169">8.4 距离压缩得到 `range_data`</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-170">沿快时间做匹配滤波</a><a class="subtoc-link" href="#sub-171">距离轴和群延迟修正</a></div></div><div class="toc-section" data-section="sub-172"><a class="toc-link" href="#sub-172">8.5 Doppler 处理得到 `rd_map`</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-173">沿慢时间做 FFT</a><a class="subtoc-link" href="#sub-174">速度轴和 `fftshift`</a></div></div><div class="toc-section" data-section="sub-175"><a class="toc-link" href="#sub-175">8.6 从 `rd_map` 到 `det_mask`</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-176">固定阈值先跑通</a><a class="subtoc-link" href="#sub-177">检测掩码的常见误读</a></div></div><div class="toc-section" data-section="sub-178"><a class="toc-link" href="#sub-178">8.7 从检测掩码到目标表</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-179">索引到物理量的换算</a><a class="subtoc-link" href="#sub-180">目标表的组织</a></div></div><div class="toc-section" data-section="sub-181"><a class="toc-link" href="#sub-181">8.8 参数变化练习</a></div></div></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第8章</span><span>完整处理流程</span></div>
@@ -55,7 +46,7 @@
 <p>前面几章把雷达处理链拆开讲过，第 3 章把多发脉冲的 I/Q 样本排成 <code>rx_matrix</code>，第 4 章在快时间上做距离处理，第 5 章在慢时间上做 Doppler 处理，第 6 章把距离-速度图上的响应筛成检测结果，第 7 章说明方向信息怎样进入目标参数。</p>
 <p>本章把这些步骤放到同一个 MATLAB 程序。每个变量都要讲清楚它的维度是什么、下一步沿哪一维处理、处理后又对应哪个物理量。</p>
 <p>本章采用简化 pulse-Doppler 场景：两个点目标，32 发脉冲，基带 LFM 信号。完整脚本在配套 MATLAB 附件，正文只保留主要片段和检查方法。</p>
-<h3 id="sub-164">8.1 仿真条件</h3>
+<h2 id="sub-164">8.1 仿真条件</h2>
 <p>本章用两个点目标作为例子。雷达参数延续前面几章的简化设定：使用基带 LFM 脉冲，接收端得到复数 I/Q 样本，多发脉冲按发射顺序组成 <code>rx_matrix</code>。</p>
 <div class="table-wrap"><table><thead><tr><th>参数</th><th>MATLAB 变量</th><th>取值</th><th>含义</th></tr></thead><tbody><tr><td>光速</td><td><code>c</code></td><td>$3\times10^8\,m/s$</td><td>距离与时延换算</td></tr><tr><td>载频</td><td><code>fc</code></td><td>$10\,GHz$</td><td>决定波长</td></tr><tr><td>波长</td><td><code>lambda</code></td><td>$0.03\,m$</td><td>Doppler 到速度的换算</td></tr><tr><td>LFM 带宽</td><td><code>B</code></td><td>$10\,MHz$</td><td>影响距离分辨率</td></tr><tr><td>脉冲宽度</td><td><code>Tp</code></td><td>$20\,\mu s$</td><td>发射脉冲持续时间</td></tr><tr><td>采样率</td><td><code>fs</code></td><td>$20\,MHz$</td><td>快时间采样间隔</td></tr><tr><td>PRF</td><td><code>PRF</code></td><td>$5\,kHz$</td><td>慢时间采样率</td></tr><tr><td>脉冲数</td><td><code>Npulse</code></td><td>$32$</td><td>决定 CPI 和速度分辨率</td></tr><tr><td>快时间采样点数</td><td><code>Nfast</code></td><td>$2048$</td><td>决定接收窗口长度</td></tr></tbody></table></div>
 <p>两个目标的真值设定如下：</p>
@@ -67,7 +58,7 @@ v_{\max}=\frac{\lambda\,\text{PRF}}{4}
 $$</div>
 <p>所以 $+30\,m/s$ 和 $-20\,m/s$ 都能在双边速度轴上显示出来。若把 PRF 降低到 $2\,kHz$，$v_{\max}$ 会变成 $15\,m/s$，目标 A 就会发生速度模糊。</p>
 <p><code>scene</code> 里的距离和速度是真值，只在仿真里存在，用来生成回波。<code>target_list</code> 是处理链从回波里估计出来的，真实雷达只有这一侧，没有真值可查。</p>
-<h3 id="sub-165">8.2 从回波矩阵到目标表</h3>
+<h2 id="sub-165">8.2 从回波矩阵到目标表</h2>
 <p>处理链写成一行数据流：</p>
 <pre><code class="language-text">scene -&gt; tx -&gt; rx_matrix -&gt; range_data -&gt; rd_map -&gt; det_mask -&gt; target_list</code></pre>
 <p>各变量的作用和维度如下：</p>
@@ -90,7 +81,7 @@ height(target_list)</code></pre>
 <p>如果 <code>rx_matrix</code> 和 <code>range_data</code> 的行列方向已经弄反，后面的 Doppler FFT、速度轴和检测点都会跟着错。</p>
 <p>上图展示了完整处理链的四个阶段。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig8_1_processing_chain.png" alt="完整处理链的四个阶段" loading="lazy"><figcaption>完整处理链的四个阶段</figcaption></figure>
-<h3 id="sub-166">8.3 回波矩阵的生成</h3>
+<h2 id="sub-166">8.3 回波矩阵的生成</h2>
 <h3 id="sub-167">场景参数怎样进入回波</h3>
 <p><code>scene</code> 里每个目标至少有三个参数：距离 $R_i$、径向速度 $v_i$ 和幅度 $A_i$。距离决定回波晚到多少，速度决定相邻脉冲之间多转多少相位。</p>
 <p>距离到时延的关系仍然是第 4 章的公式：</p>
@@ -121,7 +112,7 @@ echo(valid) = amp * exp(1j * pi * k * delayed_t(valid).^2) ...
 <p>这个约定和第 3 章的 <code>rx_matrix</code> 保持一致。若程序采用相反约定也能工作，但每一个 <code>fft(..., dim)</code>、<code>conv</code> 循环和 <code>imagesc</code> 坐标都要同步改变。教材里不混用两套约定。</p>
 <p>上图展示了数据在处理链中的维度变化（图中只显示部分采样点作为示意）。<code>rx_matrix</code> 和 <code>range_data</code> 的尺寸相同，但列的物理含义已经从"采样点"变成"距离单元"。<code>rd_map</code> 的行方向则从"脉冲序号"变成"速度单元"。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig8_3_dimension_flow.png" alt="数据维度在处理链中的变化" loading="lazy"><figcaption>数据维度在处理链中的变化</figcaption></figure>
-<h3 id="sub-169">8.4 距离压缩得到 <code>range_data</code></h3>
+<h2 id="sub-169">8.4 距离压缩得到 <code>range_data</code></h2>
 <h3 id="sub-170">沿快时间做匹配滤波</h3>
 <p><code>rx_matrix</code> 的每一行是一发脉冲的回波。距离压缩要在这一行内部做匹配滤波，把延迟后的 LFM 回波压成距离峰。</p>
 <p>第 4 章中匹配滤波写成</p>
@@ -145,7 +136,7 @@ range_axis = ((0:Nfast-1) - group_delay) * scene.c / (2 * scene.fs);</code></pre
 R=\frac{c\Delta t}{2}=\frac{c(n-n_0)}{2f_s}
 $$</div>
 <p>其中 $n_0$ 就是 <code>group_delay</code>。若不扣除这个偏移，距离估计会系统性偏大。</p>
-<h3 id="sub-172">8.5 Doppler 处理得到 <code>rd_map</code></h3>
+<h2 id="sub-172">8.5 Doppler 处理得到 <code>rd_map</code></h2>
 <h3 id="sub-173">沿慢时间做 FFT</h3>
 <p>距离压缩完成后，<code>range_data</code> 的每一列是同一个距离单元在不同脉冲之间的慢时间序列。第 5 章已经讲过，这个序列的频谱就是 Doppler 谱。</p>
 <p>程序里写成：</p>
@@ -178,7 +169,7 @@ $$</div>
 <p>所以目标速度不一定正好落在某一个速度 bin 上，实际峰值会出现在最接近的 bin 附近。</p>
 <p>上图展示了距离-速度图的细节。左图标注了两个目标的真实位置，右图叠加了检测结果。有的目标附近会出现多个检测点，这是因为主瓣展宽和固定阈值的共同作用。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig8_2_rd_map_detail.png" alt="距离-速度图与检测结果" loading="lazy"><figcaption>距离-速度图与检测结果</figcaption></figure>
-<h3 id="sub-175">8.6 从 <code>rd_map</code> 到 <code>det_mask</code></h3>
+<h2 id="sub-175">8.6 从 <code>rd_map</code> 到 <code>det_mask</code></h2>
 <h3 id="sub-176">固定阈值先跑通</h3>
 <p>距离-速度图上的亮点还不是目标表。第 6 章已经讲过，图上的响应可能来自目标，也可能来自噪声、旁瓣或杂波。检测要把连续幅度图变成 0/1 掩码。</p>
 <p>最小实现先用固定阈值：</p>
@@ -194,7 +185,7 @@ det_mask = rd_power &gt; threshold;
 det_mask = (rd_power &gt; threshold) &amp; is_peak;
 [row_idx, col_idx] = find(det_mask);</code></pre>
 <p>这段代码需要图像处理工具箱。没有这个工具箱时，也可以用第 6 章的点迹凝聚思路：先找到通过阈值的区域，再取每个区域内响应最大的格子作为代表点。</p>
-<h3 id="sub-178">8.7 从检测掩码到目标表</h3>
+<h2 id="sub-178">8.7 从检测掩码到目标表</h2>
 <h3 id="sub-179">索引到物理量的换算</h3>
 <p><code>find(det_mask)</code> 返回的是行列索引，还不是距离和速度。换算关系写成：</p>
 <pre><code class="language-matlab">range_est = range_axis(col_idx);
@@ -206,7 +197,7 @@ vel_est = vel_axis(row_idx);</code></pre>
 <pre><code class="language-matlab">target_list = table(range_est, vel_est, rd_power(sub2ind(size(rd_power), row_idx, col_idx)), ...
     &#x27;VariableNames&#x27;, {&#x27;Range&#x27;, &#x27;Velocity&#x27;, &#x27;Power&#x27;});</code></pre>
 <p>实际工程中，目标表还会包含检测时刻、信噪比估计、角度信息等字段。第 7 章讲过的角度测量可以在这里并入目标表。</p>
-<h3 id="sub-181">8.8 参数变化练习</h3>
+<h2 id="sub-181">8.8 参数变化练习</h2>
 <p>练习 1：改变目标距离。把目标 A 的距离从 $6\,km$ 改成 $7\,km$，观察 <code>range_data</code> 的距离峰和 <code>rd_map</code> 中亮点的横向位置。速度位置不应明显改变。</p>
 <p>练习 2：改变目标速度。把目标 B 的速度从 $-20\,m/s$ 改成 $+20\,m/s$，观察 <code>rd_map</code> 中亮点从负速度一侧移动到正速度一侧。距离位置不应明显改变。</p>
 <p>练习 3：降低脉冲数。把 <code>Npulse</code> 从 32 改成 16。速度 bin 变粗，<code>rd_map</code> 的速度向分辨能力下降。这个变化对应第 5 章的 CPI 与速度分辨率关系。</p>

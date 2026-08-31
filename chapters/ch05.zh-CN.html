@@ -7,16 +7,7 @@
   <meta name="description" content="第4章解决的是”目标离我多远”。这一章追问目标在靠近、远离，还是几乎不动，如果在动，速度是多少。">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch05.zh-CN.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-700-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-700-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/local-fonts-latin.css?v=20260709-font-opt">
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-sans-sc-chinese-simplified-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-serif-sc-chinese-simplified-400-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/local-fonts-cjk.css?v=20260709-font-opt">
-
-  <link rel="stylesheet" href="../assets/site.css?v=20260709-font-opt">
+  <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -45,7 +36,7 @@
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.zh-CN.html">← 首页</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.zh-CN.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.zh-CN.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch05.zh-CN.html">第5章 速度测量</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch05-s01"><a class="toc-link" href="#ch05-s01">速度测量</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-79">5.1 多普勒效应与径向速度</a><a class="subtoc-link" href="#sub-80">5.1.1 从声音的频率变化说起</a><a class="subtoc-link" href="#sub-81">5.1.2 雷达看到的是径向速度</a><a class="subtoc-link" href="#sub-82">5.2 连续波测速与频率测量</a><a class="subtoc-link" href="#sub-83">5.2.1 混频得到低频差频</a><a class="subtoc-link" href="#sub-84">5.2.2 连续波雷达的局限</a><a class="subtoc-link" href="#sub-85">5.3 脉冲间相位与慢时间 FFT</a><a class="subtoc-link" href="#sub-86">5.3.1 固定一个距离单元</a><a class="subtoc-link" href="#sub-87">5.3.2 从相位差到慢时间 FFT</a><a class="subtoc-link" href="#sub-88">5.4 MTD 与距离-速度图</a><a class="subtoc-link" href="#sub-89">5.4.1 对每个距离单元做慢时间 FFT</a><a class="subtoc-link" href="#sub-90">5.4.2 距离-速度图的读法</a><a class="subtoc-link" href="#sub-91">5.5 速度分辨率、模糊与 PRF 取舍</a><a class="subtoc-link" href="#sub-92">5.5.1 CPI 与速度分辨率</a><a class="subtoc-link" href="#sub-93">5.5.2 PRF 与最大不模糊速度</a><a class="subtoc-link" href="#sub-94">5.5.3 PRF 的距离与速度取舍</a><a class="subtoc-link" href="#sub-95">5.6 实际应用</a><a class="subtoc-link" href="#sub-96">5.6.1 测速枪</a><a class="subtoc-link" href="#sub-97">5.6.2 气象雷达</a><a class="subtoc-link" href="#sub-98">5.6.3 汽车雷达</a><a class="subtoc-link" href="#sub-99">5.6.4 实际系统中的问题</a><a class="subtoc-link" href="#sub-100">5.7 小练习</a><a class="subtoc-link" href="#sub-101">5.7.1 练习 1：基础多普勒换算</a><a class="subtoc-link" href="#sub-102">5.7.2 练习 2：测速枪的角度误差</a><a class="subtoc-link" href="#sub-103">5.7.3 练习 3：CPI 与速度分辨率</a><a class="subtoc-link" href="#sub-104">5.7.4 练习 4：最大不模糊速度</a><a class="subtoc-link" href="#sub-105">5.7.5 练习 5：距离-速度图读图</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.zh-CN.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.zh-CN.html">第8章 完整处理流程</a></div></nav>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.zh-CN.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.zh-CN.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch05.zh-CN.html">第5章 速度测量</a><div class="chapter-subtoc"><div class="toc-section" data-section="sub-79"><a class="toc-link" href="#sub-79">5.1 多普勒效应与径向速度</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-80">从声音的频率变化说起</a><a class="subtoc-link" href="#sub-81">雷达看到的是径向速度</a></div></div><div class="toc-section" data-section="sub-82"><a class="toc-link" href="#sub-82">5.2 连续波测速与频率测量</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-83">混频得到低频差频</a><a class="subtoc-link" href="#sub-84">连续波雷达的局限</a></div></div><div class="toc-section" data-section="sub-85"><a class="toc-link" href="#sub-85">5.3 脉冲间相位与慢时间 FFT</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-86">固定一个距离单元</a><a class="subtoc-link" href="#sub-87">从相位差到慢时间 FFT</a></div></div><div class="toc-section" data-section="sub-88"><a class="toc-link" href="#sub-88">5.4 MTD 与距离-速度图</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-89">对每个距离单元做慢时间 FFT</a><a class="subtoc-link" href="#sub-90">距离-速度图的读法</a></div></div><div class="toc-section" data-section="sub-91"><a class="toc-link" href="#sub-91">5.5 速度分辨率、模糊与 PRF 取舍</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-92">CPI 与速度分辨率</a><a class="subtoc-link" href="#sub-93">PRF 与最大不模糊速度</a><a class="subtoc-link" href="#sub-94">PRF 的距离与速度取舍</a></div></div><div class="toc-section" data-section="sub-95"><a class="toc-link" href="#sub-95">5.6 实际应用</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-96">测速枪</a><a class="subtoc-link" href="#sub-97">气象雷达</a><a class="subtoc-link" href="#sub-98">汽车雷达</a><a class="subtoc-link" href="#sub-99">实际系统中的问题</a></div></div><div class="toc-section" data-section="sub-100"><a class="toc-link" href="#sub-100">5.7 小练习</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-101">练习 1：基础多普勒换算</a><a class="subtoc-link" href="#sub-102">练习 2：测速枪的角度误差</a><a class="subtoc-link" href="#sub-103">练习 3：CPI 与速度分辨率</a><a class="subtoc-link" href="#sub-104">练习 4：最大不模糊速度</a><a class="subtoc-link" href="#sub-105">练习 5：距离-速度图读图</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.zh-CN.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.zh-CN.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第5章</span><span>速度测量</span></div>
@@ -54,7 +45,7 @@
       <section class="chapter-section" data-section="ch05-s01"><h2 id="ch05-s01" class="section-title">速度测量</h2>
 <p>第4章解决的是”目标离我多远”。这一章追问目标在靠近、远离，还是几乎不动，如果在动，速度是多少。</p>
 <p>这件事的入口仍然是多普勒效应。你在路边听到救护车迎面开来时声音变尖，开过去以后声音变低，雷达看到的电磁波也会发生类似的频率变化。本章先从频移怎么产生讲起，再看脉冲雷达里它为什么会变成同一距离单元上的相位转动。</p>
-<h3 id="sub-79">5.1 多普勒效应与径向速度</h3>
+<h2 id="sub-79">5.1 多普勒效应与径向速度</h2>
 <h3 id="sub-80">5.1.1 从声音的频率变化说起</h3>
 <p>你站在路边，救护车从远处驶来，警笛声会变尖，车开过去以后声音又变低。这个现象每个人都听过，它叫<strong>多普勒效应</strong>。声源和观察者之间有相对运动时，观察者接收到的频率会发生变化。</p>
 <p>先用声音建立直觉。设救护车静止时发出 $f_0=1000\,Hz$ 的声音，声速近似为 $v_s=340\,m/s$。这意味着每秒有 1000 个波峰从喇叭发出，并且均匀分布在空间中。救护车静止时，相邻两个波峰之间的距离为</p>
@@ -96,7 +87,7 @@ $$</div>
 <p>看一组数量级：</p>
 <div class="table-wrap"><table><thead><tr><th>场景</th><th>雷达频率 / 波长</th><th>径向速度</th><th>多普勒频移</th></tr></thead><tbody><tr><td>汽车测速</td><td>$f_0=24\,GHz$，$\lambda=0.0125\,m$</td><td>$30\,m/s$</td><td>$4.8\,kHz$</td></tr><tr><td>气象雷达</td><td>$f_0=3\,GHz$，$\lambda=0.1\,m$</td><td>$10\,m/s$</td><td>$200\,Hz$</td></tr><tr><td>高速飞行目标</td><td>$f_0=10\,GHz$，$\lambda=0.03\,m$</td><td>$600\,m/s$</td><td>$40\,kHz$</td></tr></tbody></table></div>
 <p>同样的速度，在更高载频下会产生更大的多普勒频移，测起来更容易，但系统也要能处理相应的频率范围。</p>
-<h3 id="sub-82">5.2 连续波测速与频率测量</h3>
+<h2 id="sub-82">5.2 连续波测速与频率测量</h2>
 <h3 id="sub-83">5.2.1 混频得到低频差频</h3>
 <p>结构最简单的测速雷达是单频连续波雷达，也就是这里说的 <strong>CW 雷达</strong>。它持续发射单频信号，同时接收目标回波。若目标在运动，回波频率相对发射频率偏移 $f_d$。</p>
 <p>公式已经说明，测出 $f_d$ 就能算速度。麻烦在于怎样把这个很小的频率偏移测准：回波信号很弱，载频又常在 GHz 量级，而多普勒频移往往只有 Hz 到 kHz 量级。</p>
@@ -133,7 +124,7 @@ $$</div>
 <p>脉冲雷达利用第4章的距离处理确定目标落在哪个距离单元，然后观察这个距离单元在多发脉冲之间的复数变化。速度信息在脉冲雷达里表现为慢时间上的相位转动。</p>
 <div class="table-wrap"><table><thead><tr><th>体制</th><th>速度信息在哪里</th><th>主要处理动作</th><th>直接测距能力</th></tr></thead><tbody><tr><td>单频 CW 雷达</td><td>混频后的差频信号</td><td>对差频信号做 FFT</td><td>不能直接测距</td></tr><tr><td>脉冲多普勒雷达</td><td>同一距离单元的慢时间相位</td><td>沿脉冲序号做 FFT</td><td>可由时间延迟测距</td></tr><tr><td>FMCW 雷达</td><td>拍频与多普勒共同作用</td><td>快时间 / 慢时间二维处理</td><td>可测距，但路径不同</td></tr></tbody></table></div>
 <p>这里的 CW 特指不调制的单频连续波。FMCW 虽然也是连续发射，但因为频率在扫动，测距和测速的处理路径都不同，不能把它和单频 CW 的差频测速公式混成一套。</p>
-<h3 id="sub-85">5.3 脉冲间相位与慢时间 FFT</h3>
+<h2 id="sub-85">5.3 脉冲间相位与慢时间 FFT</h2>
 <h3 id="sub-86">5.3.1 固定一个距离单元</h3>
 <p>脉冲雷达里的速度信息体现在相邻脉冲之间的相位变化中，而不是差频信号的频率上。</p>
 <p>第4章已经得到距离像。对一发脉冲来说，距离像横轴是距离单元，峰值位置对应目标距离。只看这一发脉冲，你最多知道某个距离单元里有没有较强回波，却很难判断它是静止、靠近还是远离。现在连续发射 $N$ 个脉冲，每一发脉冲都经过距离压缩，就会得到 $N$ 条距离像。</p>
@@ -222,7 +213,7 @@ v_r=\frac{\lambda f_d}{2}
 =3.75\,m/s
 $$</div>
 <p>这样，脉冲间相位变化就被转换成了多普勒频率，再转换成径向速度。</p>
-<h3 id="sub-88">5.4 MTD 与距离-速度图</h3>
+<h2 id="sub-88">5.4 MTD 与距离-速度图</h2>
 <h3 id="sub-89">5.4.1 对每个距离单元做慢时间 FFT</h3>
 <p>实际雷达要处理整张二维数据矩阵，横向区分不同距离，纵向观察同一距离单元在多个脉冲上的变化。</p>
 <p>发射 $N$ 个脉冲后，距离压缩输出可以排成一个复数矩阵：</p>
@@ -240,7 +231,7 @@ $$</div>
 <p>读这类图，先看亮点的横向位置得到距离，再看纵向位置得到径向速度。若某个亮点位于 $15\,km$、$+30\,m/s$ 附近，它表示这个距离-速度单元上有较强响应，目标可能在 15 km 处，以约 $30\,m/s$ 的径向速度靠近雷达。</p>
 <p>这里要区分”响应”和”目标”。距离-速度图上的亮点只是候选响应，可能来自目标，也可能来自噪声、杂波或旁瓣泄漏。雷达是否把它报告为目标，还要经过第6章的阈值和 CFAR 检测。如果一个目标附近出现多个相邻亮点，检测后还要通过点迹凝聚把它们整理成一个目标点迹。</p>
 <p>静止地面、建筑物等杂波通常集中在零多普勒附近，在图上表现为零速度附近的一条亮带。运动目标若有明显径向速度，会落到非零速度 bin 上，在速度维度上就和静止杂波分开了。</p>
-<h3 id="sub-91">5.5 速度分辨率、模糊与 PRF 取舍</h3>
+<h2 id="sub-91">5.5 速度分辨率、模糊与 PRF 取舍</h2>
 <h3 id="sub-92">5.5.1 CPI 与速度分辨率</h3>
 <p>慢时间 FFT 的频率间隔为</p>
 <div class="math-block">$$
@@ -301,7 +292,7 @@ $$</div>
 <div class="table-wrap"><table><thead><tr><th>参数变化</th><th>有利的一面</th><th>代价</th></tr></thead><tbody><tr><td>提高 PRF</td><td>最大不模糊速度增大</td><td>不模糊距离减小</td></tr><tr><td>降低 PRF</td><td>不模糊距离增大</td><td>最大不模糊速度减小</td></tr><tr><td>延长 CPI</td><td>速度分辨率变细</td><td>数据更新变慢，目标机动影响更明显</td></tr><tr><td>缩短波长</td><td>同样速度产生更大多普勒频移</td><td>固定 PRF 下不模糊速度范围变小，对硬件精度和传播环境要求也更高</td></tr></tbody></table></div>
 <p>速度分辨率主要由 CPI 决定，不要把它和 PRF 的作用混在一起。若固定 CPI，改变 PRF 主要影响可测速度范围和不模糊距离。若固定脉冲数 $N$，提高 PRF 会让 CPI 变短，速度分辨率反而变粗。</p>
 <p>这种距离和速度之间的 PRF 取舍，在雷达教材里常叫 Doppler dilemma。工程系统会用多 PRF、参差 PRF 或其他解模糊方法处理，本书不展开这些算法。</p>
-<h3 id="sub-95">5.6 实际应用</h3>
+<h2 id="sub-95">5.6 实际应用</h2>
 <h3 id="sub-96">5.6.1 测速枪</h3>
 <p>交警测速枪通常采用 CW 体制，工作在 24 GHz 或 35 GHz 等频段。它持续发射单频电磁波，接收车辆回波后与本振混频，得到多普勒差频，再对差频信号做 FFT，找到频谱峰值，换算成车速。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig5_10_excali.png" alt="测速枪工作示意" loading="lazy"><figcaption>测速枪工作示意</figcaption></figure>
@@ -319,7 +310,7 @@ $$</div>
 <p>地面、建筑物、海面等强回波集中在零多普勒附近，可能比目标回波还强，MTI/MTD 的一个任务就是抑制这些低速或零速背景。</p>
 <p>同一距离单元中若有两个速度不同的目标，慢时间 FFT 可能把它们分开，但速度差小于速度分辨率时它们仍会落在同一个 Doppler bin 附近。</p>
 <p>高速目标可能发生速度模糊。提高 PRF 可以扩大不模糊速度范围，但会牺牲不模糊距离，工程上要在两者之间做取舍。</p>
-<h3 id="sub-100">5.7 小练习</h3>
+<h2 id="sub-100">5.7 小练习</h2>
 <h3 id="sub-101">5.7.1 练习 1：基础多普勒换算</h3>
 <p>一个工作在 $10\,GHz$ 的雷达，测得某目标的多普勒频移为 $3000\,Hz$。目标的径向速度是多少？</p>
 <p>解析：先求波长</p>

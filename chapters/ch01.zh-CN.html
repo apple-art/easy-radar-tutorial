@@ -7,16 +7,7 @@
   <meta name="description" content="打开天气预报，常能看到一张彩色的降雨回波图。它来自天气雷达，雷达向天空发射电磁波，再把云团和雨滴反射回来的回波整理成图。机场旁边缓慢旋转的监视天线、高速路口的测速设备、汽车前保险杠里的毫米波模块，同样是主动发出电磁波，接收目标反射回来的回波...">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch01.zh-CN.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-700-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-700-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/local-fonts-latin.css?v=20260709-font-opt">
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-sans-sc-chinese-simplified-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-serif-sc-chinese-simplified-400-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/local-fonts-cjk.css?v=20260709-font-opt">
-
-  <link rel="stylesheet" href="../assets/site.css?v=20260709-font-opt">
+  <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -45,7 +36,7 @@
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.zh-CN.html">← 首页</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link active" href="ch01.zh-CN.html">第1章 雷达是什么</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch01-s01"><a class="toc-link" href="#ch01-s01">雷达是什么</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-1">1.1 电磁波与回波探测</a><a class="subtoc-link" href="#sub-2">1.2 回波中的距离、速度与方向信息</a><a class="subtoc-link" href="#sub-3">1.2.1 距离测量</a><a class="subtoc-link" href="#sub-4">1.2.2 速度测量</a><a class="subtoc-link" href="#sub-5">1.3 雷达的起源</a><a class="subtoc-link" href="#sub-6">1.4 雷达的发展与应用扩展</a><a class="subtoc-link" href="#sub-7">1.5 为什么雷达离不开信号处理</a><a class="subtoc-link" href="#sub-8">1.6 本书的处理链路</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.zh-CN.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.zh-CN.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.zh-CN.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.zh-CN.html">第8章 完整处理流程</a></div></nav>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link active" href="ch01.zh-CN.html">第1章 雷达是什么</a><div class="chapter-subtoc"><div class="toc-section" data-section="sub-1"><a class="toc-link" href="#sub-1">1.1 电磁波与回波探测</a></div><div class="toc-section" data-section="sub-2"><a class="toc-link" href="#sub-2">1.2 回波中的距离、速度与方向信息</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-3">距离测量</a><a class="subtoc-link" href="#sub-4">速度测量</a></div></div><div class="toc-section" data-section="sub-5"><a class="toc-link" href="#sub-5">1.3 雷达的起源</a></div><div class="toc-section" data-section="sub-6"><a class="toc-link" href="#sub-6">1.4 雷达的发展与应用扩展</a></div><div class="toc-section" data-section="sub-7"><a class="toc-link" href="#sub-7">1.5 为什么雷达离不开信号处理</a></div><div class="toc-section" data-section="sub-8"><a class="toc-link" href="#sub-8">1.6 本书的处理链路</a></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.zh-CN.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.zh-CN.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.zh-CN.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.zh-CN.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第1章</span><span>雷达是什么</span></div>
@@ -59,13 +50,13 @@
 <p>雷达要回答的是这样几个问题，远处有没有东西，它离雷达多远，它是不是在运动，它来自哪个方向。雷达信号处理，就是把回波一步步整理成这些问题的答案。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_0_processing_chain.png" alt="雷达信号处理链路" loading="lazy"><figcaption>雷达信号处理链路</figcaption></figure>
 <p>上图展示了雷达的信号处理链路：雷达发出信号，接收回波，再把原始回波整理成距离、速度、检测和方向等结果。</p>
-<h3 id="sub-1">1.1 电磁波与回波探测</h3>
+<h2 id="sub-1">1.1 电磁波与回波探测</h2>
 <p>人判断周围环境，常靠光和声音。眼睛接收外界反射来的光，耳朵接收传来的声音。可黑夜里光不够，云雾里看不清，声音也会受距离和环境影响。雷达和这些感知方式有相似之处，只是多做了一步，它先发出电磁波，再接收目标反射回来的回波。</p>
 <p>回声能帮助理解雷达测距。站在山前喊一声，过一会儿听到回声，说明声音先传到山体，再反射回耳朵。声音传播需要时间，回声来得越晚，声音走过的路程越长，山通常也越远。</p>
 <p>雷达测距用的是同一个物理事实，信号传播需要时间，往返时间反映距离。只不过雷达把声波换成了传播速度更快的电磁波，把“喊一声”换成“发射一个脉冲”，把耳朵换成了接收机。</p>
 <p>雷达用的是电磁波，不是声波。声波在空气中速度约 $340\,m/s$，探测 $10\,km$ 外的目标，一来一回接近一分钟，而电磁波速度接近光速，同样距离往返只要几十微秒。它还不像声波那样依赖空气，在高空、太空中照样传播，选对频段，黑夜和云雾也不影响工作，这是可见光做不到的。</p>
 <p>不过，雷达和生活中的回声有差异。电磁波传播得极快，往返时间往往非常短，目标反射回来的能量通常很弱，真实场景里还会混着地面、海面、雨滴、建筑物以及其他目标的响应。接收机拿到的是一段需要继续处理的电信号，不能像回声那样听出远近。</p>
-<h3 id="sub-2">1.2 回波中的距离、速度与方向信息</h3>
+<h2 id="sub-2">1.2 回波中的距离、速度与方向信息</h2>
 <h3 id="sub-3">1.2.1 距离测量</h3>
 <p>回声例子里已经有测距的影子：喊声传到山体，再反射回耳朵。声音往返用的时间越长，山通常越远。如果把声速记为 $v_s$，往返时间记为 $t$，距离就是</p>
 <div class="math-block">$$
@@ -87,7 +78,7 @@ $$</div>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_2_echo_to_information.png" alt="从回波到距离和速度" loading="lazy"><figcaption>从回波到距离和速度</figcaption></figure>
 <p>上图把这两类信息放在同一张图里。左边是发射和接收，右边对应两类最早要从回波里提取的信息：往返时间差对应距离，回波频率变化对应速度。在实际数据中，这些量要经过滤波、频谱分析和检测等处理才能稳定得到。</p>
 <p>雷达还常常需要知道目标来自哪个方向。只知道“目标在 100 m 外”还不够，工程上还要知道它在正前方、左前方，还是右侧。方向信息不只靠一个回波到达时间就能得到，往往还要依赖天线指向和波束扫描。方向同样是雷达结果的一部分。</p>
-<h3 id="sub-5">1.3 雷达的起源</h3>
+<h2 id="sub-5">1.3 雷达的起源</h2>
 <p>雷达的出现，最早面对的是这个问题：在黑夜、浓雾、云层或视线之外，怎样尽早发现远处的船只和飞机。眼睛依赖光照和能见度，瞭望员看不到地平线以外的目标，声音探测又受距离和环境限制。无线电波能在较远距离传播，也能在目标上产生反射，这使“发出去，再等回波”成为一种可工程化的探测办法。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_4_radar_origin_visibility_problem.png" alt="看不见时，雷达把问题换成等回波" loading="lazy"><figcaption>看不见时，雷达把问题换成等回波</figcaption></figure>
 <p>上图说明雷达起源时面对的困难：目标可能在黑夜、云雾或视线之外，但电磁波仍然可以发出去，并从目标上形成回波。</p>
@@ -95,7 +86,7 @@ $$</div>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_5_early_radio_echo_experiment.png" alt="早期无线电回波实验的基本想法" loading="lazy"><figcaption>早期无线电回波实验的基本想法</figcaption></figure>
 <p>上图把早期无线电回波实验画成三步：先发出无线电波，目标反射一部分能量，接收端出现变化。这个阶段要确认的就是目标能不能被回波看见。</p>
 <p>到20世纪30年代，飞机速度越来越快，单靠目视、听音和地面观察已经来不及。雷达的价值也变得清楚，它可以提前发现远处目标，并把“发现目标”和“估计距离”连在一起。RADAR 这个名字里的 Detection 和 Ranging，正好保留了这个早期任务，先发现，再测距。</p>
-<h3 id="sub-6">1.4 雷达的发展与应用扩展</h3>
+<h2 id="sub-6">1.4 雷达的发展与应用扩展</h2>
 <p>战争时期的雷达很快从单个实验装置变成系统工程。发射机、接收机、天线、显示器、操作员和指挥系统要配合起来，才能把一个微弱回波变成可用情报。雷达先把回波收进来，再把它整理成距离、速度、方向和目标判断。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_6_radar_from_device_to_system.png" alt="雷达从单个装置发展成系统" loading="lazy"><figcaption>雷达从单个装置发展成系统</figcaption></figure>
 <p>上图展示的是系统化之后的雷达：天线、发射机、接收机、显示器、操作员和指挥图共同工作，弱回波才会变成可用信息。</p>
@@ -103,7 +94,7 @@ $$</div>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_7_radar_applications_expansion.png" alt="雷达应用场景的扩展" loading="lazy"><figcaption>雷达应用场景的扩展</figcaption></figure>
 <p>上图把几类应用放在一起。空管、航海、气象和交通场景不同，但都围绕同一个动作展开：发射电磁波，接收回波，再整理成可用信息。</p>
 <p>雷达越发展，回波也越来越复杂。带宽做大、波长做短以后，雷达能分辨出更细的结构；天线和阵列技术成熟以后，能判断的方向也更准。再加上数字电路和算力的提升，原来做不动的处理，现在都可以放到数据里完成。雷达要做的事，也从早年“看见一个回波”，变成把成堆的回波整理成图像、轨迹、检测结果，乃至控制决策。</p>
-<h3 id="sub-7">1.5 为什么雷达离不开信号处理</h3>
+<h2 id="sub-7">1.5 为什么雷达离不开信号处理</h2>
 <p>在理想情况下，测量回波的延迟和频率，就能得到距离与速度。实际情况没有这么干净。</p>
 <p>接收机拿到的通常是一段原始电信号，而不是已经写着“目标在 6 km、速度 30 m/s”的结果。目标远，回波能量很弱。场景里有多个目标时，不同目标的回波会叠在一起。地面、海面、建筑物、雨滴等也会反射电磁波，它们不一定是我们想报告的目标，却会出现在接收数据里。单看原始波形，很多时候只能看到一串起伏，很难指出哪一段对应哪个目标。</p>
 <p>因此，雷达系统不能停在“收回波”这一步。它还要把原始回波一步一步整理成可以解释的结果：先沿时间方向区分不同延迟，从而把不同距离上的目标分开；再沿脉冲序列分析频率或相位变化，从而把不同速度上的目标分开；最后结合阈值判决，从噪声和杂波里挑出真正值得报告的目标响应。需要方向信息时，还要进一步利用天线指向和波束响应。</p>
@@ -111,7 +102,7 @@ $$</div>
 <p>上图展示的就是这个转变。左侧的原始回波混着目标、杂波和噪声，中间经过距离处理、速度处理和检测，右侧才变成可以解释的图和目标结果。信号处理要做的事，就是把“接收到的电信号”整理成“可以解释的目标信息”。</p>
 <p>回波中的距离、速度、检测和方向信息，都要从原始数据里提取。下表列出这些线索在本书中的位置。</p>
 <div class="table-wrap"><table><thead><tr><th>回波中的线索</th><th>回答的问题</th><th>本书中的位置</th></tr></thead><tbody><tr><td>回波到达时间</td><td>目标有多远</td><td>第4章 距离测量</td></tr><tr><td>回波频率或相位变化</td><td>目标是否靠近或远离</td><td>第5章 速度测量</td></tr><tr><td>回波强弱与背景差异</td><td>这个响应能不能算目标</td><td>第6章 目标检测</td></tr><tr><td>天线方向或波束响应</td><td>目标来自哪个方向</td><td>第7章 角度测量</td></tr></tbody></table></div>
-<h3 id="sub-8">1.6 本书的处理链路</h3>
+<h2 id="sub-8">1.6 本书的处理链路</h2>
 <p>时域、频域、采样、匹配滤波、多普勒、CFAR、距离-速度图这些名字看着零散，其实都在同一条处理链上。回波进来以后，先量出距离和速度，再判断哪些响应算目标，需要的时候才补上方向。</p>
 <p>第2章先介绍信号基础，因为回波首先是一段信号。第3章说明雷达到底发什么、收什么，以及接收数据怎样组织。第4章在回波延迟上做距离测量，第5章在一串脉冲的变化中做速度测量，第6章讨论检测，第7章加入方向，第8章把这些步骤接成一条 MATLAB 处理流程。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig1_4_book_architecture.png" alt="全书章节安排与依赖关系" loading="lazy"><figcaption>全书章节安排与依赖关系</figcaption></figure>

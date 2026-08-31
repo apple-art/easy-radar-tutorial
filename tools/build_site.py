@@ -125,6 +125,11 @@ def clean_title(title: str) -> str:
     return title.strip()
 
 
+def toc_child_title(title: str) -> str:
+    """Hide section numbering for the third-level links in the TOC."""
+    return re.sub(r"^\d+(?:\.\d+)+[.)]?\s*", "", title).strip()
+
+
 def clean_markdown(markdown_text: str) -> str:
     """Remove platform-specific copy from the Zhihu version before publishing."""
     cleaned_lines: list[str] = []
@@ -171,17 +176,13 @@ def paragraph_summary(markdown_text: str) -> str:
 
 
 def normalize_whole_chapter_headings(markdown_text: str) -> str:
-    """Keep the chapter title as H1 and render chapter subsections as H2."""
-    lines: list[str] = []
-    first_h1_seen = False
-    for line in markdown_text.splitlines():
-        if re.match(r"^#\s+", line):
-            if first_h1_seen:
-                lines.append("#" + line)
-                continue
-            first_h1_seen = True
-        lines.append(line)
-    return "\n".join(lines)
+    """Keep source heading relationships intact for the renderer.
+
+    The renderer reserves the first H1 for the chapter title and shifts all
+    subsequent headings down one level. Rewriting only later H1 headings here
+    would collapse source H1/H2 pairs into the same rendered level.
+    """
+    return markdown_text
 
 
 class MarkdownRenderer:
@@ -189,6 +190,7 @@ class MarkdownRenderer:
         self.matlab_files_by_name = matlab_files_by_name
         self.heading_counter = 0
         self.last_subheadings: list[dict[str, str]] = []
+        self.last_toc_sections: list[dict[str, object]] = []
 
     def inline(self, text: str) -> str:
         code_tokens: list[str] = []
@@ -306,6 +308,7 @@ class MarkdownRenderer:
 
     def render(self, markdown_text: str, section_id: str, section_title: str) -> str:
         self.last_subheadings = []
+        self.last_toc_sections = []
         lines = markdown_text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
         out: list[str] = []
         paragraph: list[str] = []
@@ -379,8 +382,17 @@ class MarkdownRenderer:
                     self.heading_counter += 1
                     output_level = min(level + 1, 6)
                     heading_id = f"sub-{self.heading_counter}"
-                    if output_level == 3:
+                    # The page reserves H1 for the chapter, so source H1/H2
+                    # headings render as H2/H3 and form the public TOC levels.
+                    if output_level == 2:
+                        toc_section = {"id": heading_id, "title": title, "children": []}
+                        self.last_toc_sections.append(toc_section)
+                    elif output_level == 3:
                         self.last_subheadings.append({"id": heading_id, "title": title})
+                        if self.last_toc_sections:
+                            children = self.last_toc_sections[-1]["children"]
+                            assert isinstance(children, list)
+                            children.append({"id": heading_id, "title": title})
                     out.append(f'<h{output_level} id="{heading_id}">{self.inline(title)}</h{output_level}>')
                 index += 1
                 continue
@@ -459,7 +471,11 @@ class SiteBuilder:
     def build(self) -> None:
         self.validate_source_dir()
         self.validate_public_repo()
-        reset_dir(self.chapter_out, self.output_root)
+        # Chinese pages are generated here; translated English pages are
+        # maintained separately and must survive repeated rebuilds.
+        self.chapter_out.mkdir(parents=True, exist_ok=True)
+        for generated_page in self.chapter_out.glob("*.zh-CN.html"):
+            generated_page.unlink()
         self.asset_out.mkdir(parents=True, exist_ok=True)
         self.discover_assets()
         self.discover_chapters()
@@ -693,6 +709,7 @@ class SiteBuilder:
         for section in chapter["sections"]:
             rendered_section = renderer.render(section["text"], section["id"], section["title"])
             section["subheadings"] = renderer.last_subheadings.copy()
+            section["toc_sections"] = renderer.last_toc_sections.copy()
             section_html.append(
                 f'<section class="chapter-section" data-section="{html_attr(section["id"])}">'
                 + rendered_section
@@ -707,16 +724,33 @@ class SiteBuilder:
             if item["slug"] == chapter["slug"]:
                 subsection_links = []
                 for section in item["sections"]:
-                    third_level_links = "".join(
-                        f'<a class="subtoc-link" href="#{html_attr(subheading["id"])}">{html.escape(subheading["title"])}</a>'
-                        for subheading in section.get("subheadings", [])
-                    )
-                    subitems = f'<div class="toc-subitems">{third_level_links}</div>' if third_level_links else ""
-                    subsection_links.append(
-                        f'<div class="toc-section" data-section="{html_attr(section["id"])}">'
-                        f'<a class="toc-link" href="#{html_attr(section["id"])}">{html.escape(section["title"])}</a>'
-                        f'{subitems}</div>'
-                    )
+                    toc_sections = section.get("toc_sections", [])
+                    if toc_sections:
+                        for toc_section in toc_sections:
+                            children = toc_section.get("children", [])
+                            third_level_links = "".join(
+                                f'<a class="subtoc-link" href="#{html_attr(child["id"])}">'
+                                f'{html.escape(toc_child_title(child["title"]))}</a>'
+                                for child in children
+                            )
+                            subitems = f'<div class="toc-subitems">{third_level_links}</div>' if third_level_links else ""
+                            subsection_links.append(
+                                f'<div class="toc-section" data-section="{html_attr(toc_section["id"])}">'
+                                f'<a class="toc-link" href="#{html_attr(toc_section["id"])}">{html.escape(toc_section["title"])}</a>'
+                                f'{subitems}</div>'
+                            )
+                    else:
+                        third_level_links = "".join(
+                            f'<a class="subtoc-link" href="#{html_attr(subheading["id"])}">'
+                            f'{html.escape(toc_child_title(subheading["title"]))}</a>'
+                            for subheading in section.get("subheadings", [])
+                        )
+                        subitems = f'<div class="toc-subitems">{third_level_links}</div>' if third_level_links else ""
+                        subsection_links.append(
+                            f'<div class="toc-section" data-section="{html_attr(section["id"])}">'
+                            f'<a class="toc-link" href="#{html_attr(section["id"])}">{html.escape(section["title"])}</a>'
+                            f'{subitems}</div>'
+                        )
                 chapter_link += f'<div class="chapter-subtoc">{"".join(subsection_links)}</div>'
             sidebar_items.append(f'<div class="book-toc-group">{chapter_link}</div>')
         sidebar = "".join(sidebar_items)

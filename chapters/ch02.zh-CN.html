@@ -7,16 +7,7 @@
   <meta name="description" content="第1章说雷达能从回波里读出目标信息。真实接收机最先拿到的，是一段随时间起伏的电压曲线，距离、速度和检测结果都要从这条曲线继续算出来。读这条曲线，要先弄清振幅和频率怎么描述，频谱怎么看，采样会丢掉什么信息，以及为什么雷达数据常写成复数 I/Q...">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch02.zh-CN.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-700-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-700-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/local-fonts-latin.css?v=20260709-font-opt">
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-sans-sc-chinese-simplified-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-serif-sc-chinese-simplified-400-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/local-fonts-cjk.css?v=20260709-font-opt">
-
-  <link rel="stylesheet" href="../assets/site.css?v=20260709-font-opt">
+  <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -45,7 +36,7 @@
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.zh-CN.html">← 首页</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.zh-CN.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch02.zh-CN.html">第2章 信号基础</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch02-s01"><a class="toc-link" href="#ch02-s01">信号基础</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-9">2.1 什么是信号</a><a class="subtoc-link" href="#sub-10">2.1.1 信号与正弦波</a><a class="subtoc-link" href="#sub-11">2.1.2 频率、波长与雷达应用</a><a class="subtoc-link" href="#sub-12">2.1.3 复合信号与频率成分</a><a class="subtoc-link" href="#sub-13">2.2 时域与频域</a><a class="subtoc-link" href="#sub-14">2.2.1 时域描述与频域描述</a><a class="subtoc-link" href="#sub-15">2.2.2 从时域到频域</a><a class="subtoc-link" href="#sub-16">2.2.3 傅里叶变换与 FFT</a><a class="subtoc-link" href="#sub-17">2.2.4 频率分辨率</a><a class="subtoc-link" href="#sub-18">2.3 采样定理</a><a class="subtoc-link" href="#sub-19">2.3.1 采样率与奈奎斯特频率</a><a class="subtoc-link" href="#sub-20">2.3.2 采样不足与混叠</a><a class="subtoc-link" href="#sub-21">2.3.3 ADC 与采样数据</a><a class="subtoc-link" href="#sub-22">2.4 复数、相位与I/Q数据</a><a class="subtoc-link" href="#sub-23">2.4.1 相位信息</a><a class="subtoc-link" href="#sub-24">2.4.2 复数表示与 I/Q 分量</a><a class="subtoc-link" href="#sub-25">2.4.3 I/Q 数据的来源</a><a class="subtoc-link" href="#sub-26">2.5 小练习</a><a class="subtoc-link" href="#sub-27">2.5.1 练习 1：频率与周期的换算</a><a class="subtoc-link" href="#sub-28">2.5.2 练习 2：从频谱读信息</a><a class="subtoc-link" href="#sub-29">2.5.3 练习 3：混叠判断</a><a class="subtoc-link" href="#sub-30">2.5.4 练习 4：频率分辨率</a><a class="subtoc-link" href="#sub-31">2.5.5 练习 5：I/Q 样本的幅度与相位</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.zh-CN.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.zh-CN.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.zh-CN.html">第8章 完整处理流程</a></div></nav>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.zh-CN.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch02.zh-CN.html">第2章 信号基础</a><div class="chapter-subtoc"><div class="toc-section" data-section="sub-9"><a class="toc-link" href="#sub-9">2.1 什么是信号</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-10">信号与正弦波</a><a class="subtoc-link" href="#sub-11">频率、波长与雷达应用</a><a class="subtoc-link" href="#sub-12">复合信号与频率成分</a></div></div><div class="toc-section" data-section="sub-13"><a class="toc-link" href="#sub-13">2.2 时域与频域</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-14">时域描述与频域描述</a><a class="subtoc-link" href="#sub-15">从时域到频域</a><a class="subtoc-link" href="#sub-16">傅里叶变换与 FFT</a><a class="subtoc-link" href="#sub-17">频率分辨率</a></div></div><div class="toc-section" data-section="sub-18"><a class="toc-link" href="#sub-18">2.3 采样定理</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-19">采样率与奈奎斯特频率</a><a class="subtoc-link" href="#sub-20">采样不足与混叠</a><a class="subtoc-link" href="#sub-21">ADC 与采样数据</a></div></div><div class="toc-section" data-section="sub-22"><a class="toc-link" href="#sub-22">2.4 复数、相位与I/Q数据</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-23">相位信息</a><a class="subtoc-link" href="#sub-24">复数表示与 I/Q 分量</a><a class="subtoc-link" href="#sub-25">I/Q 数据的来源</a></div></div><div class="toc-section" data-section="sub-26"><a class="toc-link" href="#sub-26">2.5 小练习</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-27">练习 1：频率与周期的换算</a><a class="subtoc-link" href="#sub-28">练习 2：从频谱读信息</a><a class="subtoc-link" href="#sub-29">练习 3：混叠判断</a><a class="subtoc-link" href="#sub-30">练习 4：频率分辨率</a><a class="subtoc-link" href="#sub-31">练习 5：I/Q 样本的幅度与相位</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.zh-CN.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch07.zh-CN.html">第7章 测角</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.zh-CN.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第2章</span><span>信号基础</span></div>
@@ -53,7 +44,7 @@
       <h1>第2章 信号基础</h1>
       <section class="chapter-section" data-section="ch02-s01"><h2 id="ch02-s01" class="section-title">信号基础</h2>
 <p>第1章说雷达能从回波里读出目标信息。真实接收机最先拿到的，是一段随时间起伏的电压曲线，距离、速度和检测结果都要从这条曲线继续算出来。读这条曲线，要先弄清振幅和频率怎么描述，频谱怎么看，采样会丢掉什么信息，以及为什么雷达数据常写成复数 I/Q。</p>
-<h3 id="sub-9">2.1 什么是信号</h3>
+<h2 id="sub-9">2.1 什么是信号</h2>
 <h3 id="sub-10">2.1.1 信号与正弦波</h3>
 <p>雷达接收机记录下来的电压曲线，就是一段信号。温度计读数是一个数，但温度随时间变化的记录就是信号。信号的共同点是值在持续变化，变化本身携带信息。</p>
 <p>工程里最常用的信号形式是正弦波，最简单的数学形式是</p>
@@ -78,7 +69,7 @@ $$</div>
 <p>上图把 3 Hz（振幅 1.0）、7 Hz（振幅 0.6）、15 Hz（振幅 0.3）三个正弦波画在一起。三条细线是各自的分量，红色粗线是它们相加后的复合信号。复合信号忽高忽低，仅凭肉眼几乎猜不出它由三个频率合成。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_3_composite_excali.png" alt="三个正弦波及其叠加" loading="lazy"><figcaption>三个正弦波及其叠加</figcaption></figure>
 <p>这样的复合信号，怎么看出里面藏了哪些频率？这就需要频域分析。</p>
-<h3 id="sub-13">2.2 时域与频域</h3>
+<h2 id="sub-13">2.2 时域与频域</h2>
 <h3 id="sub-14">2.2.1 时域描述与频域描述</h3>
 <p>同一个信号可以用两种方式描述。<strong>时域</strong>是我们最熟悉的视角，横轴是时间，纵轴是信号的值。心电图、录音波形、示波器屏幕上的曲线，都是时域表示。</p>
 <p><strong>频域</strong>换了一个角度，横轴是频率，纵轴是该频率成分的强度。它显示信号里有哪些频率，各占多大比重。</p>
@@ -113,7 +104,7 @@ $$</div>
 <p>零填充（zero-padding）可以让 FFT 输出更多点，频谱图更细腻，但不能把两根本来分不开的频率分量分开。频率分辨能力由观测时间决定。</p>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_6_frequency_resolution_excali.png" alt="观测时间、零填充与频率分辨率" loading="lazy"><figcaption>观测时间、零填充与频率分辨率</figcaption></figure>
 <p>上图中，前两行观测时间相同，零填充只让频谱曲线更细。第三行观测时间变长后，两个靠近的频率峰才分开。</p>
-<h3 id="sub-18">2.3 采样定理</h3>
+<h2 id="sub-18">2.3 采样定理</h2>
 <p>前两节讨论的正弦波、叠加、频谱，都是在连续时间框架下说的，信号在每一个时刻都有值。但计算机没法处理连续信号，只能存一串离散数字。</p>
 <h3 id="sub-19">2.3.1 采样率与奈奎斯特频率</h3>
 <p>要让计算机处理信号，必须把连续信号变成一串离散的数值，这个过程叫<strong>采样</strong>。采样就是每隔固定时间取一个点，记录下那一刻的信号值，其余时刻全部丢弃。丢了那么多信息，还能还原出原来的信号吗？</p>
@@ -144,7 +135,7 @@ $$</div>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig2_9_adc_pipeline_excali.png" alt="ADC 将连续电压变成数字序列" loading="lazy"><figcaption>ADC 将连续电压变成数字序列</figcaption></figure>
 <p>上图只画 ADC 的输入和输出。左边是连续变化的模拟电压，中间的 ADC 按固定采样率取点并量化，右边变成一串数字。FFT、滤波、检测处理的都是这些数字。</p>
 <p>ADC 的采样率影响雷达能处理多大带宽的信号。如果等效带宽是 50 MHz，采样率通常至少要在 100 MHz 以上，并配合前端滤波和下变频设计。采样率越高，ADC 往往越贵，功耗也越大，所以工程上要做好平衡。</p>
-<h3 id="sub-22">2.4 复数、相位与I/Q数据</h3>
+<h2 id="sub-22">2.4 复数、相位与I/Q数据</h2>
 <p>前面几节讨论的正弦波都是实数信号，振幅可以是正，可以是负，但都是实数。雷达信号处理里还会遇到复数数据。为什么需要复数？</p>
 <h3 id="sub-23">2.4.1 相位信息</h3>
 <p>把正弦波的起点也写进公式，就是</p>
@@ -181,7 +172,7 @@ $$</div>
 <h3 id="sub-25">2.4.3 I/Q 数据的来源</h3>
 <p>雷达接收机通常会输出 I/Q 两路数据。<strong>正交解调</strong>用两路相差 90° 的参考信号分别处理同一个回波，一路得到 $I$，另一路得到 $Q$。混频器和低通滤波器的电路细节暂不展开。I/Q 来自接收机的解调与采样链路，用来保留回波的幅度和相位。</p>
 <p>I/Q 是雷达数据里很常见的保存方式。一个复数样本可以同时记幅度和相位，距离处理、速度处理和匹配滤波都会用到。</p>
-<h3 id="sub-26">2.5 小练习</h3>
+<h2 id="sub-26">2.5 小练习</h2>
 <p>本节配套 MATLAB 脚本为 <code>第二版/matlab/第二章/ch02_exercise_signals.m</code>。它对应练习 2 到练习 5，可以用来检查频谱峰值、混叠位置、频率分辨率和 I/Q 样本的幅度相位。</p>
 <h3 id="sub-27">2.5.1 练习 1：频率与周期的换算</h3>
 <p>一个正弦信号的周期是 $T = 0.02$ s，它的频率是多少？</p>

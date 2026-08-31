@@ -7,16 +7,7 @@
   <meta name="description" content="前面几章已经得到目标表里的距离、速度和检测结果。现在还缺一个信息，就是目标在哪个方向。">
   <link rel="canonical" href="https://apple-art.github.io/easy-radar-tutorial/chapters/ch07.zh-CN.html">
   <link rel="icon" href="../design/icon-concepts/logo-mark-light.svg" type="image/svg+xml">
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin-700-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/newsreader-latin-700-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/local-fonts-latin.css?v=20260709-font-opt">
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-sans-sc-chinese-simplified-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/noto-serif-sc-chinese-simplified-400-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/local-fonts-cjk.css?v=20260709-font-opt">
-
-  <link rel="stylesheet" href="../assets/site.css?v=20260709-font-opt">
+  <link rel="stylesheet" href="../assets/site.css?v=20260506-code-font-fix">
   <script>try{if((localStorage.getItem('easy-radar-theme')||localStorage.getItem('easy-radar-home-theme'))==='dark')document.documentElement.setAttribute('data-theme','dark'),document.documentElement.setAttribute('data-home-theme','dark');}catch(_){}</script>
   <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -45,7 +36,7 @@
 <div class="article-layout">
   <aside class="sidebar">
     <a class="back-home" href="../index.zh-CN.html">← 首页</a>
-    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.zh-CN.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.zh-CN.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.zh-CN.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch07.zh-CN.html">第7章 测角</a><div class="chapter-subtoc"><div class="toc-section" data-section="ch07-s01"><a class="toc-link" href="#ch07-s01">角度测量</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-135">7.1 方向信息与雷达坐标</a><a class="subtoc-link" href="#sub-136">7.1.1 方向为什么不可省</a><a class="subtoc-link" href="#sub-137">7.1.2 方位角和俯仰角</a><a class="subtoc-link" href="#sub-138">7.2 天线方向图与波束宽度</a><a class="subtoc-link" href="#sub-139">7.2.1 主瓣、旁瓣和 3 dB 波束宽度</a><a class="subtoc-link" href="#sub-140">7.2.2 波长、天线尺寸和波束宽度</a><a class="subtoc-link" href="#sub-141">7.3 波束扫描测角</a><a class="subtoc-link" href="#sub-142">7.3.1 机械扫描</a><a class="subtoc-link" href="#sub-143">7.3.2 电子扫描</a><a class="subtoc-link" href="#sub-144">7.4 角分辨力与测角精度</a><a class="subtoc-link" href="#sub-145">7.4.1 两个目标什么时候分得开</a><a class="subtoc-link" href="#sub-146">7.4.2 分辨力和精度的区别</a><a class="subtoc-link" href="#sub-147">7.5 测角误差的主要来源</a><a class="subtoc-link" href="#sub-148">7.5.1 噪声</a><a class="subtoc-link" href="#sub-149">7.5.2 多径效应</a><a class="subtoc-link" href="#sub-150">7.5.3 角闪烁</a><a class="subtoc-link" href="#sub-151">7.5.4 指向误差与校准</a><a class="subtoc-link" href="#sub-152">7.6 单脉冲测角</a><a class="subtoc-link" href="#sub-153">7.6.1 和通道与差通道</a><a class="subtoc-link" href="#sub-154">7.6.2 比值与角度估计</a><a class="subtoc-link" href="#sub-155">7.7 小练习</a><a class="subtoc-link" href="#sub-156">7.7.1 练习 1：波束宽度与角度范围</a><a class="subtoc-link" href="#sub-157">7.7.2 练习 2：角分辨力判断</a><a class="subtoc-link" href="#sub-158">7.7.3 练习 3：估算波束宽度</a><a class="subtoc-link" href="#sub-159">7.7.4 练习 4：多径效应识别</a><a class="subtoc-link" href="#sub-160">7.7.5 练习 5：分辨力和精度的区别</a><a class="subtoc-link" href="#sub-161">7.7.6 练习 6：扫描测角与单脉冲测角</a><a class="subtoc-link" href="#sub-162">7.7.7 练习 7（选做）：波束扫描测角实验</a><a class="subtoc-link" href="#sub-163">7.7.8 练习 8（选做）：单脉冲比实验</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.zh-CN.html">第8章 完整处理流程</a></div></nav>
+    <nav class="book-toc"><div class="book-toc-group"><a class="chapter-toc-link" href="ch01.zh-CN.html">第1章 雷达是什么</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch02.zh-CN.html">第2章 信号基础</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch03.zh-CN.html">第3章 雷达信号的生成与接收</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch04.zh-CN.html">第4章 距离测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch05.zh-CN.html">第5章 速度测量</a></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch06.zh-CN.html">第6章 目标检测</a></div><div class="book-toc-group"><a class="chapter-toc-link active" href="ch07.zh-CN.html">第7章 测角</a><div class="chapter-subtoc"><div class="toc-section" data-section="sub-135"><a class="toc-link" href="#sub-135">7.1 方向信息与雷达坐标</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-136">方向为什么不可省</a><a class="subtoc-link" href="#sub-137">方位角和俯仰角</a></div></div><div class="toc-section" data-section="sub-138"><a class="toc-link" href="#sub-138">7.2 天线方向图与波束宽度</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-139">主瓣、旁瓣和 3 dB 波束宽度</a><a class="subtoc-link" href="#sub-140">波长、天线尺寸和波束宽度</a></div></div><div class="toc-section" data-section="sub-141"><a class="toc-link" href="#sub-141">7.3 波束扫描测角</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-142">机械扫描</a><a class="subtoc-link" href="#sub-143">电子扫描</a></div></div><div class="toc-section" data-section="sub-144"><a class="toc-link" href="#sub-144">7.4 角分辨力与测角精度</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-145">两个目标什么时候分得开</a><a class="subtoc-link" href="#sub-146">分辨力和精度的区别</a></div></div><div class="toc-section" data-section="sub-147"><a class="toc-link" href="#sub-147">7.5 测角误差的主要来源</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-148">噪声</a><a class="subtoc-link" href="#sub-149">多径效应</a><a class="subtoc-link" href="#sub-150">角闪烁</a><a class="subtoc-link" href="#sub-151">指向误差与校准</a></div></div><div class="toc-section" data-section="sub-152"><a class="toc-link" href="#sub-152">7.6 单脉冲测角</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-153">和通道与差通道</a><a class="subtoc-link" href="#sub-154">比值与角度估计</a></div></div><div class="toc-section" data-section="sub-155"><a class="toc-link" href="#sub-155">7.7 小练习</a><div class="toc-subitems"><a class="subtoc-link" href="#sub-156">练习 1：波束宽度与角度范围</a><a class="subtoc-link" href="#sub-157">练习 2：角分辨力判断</a><a class="subtoc-link" href="#sub-158">练习 3：估算波束宽度</a><a class="subtoc-link" href="#sub-159">练习 4：多径效应识别</a><a class="subtoc-link" href="#sub-160">练习 5：分辨力和精度的区别</a><a class="subtoc-link" href="#sub-161">练习 6：扫描测角与单脉冲测角</a><a class="subtoc-link" href="#sub-162">练习 7（选做）：波束扫描测角实验</a><a class="subtoc-link" href="#sub-163">练习 8（选做）：单脉冲比实验</a></div></div></div></div><div class="book-toc-group"><a class="chapter-toc-link" href="ch08.zh-CN.html">第8章 完整处理流程</a></div></nav>
   </aside>
   <main class="article-main reveal">
     <div class="article-meta"><span>第7章</span><span>测角</span></div>
@@ -56,7 +47,7 @@
 <p>一个目标距离雷达 $50\,km$，速度 $300\,m/s$。这当然已经是有用信息，但如果不知道它在东边还是西边、在低空还是高空，指挥和预警都很难落到具体动作上。气象雷达也是一样。只说“$100\,km$ 外有强降雨”，还不能告诉读者该往哪个方向看。</p>
 <p>角度测量补上的就是目标方向。测距离时抓的是时间延迟，测速时抓的是脉冲间相位变化，检测时看回波是否越过门限，测角时则是天线本身的方向性开始起主要作用。雷达能判断方向，是因为它对不同方向的响应并不相同。波束扫描、角分辨力、测角误差和单脉冲测角，都在追问怎样利用天线方向性，以及哪些因素会限制测角结果。</p>
 <p>这些内容可以接到前面几章的线索上。第 3 章讲过天线方向性，第 4 章讲过”宽度会限制分辨能力”，第 5 章讲过参数估计会有误差。放到角度轴上，响应越强的方向越可能接近目标方向，波束越宽则角度相近的目标越容易混在一起，噪声、多径和指向误差则会把角度估计推偏。</p>
-<h3 id="sub-135">7.1 方向信息与雷达坐标</h3>
+<h2 id="sub-135">7.1 方向信息与雷达坐标</h2>
 <h3 id="sub-136">7.1.1 方向为什么不可省</h3>
 <p>想象在操场上。有人说”有个人在 $100\,m$ 外，以 $5\,m/s$ 向你跑来”。你会问什么？大概率是从哪个方向——正前方、侧面、身后，意义完全不同。</p>
 <p>防空雷达也是这样。雷达探测到三个目标，距离都在 $50\,km$ 左右，速度也接近 $300\,m/s$。如果没有方向信息，这三个目标可能在同一方向，也可能分别来自东、南、西三个方向。前一种情况需要集中处理，后一种情况需要分配不同方向的资源。距离和速度相同，并不代表空间位置相同。</p>
@@ -69,7 +60,7 @@
 <ul><li>目标在正东方向、水平高度、距离 $10\,km$，可记为方位角 $90^\circ$，俯仰角 $0^\circ$，距离 $10\,km$。</li><li>目标在东北方向、仰角 $30^\circ$、距离 $20\,km$，可记为方位角 $45^\circ$，俯仰角 $30^\circ$，距离 $20\,km$。</li><li>目标在正上方、距离 $5\,km$，俯仰角为 $90^\circ$，方位角失去实际意义，因为所有水平方向都指向同一个点。</li></ul>
 <p>最后一种情况说明坐标表示也有局限。对地面搜索雷达来说，目标正好在天顶并不常见，对舰载、机载或特殊跟踪雷达，接近天顶的目标需要更仔细的坐标处理。角度不是一个数字，通常至少包括方位角和俯仰角。</p>
 <p>雷达能测角，是因为天线对不同方向的响应不同。测距离时抓的是时间延迟，测速时抓的是脉冲间相位变化，测角时天线本身的方向性开始起主要作用。</p>
-<h3 id="sub-138">7.2 天线方向图与波束宽度</h3>
+<h2 id="sub-138">7.2 天线方向图与波束宽度</h2>
 <h3 id="sub-139">7.2.1 主瓣、旁瓣和 3 dB 波束宽度</h3>
 <p>雷达波束不是一条无限细的线，更像手电筒照在墙上的光斑，中心最亮，边缘逐渐变暗，中间没有一条清楚的边界。天线对电磁波的发射和接收也有这样的角度分布。</p>
 <p>假设天线指向正前方，逐个测量不同角度上的辐射功率或接收灵敏度，再把结果画成曲线，就得到<strong>天线方向图</strong>。方向图描述的是天线自己的方向响应，不是某一次扫描得到的目标回波曲线。</p>
@@ -102,7 +93,7 @@ $$</div>
 $$</div>
 <figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig7_4_beamwidth_vs_antenna_size_excali.png" alt="波束宽度与天线尺寸的关系" loading="lazy"><figcaption>波束宽度与天线尺寸的关系</figcaption></figure>
 <p>窄波束有利于测角和分辨相近目标，但它也带来代价。天线变大，重量、成本和安装空间都会增加，频率升高，器件、损耗和传播条件也会随之变化。工程系统通常不会只追求最窄波束，而要在搜索范围、刷新率、精度、成本和平台尺寸之间取折中。</p>
-<h3 id="sub-141">7.3 波束扫描测角</h3>
+<h2 id="sub-141">7.3 波束扫描测角</h2>
 <h3 id="sub-142">7.3.1 机械扫描</h3>
 <p>波束指向目标中心时，回波通常最强。沿着不同方向扫过去，记录每个方向上的回波强度，峰值所在的方向就可以作为目标角度估计。这就是扫描测角的思路。</p>
 <p>一种扫描方式是让天线物理转动。机场、港口和气象站常见的旋转雷达，就是机械扫描的例子。天线每转到一个方向，就发射脉冲、接收回波，并把这一方向上的距离和强度信息记录下来。</p>
@@ -118,7 +109,7 @@ $$</div>
 <p>电子扫描的优点是波束捷变。它不需要让一个大天线物理转动，可以在很短时间内从一个方向切到另一个方向，也可以把更多时间分配给正在接近的目标。现代战斗机雷达、防空雷达和大型预警雷达中，相控阵已经非常常见。</p>
 <p>电子扫描也有局限。第一，阵列成本高、功耗大，很多单元都需要幅度和相位控制。第二，每个方向仍然需要驻留时间，不能只”指一下”就得到可靠回波。第三，波束偏离阵列正前方太多时，增益会下降，旁瓣可能升高，波束形状也会变差。</p>
 <p>相位差如何精确形成波束、数字波束形成怎样从阵列数据中估计角度，属于阵列信号处理内容。</p>
-<h3 id="sub-144">7.4 角分辨力与测角精度</h3>
+<h2 id="sub-144">7.4 角分辨力与测角精度</h2>
 <h3 id="sub-145">7.4.1 两个目标什么时候分得开</h3>
 <p>距离测量中，两个目标如果回波在时间上挤在一起，距离像上可能只剩一个峰。测角也有类似问题，两个目标角度太接近时，波束能不能把它们分成两个目标？这个能力叫<strong>角分辨力</strong>。</p>
 <p>假设两个目标在同一距离上，一个在 $20^\circ$，另一个在 $23^\circ$，角度差为 $3^\circ$。若雷达波束宽度为 $10^\circ$，当波束指向 $20^\circ$ 到 $23^\circ$ 附近时，两个目标都会落在主瓣里，回波容易叠成一个宽峰，雷达很难判断有两个目标。</p>
@@ -147,7 +138,7 @@ $$</div>
 $$</div>
 <p>波束越窄，角度变化在回波上表现得越敏感，信噪比越高，峰值或比值越稳定。这个式子只表示趋势，具体系数和波束形状、测角方法、目标起伏、处理算法有关。</p>
 <p>例如波束宽度为 $3^\circ$，信噪比为 $100$（$20\,dB$）时，随机测角误差可能落在零点几度的量级。实际系统还会受到多径、角闪烁和天线指向误差影响，所以工程指标通常不能只看热噪声下的理论估计。</p>
-<h3 id="sub-147">7.5 测角误差的主要来源</h3>
+<h2 id="sub-147">7.5 测角误差的主要来源</h2>
 <h3 id="sub-148">7.5.1 噪声</h3>
 <p>接收机里总有噪声。噪声叠加到回波上，会让扫描曲线或单脉冲比值出现抖动。目标真实方向是 $30^\circ$，理想情况下峰值应在 $30^\circ$，加上噪声后，峰值可能出现在 $29.8^\circ$、$30.1^\circ$ 或 $30.3^\circ$。</p>
 <p>信噪比越低，抖动越大。波束越宽，峰值附近的曲线越平，同样的噪声更容易把估计位置推偏。减小波束宽度、提高发射能量、增加相干积累或做多次测量平均，都可以降低噪声引起的随机误差。</p>
@@ -171,7 +162,7 @@ $$</div>
 <p>这类误差通常靠标校减小。雷达可以观测已知位置的信标、卫星或地面目标，比较测得角度和真实角度，再修正指向模型。对高精度系统来说，标校本身就是测角能力的一部分。</p>
 <div class="table-wrap"><table><thead><tr><th>误差来源</th><th>主要表现</th><th>常见应对方式</th></tr></thead><tbody><tr><td>噪声</td><td>测角结果随机抖动</td><td>提高信噪比、多次平均、窄波束</td></tr><tr><td>多径</td><td>低仰角目标出现偏差或摆动</td><td>提高天线高度、抑制反射路径、选择极化和频率</td></tr><tr><td>角闪烁</td><td>复杂目标等效散射中心跳动</td><td>宽带、多频、多视角、时间平滑</td></tr><tr><td>指向误差</td><td>角度读数整体偏移</td><td>安装校准、相位校准、定期标校</td></tr></tbody></table></div>
 <p>实际测角结果往往由多种误差叠加而成。低空目标可能主要受多径影响，高信噪比远距离目标可能主要受指向标校限制，机动目标则可能有较强角闪烁。判断误差来源时，不能只看一个理论公式。</p>
-<h3 id="sub-152">7.6 单脉冲测角</h3>
+<h2 id="sub-152">7.6 单脉冲测角</h2>
 <h3 id="sub-153">7.6.1 和通道与差通道</h3>
 <p>扫描测角靠的是逐方向试探。波束指一个方向，测一次回波强度，换一个方向再测一次，最后比较哪个方向最强。快速目标或精确跟踪时，这种逐方向比较会显得慢。</p>
 <p>单脉冲测角在同一次回波中同时回答两个问题：目标强不强，以及目标偏离中心多少。最常见的做法是形成<strong>和通道</strong> $\Sigma$ 与<strong>差通道</strong> $\Delta$。</p>
@@ -210,7 +201,7 @@ $$</div>
 <p>其中 $K_m$ 是由天线波束形状和标定结果决定的系数。实际系统通常通过标校得到这条曲线，纸面公式只给出近似关系。</p>
 <p>单脉冲测角的优点是快，也更适合跟踪。它的代价是硬件和通道更复杂，系统需要同时形成和通道、差通道，还要保持各通道幅度和相位一致。若通道不平衡，$\Delta/\Sigma$ 本身也会带来误差。</p>
 <p>完整的幅度比较、相位比较、多维单脉冲和阵列处理，属于雷达测量与阵列信号处理的深入内容。</p>
-<h3 id="sub-155">7.7 小练习</h3>
+<h2 id="sub-155">7.7 小练习</h2>
 <h3 id="sub-156">7.7.1 练习 1：波束宽度与角度范围</h3>
 <p>某搜索雷达的 3 dB 波束宽度为 $5^\circ$。一次扫描中，雷达在方位角 $30^\circ$ 方向探测到强回波。目标大致可能落在什么角度范围内？</p>
 <p>解析：若只做粗略判断，可认为主瓣较强区域约为 $30^\circ\pm2.5^\circ$，也就是 $27.5^\circ$ 到 $32.5^\circ$。这只是范围判断，不是精确测角结果。目标具体角度还要看回波曲线形状、信噪比和测角方法。</p>
