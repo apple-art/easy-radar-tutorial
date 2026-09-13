@@ -67,7 +67,7 @@ $$</div>
 \Delta t = \frac{2\times150\times10^3}{3\times10^8} = 1\,ms
 $$</div>
 <p>测距的核心是测时。回波晚回来多少，决定了目标大致有多远。</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/fig4_1_excali.png" alt="脉冲雷达测距示意" loading="lazy"><figcaption>脉冲雷达测距示意</figcaption></figure>
+<figure><img src="../figures/ch04/fig4_1_excali.png" alt="脉冲雷达测距示意" loading="lazy"><figcaption>脉冲雷达测距示意</figcaption></figure>
 <p>这里要区分两个概念。测距公式给出一个回波峰对应的距离，距离分辨率则决定两个相近目标能不能分开。单个目标的位置估计可以很细，但两个目标的回波如果严重重叠，在按距离排列的回波图上仍可能只剩一个峰。</p>
 <h3 id="sub-60">4.1.2 采样点到距离轴</h3>
 <p>真实接收机按采样率 $f_s$ 把回波变成一串采样点，而不是连续记录所有时刻的值。相邻两个采样点的时间间隔是</p>

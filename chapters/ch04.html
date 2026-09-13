@@ -73,7 +73,7 @@ $$</div>
 \Delta t = \frac{2\times150\times10^3}{3\times10^8} = 1\,ms
 $$</div>
 <p>The first layer of meaning in the ranging problem is the time measurement problem. How late the echo returns determines roughly how far away the target is.</p>
-<figure><img src="https://pico-tcq.oss-cn-shanghai.aliyuncs.com/img/en/fig4_1_excali.png" alt="Figure 4.1 Pulse radar ranging schematic" loading="lazy"><figcaption>Figure 4.1 Pulse radar ranging schematic</figcaption></figure>
+<figure><img src="../figures/en/ch04/fig4_1_excali.png" alt="Figure 4.1 Pulse radar ranging schematic" loading="lazy"><figcaption>Figure 4.1 Pulse radar ranging schematic</figcaption></figure>
 <p>Here we need to distinguish between two terms. The range equation tells us at what distance a single echo peak is located; range resolution tells us whether two nearby targets can be separated. The position estimate of a single target can be very fine, but if two targets have severely overlapping echoes, they may still appear as only one peak on the range-ordered echo plot.</p>
 <h3 id="sub-44">Sample Points to Range Axis</h3>
 <p>A real receiver converts the echo into a series of samples at sampling rate $f_s$, rather than continuously recording values at all times. The time interval between adjacent samples is</p>
